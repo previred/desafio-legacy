@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Empleados - Previred</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Gestión de Empleados</h1>
+            <p class="subtitle">Desafío Técnico Previred</p>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <h2>Registrar Nuevo Empleado</h2>
+                <form id="empleadoForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre *</label>
+                            <input type="text" id="nombre" name="nombre" required maxlength="100">
+                            <span class="error-message" id="error-nombre"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="apellido">Apellido *</label>
+                            <input type="text" id="apellido" name="apellido" required maxlength="100">
+                            <span class="error-message" id="error-apellido"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rut">RUT *</label>
+                            <input type="text" id="rut" name="rut" required maxlength="12" placeholder="12.345.678-9">
+                            <span class="error-message" id="error-rut"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cargo">Cargo *</label>
+                            <input type="text" id="cargo" name="cargo" required maxlength="100">
+                            <span class="error-message" id="error-cargo"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="salarioBase">Salario Base * (mín. $400.000)</label>
+                            <div class="input-currency">
+                                <span class="currency-symbol">$</span>
+                                <input type="text" id="salarioBase" name="salarioBase" required placeholder="400.000">
+                            </div>
+                            <span class="error-message" id="error-salarioBase"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bonos">Bonos (máx. 50% del salario)</label>
+                            <div class="input-currency">
+                                <span class="currency-symbol">$</span>
+                                <input type="text" id="bonos" name="bonos" placeholder="0">
+                            </div>
+                            <span class="error-message" id="error-bonos"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="descuentos">Descuentos (máx. salario base)</label>
+                            <div class="input-currency">
+                                <span class="currency-symbol">$</span>
+                                <input type="text" id="descuentos" name="descuentos" placeholder="0">
+                            </div>
+                            <span class="error-message" id="error-descuentos"></span>
+                        </div>
+
+                        <div class="form-group"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Registrar Empleado</button>
+                        <button type="reset" class="btn btn-secondary">Limpiar Formulario</button>
+                    </div>
+
+                    <div id="formErrors" class="error-message-box" style="display: none;"></div>
+                </form>
+            </section>
+
+            <section class="table-section">
+                <h2>Lista de Empleados</h2>
+                <div id="loadingIndicator" class="loading" style="display: none;">Cargando...</div>
+                <div id="empleadosTableContainer">
+                    <table id="empleadosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Apellido</th>
+                                <th>RUT</th>
+                                <th>Cargo</th>
+                                <th>Salario Base</th>
+                                <th>Bonos</th>
+                                <th>Descuentos</th>
+                                <th>Salario Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empleadosTableBody">
+                            <tr>
+                                <td colspan="10" class="no-data">No hay empleados registrados</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer__content">
+                <p class="footer__copyright">
+                    &copy; 2026 Previred - Desafío Técnico
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/validator.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
