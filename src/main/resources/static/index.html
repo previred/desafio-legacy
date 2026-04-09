@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados - Previred</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            color: #333;
+        }
+
+        header {
+            background: #1a237e;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        header h1 { font-size: 1.4rem; font-weight: 600; }
+
+        .container { max-width: 1100px; margin: 32px auto; padding: 0 24px; }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-bottom: 28px;
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: #1a237e;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+
+        label { font-size: 0.85rem; font-weight: 600; color: #555; }
+
+        input {
+            padding: 10px 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { outline: none; border-color: #3f51b5; }
+        input.error { border-color: #e53935; }
+
+        .field-error {
+            font-size: 0.78rem;
+            color: #e53935;
+            min-height: 16px;
+        }
+
+        .btn {
+            padding: 10px 22px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: #3f51b5; color: white; }
+        .btn-primary:hover { background: #303f9f; }
+        .btn-danger { background: #e53935; color: white; font-size: 0.82rem; padding: 6px 14px; }
+        .btn-danger:hover { background: #c62828; }
+
+        .form-actions { margin-top: 20px; display: flex; align-items: center; gap: 16px; }
+
+        /* Alertas */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .alert.show { display: block; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
+        .alert-error   { background: #ffebee; color: #c62828; border-left: 4px solid #f44336; }
+
+        /* Tabla */
+        .table-wrapper { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+
+        thead tr { background: #e8eaf6; }
+
+        th, td {
+            padding: 12px 14px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th { font-weight: 600; color: #3f51b5; white-space: nowrap; }
+        tr:hover td { background: #f5f5f5; }
+
+        .badge {
+            display: inline-block;
+            background: #e8eaf6;
+            color: #3f51b5;
+            border-radius: 20px;
+            padding: 2px 10px;
+            font-size: 0.8rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading { text-align: center; color: #3f51b5; padding: 20px; }
+
+        /* Spinner */
+        .spinner {
+            display: inline-block;
+            width: 18px; height: 18px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<header>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+    </svg>
+    <h1>Gestión de Empleados — Previred</h1>
+</header>
+
+<div class="container">
+
+    <!-- Formulario agregar empleado -->
+    <div class="card">
+        <h2>➕ Agregar Empleado</h2>
+
+        <div id="alert-success" class="alert alert-success"></div>
+        <div id="alert-error" class="alert alert-error"></div>
+
+        <form id="form-empleado" novalidate>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="nombre">Nombre *</label>
+                    <input type="text" id="nombre" placeholder="Ej: Juan">
+                    <span class="field-error" id="err-nombre"></span>
+                </div>
+                <div class="form-group">
+                    <label for="apellido">Apellido *</label>
+                    <input type="text" id="apellido" placeholder="Ej: Pérez">
+                    <span class="field-error" id="err-apellido"></span>
+                </div>
+                <div class="form-group">
+                    <label for="rut">RUT/DNI *</label>
+                    <input type="text" id="rut" placeholder="Ej: 12345678-9">
+                    <span class="field-error" id="err-rut"></span>
+                </div>
+                <div class="form-group">
+                    <label for="cargo">Cargo *</label>
+                    <input type="text" id="cargo" placeholder="Ej: Desarrollador">
+                    <span class="field-error" id="err-cargo"></span>
+                </div>
+                <div class="form-group">
+                    <label for="salario">Salario Base ($) *</label>
+                    <input type="number" id="salario" placeholder="Mín. 400000" min="400000">
+                    <span class="field-error" id="err-salario"></span>
+                </div>
+                <div class="form-group">
+                    <label for="bono">Bono ($)</label>
+                    <input type="number" id="bono" placeholder="Máx. 50% del salario" min="0" value="0">
+                    <span class="field-error" id="err-bono"></span>
+                </div>
+                <div class="form-group">
+                    <label for="descuento">Descuento ($)</label>
+                    <input type="number" id="descuento" placeholder="No mayor al salario base" min="0" value="0">
+                    <span class="field-error" id="err-descuento"></span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary" id="btn-submit">
+                    Agregar Empleado
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de empleados -->
+    <div class="card">
+        <h2>📋 Lista de Empleados</h2>
+        <div class="table-wrapper">
+            <div id="loading" class="loading">Cargando empleados...</div>
+            <table id="tabla-empleados" style="display:none;">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>RUT/DNI</th>
+                        <th>Cargo</th>
+                        <th>Salario</th>
+                        <th>Bono</th>
+                        <th>Descuento</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-empleados"></tbody>
+            </table>
+            <div id="empty-state" class="empty-state" style="display:none;">
+                No hay empleados registrados aún.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = '/api/empleados';
+
+    // ── Formatear salario en pesos chilenos ───────────────────────────────────
+    function formatearSalario(valor) {
+        return new Intl.NumberFormat('es-CL', {
+            style: 'currency', currency: 'CLP', minimumFractionDigits: 0
+        }).format(valor);
+    }
+
+    // ── Mostrar / ocultar alerta ──────────────────────────────────────────────
+    function mostrarAlerta(tipo, mensaje) {
+        const el = document.getElementById('alert-' + tipo);
+        el.textContent = mensaje;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 4000);
+    }
+
+    // ── Limpiar errores del formulario ────────────────────────────────────────
+    function limpiarErrores() {
+        ['nombre', 'apellido', 'rut', 'cargo', 'salario', 'bono', 'descuento'].forEach(campo => {
+            document.getElementById(campo).classList.remove('error');
+            document.getElementById('err-' + campo).textContent = '';
+        });
+    }
+
+    // ── Mostrar error en campo específico ─────────────────────────────────────
+    function mostrarErrorCampo(campo, mensaje) {
+        document.getElementById(campo).classList.add('error');
+        document.getElementById('err-' + campo).textContent = mensaje;
+    }
+
+    // ── Validaciones frontend ─────────────────────────────────────────────────
+    function validarFormulario(datos) {
+        let valido = true;
+
+        if (!datos.nombre.trim()) {
+            mostrarErrorCampo('nombre', 'El nombre es obligatorio');
+            valido = false;
+        }
+
+        if (!datos.apellido.trim()) {
+            mostrarErrorCampo('apellido', 'El apellido es obligatorio');
+            valido = false;
+        }
+
+        const rutRegex = /^[0-9]{7,8}-[0-9Kk]$/;
+        if (!datos.rut.trim()) {
+            mostrarErrorCampo('rut', 'El RUT/DNI es obligatorio');
+            valido = false;
+        } else if (!rutRegex.test(datos.rut.trim())) {
+            mostrarErrorCampo('rut', 'Formato inválido. Ej: 12345678-9 o 12345678-K');
+            valido = false;
+        }
+
+        if (!datos.cargo.trim()) {
+            mostrarErrorCampo('cargo', 'El cargo es obligatorio');
+            valido = false;
+        }
+
+        const salario = parseFloat(datos.salario);
+        if (!datos.salario || isNaN(salario)) {
+            mostrarErrorCampo('salario', 'El salario es obligatorio');
+            valido = false;
+        } else if (salario < 400000) {
+            mostrarErrorCampo('salario', 'El salario no puede ser menor a $400.000');
+            valido = false;
+        }
+
+        const bono = parseFloat(datos.bono) || 0;
+        if (bono < 0) {
+            mostrarErrorCampo('bono', 'El bono no puede ser negativo');
+            valido = false;
+        } else if (!isNaN(salario) && salario >= 400000 && bono > salario * 0.5) {
+            mostrarErrorCampo('bono', `El bono no puede superar el 50% del salario ($${(salario * 0.5).toLocaleString('es-CL')})`);
+            valido = false;
+        }
+
+        const descuento = parseFloat(datos.descuento) || 0;
+        if (descuento < 0) {
+            mostrarErrorCampo('descuento', 'El descuento no puede ser negativo');
+            valido = false;
+        } else if (!isNaN(salario) && descuento > salario) {
+            mostrarErrorCampo('descuento', 'El descuento no puede ser mayor al salario base');
+            valido = false;
+        }
+
+        return valido;
+    }
+
+    // ── Cargar empleados (GET) ────────────────────────────────────────────────
+    async function cargarEmpleados() {
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('tabla-empleados').style.display = 'none';
+        document.getElementById('empty-state').style.display = 'none';
+
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error('Error al obtener empleados');
+
+            const empleados = await response.json();
+
+            document.getElementById('loading').style.display = 'none';
+
+            if (empleados.length === 0) {
+                document.getElementById('empty-state').style.display = 'block';
+                return;
+            }
+
+            const tbody = document.getElementById('tbody-empleados');
+            tbody.innerHTML = empleados.map(e => `
+                <tr id="fila-${e.id}">
+                    <td><span class="badge">#${e.id}</span></td>
+                    <td>${escapeHtml(e.nombre)}</td>
+                    <td>${escapeHtml(e.apellido)}</td>
+                    <td>${escapeHtml(e.rut)}</td>
+                    <td>${escapeHtml(e.cargo)}</td>
+                    <td>${formatearSalario(e.salario)}</td>
+                    <td>${formatearSalario(e.bono)}</td>
+                    <td>${formatearSalario(e.descuento)}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="eliminarEmpleado(${e.id})">
+                            🗑 Eliminar
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('tabla-empleados').style.display = 'table';
+
+        } catch (error) {
+            document.getElementById('loading').style.display = 'none';
+            mostrarAlerta('error', 'Error al cargar la lista de empleados');
+            console.error(error);
+        }
+    }
+
+    // ── Agregar empleado (POST) ───────────────────────────────────────────────
+    document.getElementById('form-empleado').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        limpiarErrores();
+
+        const datos = {
+            nombre:    document.getElementById('nombre').value,
+            apellido:  document.getElementById('apellido').value,
+            rut:       document.getElementById('rut').value,
+            cargo:     document.getElementById('cargo').value,
+            salario:   document.getElementById('salario').value,
+            bono:      document.getElementById('bono').value,
+            descuento: document.getElementById('descuento').value
+        };
+
+        if (!validarFormulario(datos)) return;
+
+        const btn = document.getElementById('btn-submit');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Guardando...';
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    nombre:    datos.nombre.trim(),
+                    apellido:  datos.apellido.trim(),
+                    rut:       datos.rut.trim(),
+                    cargo:     datos.cargo.trim(),
+                    salario:   parseFloat(datos.salario),
+                    bono:      parseFloat(datos.bono) || 0,
+                    descuento: parseFloat(datos.descuento) || 0
+                })
+            });
+
+            const body = await response.json();
+
+            if (!response.ok) {
+                // Errores del backend
+                if (body.errores && body.errores.length > 0) {
+                    mostrarAlerta('error', body.errores.join(' | '));
+                } else {
+                    mostrarAlerta('error', body.mensaje || 'Error al crear el empleado');
+                }
+                return;
+            }
+
+            mostrarAlerta('success', `Empleado ${body.nombre} ${body.apellido} agregado correctamente`);
+            document.getElementById('form-empleado').reset();
+            limpiarErrores();
+            await cargarEmpleados();
+
+        } catch (error) {
+            mostrarAlerta('error', 'Error de conexión con el servidor');
+            console.error(error);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Agregar Empleado';
+        }
+    });
+
+    // ── Eliminar empleado (DELETE) ────────────────────────────────────────────
+    async function eliminarEmpleado(id) {
+        if (!confirm(`¿Está seguro de eliminar al empleado #${id}?`)) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+
+            if (response.status === 204) {
+                document.getElementById('fila-' + id).remove();
+                mostrarAlerta('success', `Empleado #${id} eliminado correctamente`);
+
+                const tbody = document.getElementById('tbody-empleados');
+                if (tbody.children.length === 0) {
+                    document.getElementById('tabla-empleados').style.display = 'none';
+                    document.getElementById('empty-state').style.display = 'block';
+                }
+            } else {
+                const body = await response.json();
+                mostrarAlerta('error', body.mensaje || 'No se pudo eliminar el empleado');
+            }
+        } catch (error) {
+            mostrarAlerta('error', 'Error de conexión con el servidor');
+            console.error(error);
+        }
+    }
+
+    // ── Utilidad: evitar XSS ──────────────────────────────────────────────────
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    // ── Carga inicial ─────────────────────────────────────────────────────────
+    cargarEmpleados();
+</script>
+
+</body>
+</html>
