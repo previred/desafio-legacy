@@ -3,11 +3,15 @@ package cl.hf.previred.servlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,72 +51,80 @@ public class EmpleadoServlet extends HttpServlet {
     }
 
     // POST: Agregar nuevo empleado con validaciones
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try (BufferedReader reader = req.getReader()) {
-            EmpleadoDTO nuevo = gson.fromJson(reader, EmpleadoDTO.class);
-
-            // Usamos una lista para acumular todos los errores encontrados
-            List<String> errores = new ArrayList<>();
-
-            // 0. Validar campos obligatorios (nombre, apellido, rut, cargo, salario)
-            if (nuevo == null || nuevo.getNombre() == null || nuevo.getNombre().trim().isEmpty()) {
-                errores.add("El nombre es obligatorio.");
+        @Override
+        protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            try (BufferedReader reader = req.getReader()) {
+                EmpleadoDTO nuevo = gson.fromJson(reader, EmpleadoDTO.class);
+    
+                List<String> errores = Stream.of(
+                        validarCampoObligatorio(nuevo, EmpleadoDTO::getNombre, "El nombre es obligatorio."),
+                        validarCampoObligatorio(nuevo, EmpleadoDTO::getApellido, "El apellido es obligatorio."),
+                        validarCampoObligatorio(nuevo, EmpleadoDTO::getRut, "El RUT/DNI es obligatorio."),
+                        validarCampoObligatorio(nuevo, EmpleadoDTO::getCargo, "El cargo es obligatorio."),
+                        validarSalario(nuevo),
+                        validarRutDuplicado(nuevo),
+                        validarBono(nuevo),
+                        validarDescuento(nuevo)
+                )
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    
+                if (!errores.isEmpty()) {
+                    Map<String, Object> respuestaError = new HashMap<>();
+                    respuestaError.put("errores", errores);
+                    enviarRespuesta(resp, HttpServletResponse.SC_BAD_REQUEST, gson.toJson(respuestaError));
+                    return;
+                }
+    
+                empleadoDao.guardar(nuevo);
+                enviarRespuesta(resp, HttpServletResponse.SC_CREATED, gson.toJson(nuevo));
+            } catch (SQLException e) {
+                LOGGER.log(Level.SEVERE, "Error de base de datos al guardar", e);
+                enviarError(resp, "Error interno al procesar el registro.");
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "Error de formato en petición POST", e);
+                enviarError(resp, "Formato de datos inválido o campos faltantes.");
             }
-            if (nuevo == null || nuevo.getApellido() == null || nuevo.getApellido().trim().isEmpty()) {
-                errores.add("El apellido es obligatorio.");
-            }
-            if (nuevo == null || nuevo.getRut() == null || nuevo.getRut().trim().isEmpty()) {
-                errores.add("El RUT/DNI es obligatorio.");
-            }
-            if (nuevo == null || nuevo.getCargo() == null || nuevo.getCargo().trim().isEmpty()) {
-                errores.add("El cargo es obligatorio.");
-            }
-
-            // 1. Validar Salario Base Mínimo ($400.000)
-            if (nuevo.getSalario() == null || nuevo.getSalario() < 400000) {
-                errores.add("El salario base no puede ser menor a $400.000.");
-            }
-
-            // 2. Validar RUT Duplicado (Solo si el RUT no es nulo)
-            if (nuevo.getRut() != null && !nuevo.getRut().trim().isEmpty() && empleadoDao.existeRut(nuevo.getRut())) {
-                errores.add("El RUT/DNI ya se encuentra registrado.");
-            }
-
-            // 3. Validar Bonos (No pueden superar el 50% del salario base)
-            double bono = (nuevo.getBono() != null) ? nuevo.getBono() : 0;
-            if (nuevo.getSalario() != null && bono > (nuevo.getSalario() * 0.5)) {
-                errores.add("Los bonos no pueden superar el 50% del salario base.");
-            }
-
-            // 4. Validar Descuentos (No pueden ser mayores al salario base)
-            double descuento = (nuevo.getDescuento() != null) ? nuevo.getDescuento() : 0;
-            if (nuevo.getSalario() != null && descuento > nuevo.getSalario()) {
-                errores.add("El total de descuentos no puede ser mayor al salario base.");
-            }
-
-            // --- Verificación Final de Reglas ---
-            if (!errores.isEmpty()) {
-                // Retornamos HTTP 400 con el JSON de errores
-                Map<String, Object> respuestaError = new HashMap<>();
-                respuestaError.put("errores", errores);
-
-                enviarRespuesta(resp, HttpServletResponse.SC_BAD_REQUEST, gson.toJson(respuestaError));
-                return;
-            }
-
-            // Si pasa todas las validaciones, guardamos
-            empleadoDao.guardar(nuevo);
-            enviarRespuesta(resp, HttpServletResponse.SC_CREATED, gson.toJson(nuevo));
-
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error de base de datos al guardar", e);
-            enviarError(resp, "Error interno al procesar el registro.");
-        } catch (Exception e) {
-            LOGGER.log(Level.WARNING, "Error de formato en petición POST", e);
-            enviarError(resp, "Formato de datos inválido o campos faltantes.");
         }
-    }
+    
+        private String validarCampoObligatorio(EmpleadoDTO empleado, Function<EmpleadoDTO, String> extractor, String mensaje) {
+            if (empleado == null) {
+                return mensaje;
+            }
+            String valor = extractor.apply(empleado);
+            return valor == null || valor.trim().isEmpty() ? mensaje : null;
+        }
+    
+        private String validarSalario(EmpleadoDTO empleado) {
+            if (empleado == null || empleado.getSalario() == null || empleado.getSalario() < 400000) {
+                return "El salario base no puede ser menor a $400.000.";
+            }
+            return null;
+        }
+    
+        private String validarRutDuplicado(EmpleadoDTO empleado) throws SQLException {
+            if (empleado == null || empleado.getRut() == null || empleado.getRut().trim().isEmpty()) {
+                return null;
+            }
+            return empleadoDao.existeRut(empleado.getRut()) ? "El RUT/DNI ya se encuentra registrado." : null;
+        }
+    
+        private String validarBono(EmpleadoDTO empleado) {
+            if (empleado == null || empleado.getSalario() == null) {
+                return null;
+            }
+            double bono = Optional.ofNullable(empleado.getBono()).orElse(0.0);
+            return bono > empleado.getSalario() * 0.5 ? "Los bonos no pueden superar el 50% del salario base." : null;
+        }
+    
+        private String validarDescuento(EmpleadoDTO empleado) {
+            if (empleado == null || empleado.getSalario() == null) {
+                return null;
+            }
+            double descuento = Optional.ofNullable(empleado.getDescuento()).orElse(0.0);
+            return descuento > empleado.getSalario() ? "El total de descuentos no puede ser mayor al salario base." : null;
+        }
+    // ...existing code...
 
     // DELETE: Eliminar por ID
     @Override
