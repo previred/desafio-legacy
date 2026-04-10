@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-PreviredApplication<previred>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "cl.hf.previred.PreviredApplication",
+            "projectName": "previred",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
