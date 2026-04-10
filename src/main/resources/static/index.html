@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Empleados</title>
+    <style>
+        /* === RESET Y VARIABLES === */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #dbeafe;
+            --danger: #dc2626;
+            --danger-light: #fef2f2;
+            --danger-border: #fca5a5;
+            --success: #16a34a;
+            --success-light: #f0fdf4;
+            --success-border: #86efac;
+            --warning: #d97706;
+            --warning-light: #fffbeb;
+            --warning-border: #fcd34d;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--gray-100);
+            color: var(--gray-800);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* === LAYOUT DASHBOARD === */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr auto;
+            min-height: 100vh;
+        }
+
+        /* === HEADER === */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 1.25rem 2rem;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.025em; }
+        .header .subtitle { font-size: 0.875rem; opacity: 0.85; font-weight: 400; }
+
+        .header-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 0.375rem 0.875rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* === CONTENIDO PRINCIPAL === */
+        .main-content {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            max-width: 1440px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content { grid-template-columns: 1fr; padding: 1rem; }
+        }
+
+        /* === CARDS === */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h2 { font-size: 1.1rem; font-weight: 600; color: var(--gray-800); }
+        .card-body { padding: 1.5rem; }
+
+        /* === MENSAJES GLOBALES === */
+        .message-container { margin-bottom: 1rem; }
+
+        .message {
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.error  { background: var(--danger-light); border: 1px solid var(--danger-border); color: var(--danger); display: block; }
+        .message.success { background: var(--success-light); border: 1px solid var(--success-border); color: var(--success); display: block; }
+        .message ul { margin: 0.375rem 0 0 1.25rem; padding: 0; }
+        .message ul li { margin-bottom: 0.2rem; }
+
+        /* === FORMULARIO === */
+        .form-group { margin-bottom: 1rem; position: relative; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-bottom: 0.375rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.925rem;
+            color: var(--gray-800);
+            background: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+        }
+
+        .form-group input.input-error {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+        }
+
+        .form-group input.input-valid {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+        }
+
+        /* Mensajes inline por campo */
+        .field-hint {
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            min-height: 1.1rem;
+            transition: all 0.2s;
+        }
+
+        .field-hint.error { color: var(--danger); }
+        .field-hint.info  { color: var(--gray-400); }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.7rem 1.5rem;
+            font-size: 0.925rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-primary { background: var(--primary); color: var(--white); }
+        .btn-primary:hover { background: var(--primary-dark); box-shadow: var(--shadow-md); }
+        .btn-primary:disabled { background: var(--gray-300); cursor: not-allowed; }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8rem;
+            width: auto;
+        }
+
+        .btn-danger:hover { background: var(--danger); color: var(--white); }
+
+        .btn-danger.confirming {
+            background: var(--danger);
+            color: var(--white);
+            animation: pulse 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.05); }
+        }
+
+        /* === TABLA === */
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+
+        thead th {
+            background: var(--gray-50);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        tbody td {
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            border-bottom: 1px solid var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        tbody tr:hover { background: var(--gray-50); }
+        tbody tr:last-child td { border-bottom: none; }
+        tbody tr.deleting { background: var(--danger-light); opacity: 0.6; transition: all 0.3s; }
+
+        .salary-cell { font-weight: 600; font-variant-numeric: tabular-nums; }
+        .salary-positive { color: var(--success); }
+
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--gray-400); }
+        .empty-state .icon { font-size: 3rem; margin-bottom: 0.75rem; }
+        .empty-state p { font-size: 0.95rem; }
+
+        /* === BADGES === */
+        .badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* === SPINNER === */
+        .spinner {
+            display: inline-block;
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 0.6s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* === FOOTER === */
+        .footer { text-align: center; padding: 1rem; font-size: 0.8rem; color: var(--gray-400); }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <!-- ═══ HEADER ═══ -->
+    <header class="header">
+        <div>
+            <h1>👥 Gestión de Empleados</h1>
+            <span class="subtitle">Panel de administración — Servlets + JDBC</span>
+        </div>
+        <span class="header-badge" id="totalEmpleados">0 empleados</span>
+    </header>
+
+    <!-- ═══ CONTENIDO PRINCIPAL ═══ -->
+    <main class="main-content">
+
+        <!-- ── PANEL IZQUIERDO: FORMULARIO ── -->
+        <section class="card">
+            <div class="card-header">
+                <h2>➕ Nuevo Empleado</h2>
+            </div>
+            <div class="card-body">
+                <!-- Mensajes globales del formulario -->
+                <div class="message-container">
+                    <div id="formMessage" class="message"></div>
+                </div>
+
+                <form id="empleadoForm" novalidate>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nombre">Nombre *</label>
+                            <input type="text" id="nombre" placeholder="Ej: Juan" required>
+                            <div class="field-hint" id="hint-nombre"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="apellido">Apellido *</label>
+                            <input type="text" id="apellido" placeholder="Ej: Pérez" required>
+                            <div class="field-hint" id="hint-apellido"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rut">RUT / DNI *</label>
+                            <input type="text" id="rut" placeholder="Ej: 12.345.678-9" required>
+                            <div class="field-hint info" id="hint-rut">Formato: 12.345.678-K</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="cargo">Cargo *</label>
+                            <input type="text" id="cargo" placeholder="Ej: Desarrollador" required>
+                            <div class="field-hint" id="hint-cargo"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salarioBase">Salario Base ($) *</label>
+                        <input type="number" id="salarioBase" placeholder="Mínimo 400,000" min="400000" step="1000" required>
+                        <div class="field-hint info" id="hint-salarioBase">Mínimo permitido: $400,000</div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bonificaciones">Bonificaciones ($)</label>
+                            <input type="number" id="bonificaciones" placeholder="0" min="0" step="1000" value="0">
+                            <div class="field-hint info" id="hint-bonificaciones">Máximo: 50% del salario</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="descuentos">Descuentos ($)</label>
+                            <input type="number" id="descuentos" placeholder="0" min="0" step="1000" value="0">
+                            <div class="field-hint info" id="hint-descuentos">No puede superar el salario</div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="btnSubmit">
+                        Agregar Empleado
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- ── PANEL DERECHO: TABLA ── -->
+        <section class="card">
+            <div class="card-header">
+                <h2>📋 Lista de Empleados</h2>
+                <span class="badge" id="countBadge">0</span>
+            </div>
+            <div class="card-body" style="padding: 0;">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>RUT</th>
+                                <th>Cargo</th>
+                                <th>Salario Base</th>
+                                <th>Bonos</th>
+                                <th>Descuentos</th>
+                                <th>Salario Líquido</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="empleadosTableBody">
+                            <tr>
+                                <td colspan="9">
+                                    <div class="empty-state">
+                                        <div class="icon">📂</div>
+                                        <p>Cargando empleados...</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        Desafío Técnico — Java 8 · Servlets · JDBC · H2
+    </footer>
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    // ═════════════════════════════════════════════════════════════
+    // CONFIGURACIÓN Y CONSTANTES
+    // ═════════════════════════════════════════════════════════════
+    var API_URL = '/api/empleados';
+    var SALARIO_MINIMO = 400000;
+    var PORCENTAJE_MAX_BONOS = 0.50;
+
+    // ═════════════════════════════════════════════════════════════
+    // ELEMENTOS DEL DOM
+    // ═════════════════════════════════════════════════════════════
+    var form           = document.getElementById('empleadoForm');
+    var formMessage    = document.getElementById('formMessage');
+    var tableBody      = document.getElementById('empleadosTableBody');
+    var countBadge     = document.getElementById('countBadge');
+    var totalEmpleados = document.getElementById('totalEmpleados');
+    var btnSubmit      = document.getElementById('btnSubmit');
+
+    var campos = {
+        nombre:         document.getElementById('nombre'),
+        apellido:       document.getElementById('apellido'),
+        rut:            document.getElementById('rut'),
+        cargo:          document.getElementById('cargo'),
+        salarioBase:    document.getElementById('salarioBase'),
+        bonificaciones: document.getElementById('bonificaciones'),
+        descuentos:     document.getElementById('descuentos')
+    };
+
+    // ═════════════════════════════════════════════════════════════
+    // UTILIDADES
+    // ═════════════════════════════════════════════════════════════
+    function escapeHtml(text) {
+        var div = document.createElement('div');
+        div.appendChild(document.createTextNode(text));
+        return div.innerHTML;
+    }
+
+    function formatMoney(amount) {
+        return '$' + Math.round(amount).toLocaleString('es-CL');
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // MENSAJES GLOBALES (sin alert() — todo dinámico en el DOM)
+    // ═════════════════════════════════════════════════════════════
+    function mostrarError(mensajes) {
+        formMessage.className = 'message error';
+        if (Array.isArray(mensajes) && mensajes.length > 0) {
+            formMessage.innerHTML = '<strong>⚠️ Errores de validación:</strong><ul>' +
+                mensajes.map(function(m) { return '<li>' + escapeHtml(m) + '</li>'; }).join('') +
+                '</ul>';
+        } else {
+            formMessage.innerHTML = '<strong>⚠️ Error:</strong> ' + escapeHtml(String(mensajes));
+        }
+        formMessage.style.display = 'block';
+        formMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function mostrarExito(mensaje) {
+        formMessage.className = 'message success';
+        formMessage.innerHTML = '<strong>✅</strong> ' + escapeHtml(mensaje);
+        formMessage.style.display = 'block';
+        setTimeout(function() { formMessage.style.display = 'none'; }, 4000);
+    }
+
+    function limpiarMensajes() {
+        formMessage.style.display = 'none';
+        formMessage.className = 'message';
+        formMessage.innerHTML = '';
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // MENSAJES INLINE POR CAMPO
+    // ═════════════════════════════════════════════════════════════
+    function setFieldError(fieldId, mensaje) {
+        var hint = document.getElementById('hint-' + fieldId);
+        var input = campos[fieldId];
+        if (hint) { hint.className = 'field-hint error'; hint.textContent = mensaje; }
+        if (input) { input.classList.add('input-error'); input.classList.remove('input-valid'); }
+    }
+
+    function setFieldValid(fieldId) {
+        var hint = document.getElementById('hint-' + fieldId);
+        var input = campos[fieldId];
+        if (hint) { hint.className = 'field-hint'; hint.textContent = ''; }
+        if (input) { input.classList.remove('input-error'); input.classList.add('input-valid'); }
+    }
+
+    function clearFieldState(fieldId, infoText) {
+        var hint = document.getElementById('hint-' + fieldId);
+        var input = campos[fieldId];
+        if (hint) { hint.className = infoText ? 'field-hint info' : 'field-hint'; hint.textContent = infoText || ''; }
+        if (input) { input.classList.remove('input-error', 'input-valid'); }
+    }
+
+    function limpiarTodosLosCampos() {
+        clearFieldState('nombre', '');
+        clearFieldState('apellido', '');
+        clearFieldState('rut', 'Formato: 12.345.678-K');
+        clearFieldState('cargo', '');
+        clearFieldState('salarioBase', 'Mínimo permitido: $400,000');
+        clearFieldState('bonificaciones', 'Máximo: 50% del salario');
+        clearFieldState('descuentos', 'No puede superar el salario');
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // VALIDACIÓN DE RUT CHILENO (Módulo 11 con dígito verificador)
+    // ═════════════════════════════════════════════════════════════
+    function validarRut(rutCompleto) {
+        if (!rutCompleto || typeof rutCompleto !== 'string') return false;
+
+        var rutLimpio = rutCompleto.replace(/\./g, '').replace(/-/g, '');
+        if (rutLimpio.length < 2) return false;
+
+        var cuerpo = rutLimpio.slice(0, -1);
+        var dv     = rutLimpio.slice(-1).toUpperCase();
+
+        if (!/^\d+$/.test(cuerpo)) return false;
+
+        var cuerpoNum = parseInt(cuerpo, 10);
+        if (cuerpoNum < 1000000 || cuerpoNum > 99999999) return false;
+
+        // Algoritmo Módulo 11 para calcular dígito verificador
+        var suma = 0;
+        var multiplicador = 2;
+        for (var i = cuerpo.length - 1; i >= 0; i--) {
+            suma += parseInt(cuerpo.charAt(i), 10) * multiplicador;
+            multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+        }
+        var resto = suma % 11;
+        var dvEsperado = 11 - resto;
+
+        var dvCalculado;
+        if (dvEsperado === 11) dvCalculado = '0';
+        else if (dvEsperado === 10) dvCalculado = 'K';
+        else dvCalculado = String(dvEsperado);
+
+        return dv === dvCalculado;
+    }
+
+    function formatearRut(valor) {
+        var limpio = valor.replace(/[^0-9kK]/g, '');
+        if (limpio.length < 2) return limpio;
+
+        var cuerpo = limpio.slice(0, -1);
+        var dv = limpio.slice(-1);
+
+        var cuerpoFormateado = '';
+        var count = 0;
+        for (var i = cuerpo.length - 1; i >= 0; i--) {
+            if (count > 0 && count % 3 === 0) cuerpoFormateado = '.' + cuerpoFormateado;
+            cuerpoFormateado = cuerpo.charAt(i) + cuerpoFormateado;
+            count++;
+        }
+
+        return cuerpoFormateado + '-' + dv;
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // VALIDACIONES INDIVIDUALES (para onblur en tiempo real)
+    // ═════════════════════════════════════════════════════════════
+    function validarCampoTexto(fieldId, label) {
+        var valor = campos[fieldId].value.trim();
+        if (!valor) { setFieldError(fieldId, label + ' es obligatorio.'); return false; }
+        setFieldValid(fieldId);
+        return true;
+    }
+
+    function validarCampoRut() {
+        var valor = campos.rut.value.trim();
+        if (!valor) { setFieldError('rut', 'El RUT/DNI es obligatorio.'); return false; }
+        if (!/^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/.test(valor)) {
+            setFieldError('rut', 'Formato inválido. Ejemplo: 12.345.678-9');
+            return false;
+        }
+        if (!validarRut(valor)) {
+            setFieldError('rut', 'El dígito verificador del RUT no es válido.');
+            return false;
+        }
+        setFieldValid('rut');
+        return true;
+    }
+
+    function validarCampoSalario() {
+        var valor = campos.salarioBase.value;
+        if (!valor || isNaN(parseFloat(valor))) {
+            setFieldError('salarioBase', 'El salario base es obligatorio.');
+            return false;
+        }
+        if (parseFloat(valor) < SALARIO_MINIMO) {
+            setFieldError('salarioBase', 'Debe ser al menos ' + formatMoney(SALARIO_MINIMO) + '.');
+            return false;
+        }
+        setFieldValid('salarioBase');
+        validarCampoBonos();
+        validarCampoDescuentos();
+        return true;
+    }
+
+    function validarCampoBonos() {
+        var bonosVal = parseFloat(campos.bonificaciones.value) || 0;
+        var salarioVal = parseFloat(campos.salarioBase.value) || 0;
+        if (bonosVal < 0) { setFieldError('bonificaciones', 'No puede ser negativo.'); return false; }
+        if (salarioVal > 0 && bonosVal >= salarioVal * PORCENTAJE_MAX_BONOS) {
+            setFieldError('bonificaciones', 'Debe ser menor a ' + formatMoney(salarioVal * PORCENTAJE_MAX_BONOS) + ' (50%).');
+            return false;
+        }
+        if (campos.bonificaciones.value !== '' && campos.bonificaciones.value !== '0') {
+            setFieldValid('bonificaciones');
+        } else { clearFieldState('bonificaciones', 'Máximo: 50% del salario'); }
+        return true;
+    }
+
+    function validarCampoDescuentos() {
+        var descVal = parseFloat(campos.descuentos.value) || 0;
+        var salarioVal = parseFloat(campos.salarioBase.value) || 0;
+        if (descVal < 0) { setFieldError('descuentos', 'No puede ser negativo.'); return false; }
+        if (salarioVal > 0 && descVal > salarioVal) {
+            setFieldError('descuentos', 'No puede superar el salario base (' + formatMoney(salarioVal) + ').');
+            return false;
+        }
+        if (campos.descuentos.value !== '' && campos.descuentos.value !== '0') {
+            setFieldValid('descuentos');
+        } else { clearFieldState('descuentos', 'No puede superar el salario'); }
+        return true;
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // VALIDACIÓN COMPLETA DEL FORMULARIO (al hacer submit)
+    // ═════════════════════════════════════════════════════════════
+    function validarFormulario() {
+        var errores = [];
+
+        // 1. Campos obligatorios de texto
+        if (!campos.nombre.value.trim()) {
+            errores.push('El nombre es obligatorio.');
+            setFieldError('nombre', 'Campo obligatorio.');
+        } else { setFieldValid('nombre'); }
+
+        if (!campos.apellido.value.trim()) {
+            errores.push('El apellido es obligatorio.');
+            setFieldError('apellido', 'Campo obligatorio.');
+        } else { setFieldValid('apellido'); }
+
+        if (!campos.cargo.value.trim()) {
+            errores.push('El cargo es obligatorio.');
+            setFieldError('cargo', 'Campo obligatorio.');
+        } else { setFieldValid('cargo'); }
+
+        // 2. RUT/DNI: obligatorio + formato + dígito verificador
+        var rutVal = campos.rut.value.trim();
+        if (!rutVal) {
+            errores.push('El RUT/DNI es obligatorio.');
+            setFieldError('rut', 'Campo obligatorio.');
+        } else if (!/^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/.test(rutVal)) {
+            errores.push('El formato del RUT no es válido. Ejemplo: 12.345.678-9');
+            setFieldError('rut', 'Formato inválido.');
+        } else if (!validarRut(rutVal)) {
+            errores.push('El dígito verificador del RUT no es correcto.');
+            setFieldError('rut', 'Dígito verificador incorrecto.');
+        } else { setFieldValid('rut'); }
+
+        // 3. Salario base >= $400,000
+        var salarioVal = parseFloat(campos.salarioBase.value);
+        if (!campos.salarioBase.value || isNaN(salarioVal)) {
+            errores.push('El salario base es obligatorio.');
+            setFieldError('salarioBase', 'Campo obligatorio.');
+        } else if (salarioVal < SALARIO_MINIMO) {
+            errores.push('El salario base no puede ser menor a ' + formatMoney(SALARIO_MINIMO) + '.');
+            setFieldError('salarioBase', 'Mínimo: ' + formatMoney(SALARIO_MINIMO));
+        } else { setFieldValid('salarioBase'); }
+
+        // 4. Bonificaciones < 50% del salario base
+        var bonosVal = parseFloat(campos.bonificaciones.value) || 0;
+        if (bonosVal < 0) {
+            errores.push('Las bonificaciones no pueden ser negativas.');
+            setFieldError('bonificaciones', 'No puede ser negativo.');
+        } else if (!isNaN(salarioVal) && salarioVal > 0 && bonosVal >= salarioVal * PORCENTAJE_MAX_BONOS) {
+            errores.push('Las bonificaciones (' + formatMoney(bonosVal) + ') no pueden superar el 50% del salario (' + formatMoney(salarioVal * PORCENTAJE_MAX_BONOS) + ').');
+            setFieldError('bonificaciones', 'Excede el 50% del salario.');
+        }
+
+        // 5. Descuentos no pueden ser mayores al salario base
+        var descVal = parseFloat(campos.descuentos.value) || 0;
+        if (descVal < 0) {
+            errores.push('Los descuentos no pueden ser negativos.');
+            setFieldError('descuentos', 'No puede ser negativo.');
+        } else if (!isNaN(salarioVal) && salarioVal > 0 && descVal > salarioVal) {
+            errores.push('Los descuentos (' + formatMoney(descVal) + ') no pueden ser mayores al salario base (' + formatMoney(salarioVal) + ').');
+            setFieldError('descuentos', 'Supera el salario base.');
+        }
+
+        return errores;
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // VALIDACIÓN EN TIEMPO REAL (onblur — al salir de cada campo)
+    // ═════════════════════════════════════════════════════════════
+    campos.nombre.addEventListener('blur', function()    { validarCampoTexto('nombre', 'El nombre'); });
+    campos.apellido.addEventListener('blur', function()  { validarCampoTexto('apellido', 'El apellido'); });
+    campos.cargo.addEventListener('blur', function()     { validarCampoTexto('cargo', 'El cargo'); });
+    campos.rut.addEventListener('blur', function() {
+        var valor = campos.rut.value.trim();
+        if (valor.length >= 2) { campos.rut.value = formatearRut(valor); }
+        validarCampoRut();
+    });
+    campos.salarioBase.addEventListener('blur', validarCampoSalario);
+    campos.bonificaciones.addEventListener('blur', validarCampoBonos);
+    campos.descuentos.addEventListener('blur', validarCampoDescuentos);
+
+    // Actualizar hints dinámicos cuando cambia el salario
+    campos.salarioBase.addEventListener('input', function() {
+        var sal = parseFloat(campos.salarioBase.value) || 0;
+        if (sal >= SALARIO_MINIMO) {
+            var hintBonos = document.getElementById('hint-bonificaciones');
+            var hintDesc  = document.getElementById('hint-descuentos');
+            if (hintBonos && !hintBonos.classList.contains('error')) {
+                hintBonos.textContent = 'Máximo: ' + formatMoney(sal * PORCENTAJE_MAX_BONOS) + ' (50%)';
+            }
+            if (hintDesc && !hintDesc.classList.contains('error')) {
+                hintDesc.textContent = 'Máximo: ' + formatMoney(sal);
+            }
+        }
+    });
+
+    // ═════════════════════════════════════════════════════════════
+    // FETCH API — LISTAR EMPLEADOS (GET)
+    // ═════════════════════════════════════════════════════════════
+    function cargarEmpleados() {
+        fetch(API_URL + '/')
+            .then(function(response) {
+                if (!response.ok) throw new Error('Error al cargar empleados (HTTP ' + response.status + ')');
+                return response.json();
+            })
+            .then(function(empleados) {
+                renderizarTabla(empleados);
+                actualizarContadores(empleados.length);
+            })
+            .catch(function(error) {
+                tableBody.innerHTML = '<tr><td colspan="9"><div class="empty-state">' +
+                    '<div class="icon">⚠️</div><p>Error al cargar datos: ' +
+                    escapeHtml(error.message) + '</p></div></td></tr>';
+            });
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // RENDERIZAR TABLA DE EMPLEADOS
+    // ═════════════════════════════════════════════════════════════
+    function renderizarTabla(empleados) {
+        if (!empleados || empleados.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="9"><div class="empty-state">' +
+                '<div class="icon">📂</div><p>No hay empleados registrados.</p></div></td></tr>';
+            return;
+        }
+
+        tableBody.innerHTML = empleados.map(function(emp) {
+            return '<tr id="row-' + emp.id + '">' +
+                '<td><strong>' + emp.id + '</strong></td>' +
+                '<td>' + escapeHtml(emp.nombre) + ' ' + escapeHtml(emp.apellido) + '</td>' +
+                '<td><code>' + escapeHtml(emp.rut) + '</code></td>' +
+                '<td>' + escapeHtml(emp.cargo) + '</td>' +
+                '<td class="salary-cell">' + formatMoney(emp.salarioBase) + '</td>' +
+                '<td class="salary-cell">' + formatMoney(emp.bonificaciones) + '</td>' +
+                '<td class="salary-cell">' + formatMoney(emp.descuentos) + '</td>' +
+                '<td class="salary-cell salary-positive">' + formatMoney(emp.salarioLiquido) + '</td>' +
+                '<td><button class="btn btn-danger" data-id="' + emp.id + '" ' +
+                    'data-nombre="' + escapeHtml(emp.nombre + ' ' + emp.apellido) + '" ' +
+                    'onclick="window._handleEliminar(event)">Eliminar</button></td>' +
+                '</tr>';
+        }).join('');
+    }
+
+    function actualizarContadores(count) {
+        countBadge.textContent = count;
+        totalEmpleados.textContent = count + (count === 1 ? ' empleado' : ' empleados');
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // FETCH API — CREAR EMPLEADO (POST)
+    // ═════════════════════════════════════════════════════════════
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        limpiarMensajes();
+        limpiarTodosLosCampos();
+
+        // Validaciones frontend antes de enviar al servidor
+        var errores = validarFormulario();
+        if (errores.length > 0) {
+            mostrarError(errores);
+            return;
+        }
+
+        var data = {
+            nombre:         campos.nombre.value.trim(),
+            apellido:       campos.apellido.value.trim(),
+            rut:            campos.rut.value.trim(),
+            cargo:          campos.cargo.value.trim(),
+            salarioBase:    parseFloat(campos.salarioBase.value),
+            bonificaciones: parseFloat(campos.bonificaciones.value) || 0,
+            descuentos:     parseFloat(campos.descuentos.value) || 0
+        };
+
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="spinner"></span>Guardando...';
+
+        fetch(API_URL + '/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        })
+        .then(function(response) {
+            return response.json().then(function(body) {
+                return { status: response.status, ok: response.ok, body: body };
+            });
+        })
+        .then(function(result) {
+            if (!result.ok) {
+                // Errores del servidor (HTTP 400)
+                var erroresServidor = result.body.errores || [result.body.mensaje || 'Error desconocido.'];
+                mostrarError(erroresServidor);
+            } else {
+                mostrarExito('Empleado "' + data.nombre + ' ' + data.apellido + '" agregado exitosamente.');
+                form.reset();
+                campos.bonificaciones.value = '0';
+                campos.descuentos.value = '0';
+                limpiarTodosLosCampos();
+                cargarEmpleados();
+            }
+        })
+        .catch(function(error) {
+            mostrarError('Error de conexión con el servidor: ' + error.message);
+        })
+        .finally(function() {
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = 'Agregar Empleado';
+        });
+    });
+
+    // ═════════════════════════════════════════════════════════════
+    // FETCH API — ELIMINAR EMPLEADO (DELETE)
+    // Confirmación visual en 2 clics (sin alert/confirm de JS)
+    // ═════════════════════════════════════════════════════════════
+    var pendingDeleteId = null;
+    var pendingDeleteTimer = null;
+
+    window._handleEliminar = function(evt) {
+        var btn = evt.target;
+        var id = parseInt(btn.getAttribute('data-id'), 10);
+        var nombre = btn.getAttribute('data-nombre');
+        var row = document.getElementById('row-' + id);
+
+        // Primer clic → pedir confirmación visual
+        if (pendingDeleteId !== id) {
+            cancelarConfirmacion();
+            pendingDeleteId = id;
+            btn.textContent = '¿Confirmar?';
+            btn.classList.add('confirming');
+            if (row) row.classList.add('deleting');
+
+            pendingDeleteTimer = setTimeout(function() {
+                cancelarConfirmacion();
+            }, 3000);
+            return;
+        }
+
+        // Segundo clic → ejecutar eliminación
+        cancelarConfirmacion();
+        btn.disabled = true;
+        btn.textContent = 'Eliminando...';
+
+        fetch(API_URL + '/' + id, { method: 'DELETE' })
+            .then(function(response) {
+                return response.json().then(function(body) {
+                    return { ok: response.ok, body: body };
+                });
+            })
+            .then(function(result) {
+                if (!result.ok) {
+                    mostrarError(result.body.errores || ['No se pudo eliminar el empleado.']);
+                    if (row) row.classList.remove('deleting');
+                } else {
+                    mostrarExito(result.body.mensaje || 'Empleado "' + nombre + '" eliminado.');
+                    cargarEmpleados();
+                }
+            })
+            .catch(function(error) {
+                mostrarError('Error al eliminar: ' + error.message);
+                if (row) row.classList.remove('deleting');
+            });
+    };
+
+    function cancelarConfirmacion() {
+        if (pendingDeleteTimer) clearTimeout(pendingDeleteTimer);
+        pendingDeleteId = null;
+        pendingDeleteTimer = null;
+        document.querySelectorAll('.btn-danger.confirming').forEach(function(btn) {
+            btn.textContent = 'Eliminar';
+            btn.classList.remove('confirming');
+        });
+        document.querySelectorAll('tr.deleting').forEach(function(row) {
+            row.classList.remove('deleting');
+        });
+    }
+
+    // ═════════════════════════════════════════════════════════════
+    // INICIALIZACIÓN
+    // ═════════════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarEmpleados();
+    });
+
+})();
+</script>
+
+</body>
+</html>
+
