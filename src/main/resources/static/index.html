@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desafío Técnico - Previred</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="spinnerGlobal" class="spinner-global oculto">
+        <div class="spinner-grande"></div>
+    </div>
+    
+    <main>
+    <h1>Módulo de Empleados</h1>
+    
+    <section class="box">
+        <h2>Registrar Nuevo</h2>
+        <form id="empleadoForm">
+            <div>
+                <label for="nombre">Nombre <span class="req">*</span>:</label>
+                <input type="text" id="nombre" placeholder="Ejemplo: Nicolás">
+            </div>
+            <div>
+                <label for="apellido">Apellido <span class="req">*</span>:</label>
+                <input type="text" id="apellido" placeholder="Ejemplo: Astudillo">
+            </div>
+            <div>
+                <label for="rut">RUT <span class="req">*</span>:</label>
+                <input type="text" id="rut" placeholder="Ejemplo: 12345678-9">
+            </div>
+            <div>
+                <label for="cargo">Cargo <span class="req">*</span>:</label>
+                <input type="text" id="cargo" placeholder="Ejemplo: Agricultor">
+            </div>
+            <div>
+                <label for="salarioBase">Salario Base <span class="req">*</span>:</label>
+                <input type="text" id="salarioBase" placeholder="Valor Mínimo: $400.000">
+            </div>
+            <div>
+                <label for="bonos">Bonos:</label>
+                <input type="text" id="bonos" placeholder="Valor por defecto: $0">
+            </div>
+            <div>
+                <label for="descuentos">Descuentos:</label>
+                <input type="text" id="descuentos" placeholder="Valor por defecto: $0">
+            </div>
+            <div class="contenedor-btn">
+                <button type="submit">Guardar Registro</button>
+            </div>
+        </form>
+        <div id="mensaje" class="mensaje"></div>
+    </section>
+
+    <hr>
+
+    <section class="box">
+        <div class="encabezado-seccion">
+            <h2>Listado Actual</h2>
+            <button id="btnRecargar" type="button">Recargar</button>
+        </div>
+        <div id="mensajeTabla" class="mensaje"></div>
+        <table id="tablaEmpleados">
+            <thead>
+                <tr>
+                    <th>RUT</th>
+                    <th>Nombre Completo</th>
+                    <th>Cargo</th>
+                    <th>Base</th>
+                    <th>Líquido</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </section>
+    </main>
+
+    <script src="assets/js/index.js"></script>
+</body>
+</html>

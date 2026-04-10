@@ -1,72 +1,91 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Técnico Previred
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+![Java](https://img.shields.io/badge/Java-8-ED8B00?style=flat-square&logo=openjdk&logoColor=white) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-2.7.x-6DB33F?style=flat-square&logo=spring-boot&logoColor=white) ![Servlets](https://img.shields.io/badge/API-Servlets_Nativos-007396?style=flat-square&logo=java&logoColor=white) ![OpenAPI](https://img.shields.io/badge/Docs-OpenAPI_3.0-85EA2D?style=flat-square&logo=swagger&logoColor=black)
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+Solución al desafío técnico implementando Servlets, JDBC puro, Fetch API, respetando el uso estricto de Java 8.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+> **Ver Enunciado Original:** Puedes consultar las reglas y requerimientos exactos de la prueba en el documento [INSTRUCCIONES.md](./INSTRUCCIONES.md).
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+## Stack Tecnológico
+- **Backend:** Java 8, Servlet API nativa (`@WebServlet`), habilitada vía `@ServletComponentScan` con Spring Boot 2.7 (actuando como Runtime).
+- **Base de Datos:** H2 In-Memory + Spring JDBC (`JdbcTemplate`)
+- **JSON:** Gson (serialización y deserialización de JSON)
+- **Frontend:** HTML5, CSS, Vanilla JavaScript.
+- **Documentación:** OpenAPI 3.0 (Swagger UI)
 
-  Datos esperados del empleado: 
+## Arquitectura y Decisiones
+Siguiendo los lineamientos solicitados:
+- **3 Capas:** `Controller` > `Service` > `Repository`.
+- **Independencia del modelo:** La API recibe e interactúa vía `EmpleadoDTO`. El `EmpleadoEntity` es exclusivo de la capa de persistencia.
+- **Logging:** Trazabilidad completa con `SLF4J` (INFO para accesos, DEBUG para lógica interna, WARN para validaciones rechazadas, ERROR para fallos).
+- **Validaciones y Errores:** Validaciones estrictas según reglas de negocio, manejadas por un `GlobalExceptionHandler` que retorna JSON puro.
+- **Desglose de Salario:** El campo "Salario" del enunciado (Parte 1) se descompone en `salarioBase`, `bonos` y `descuentos` para poder implementar las reglas de negocio de la Parte 2 (topes de bonos, límites de descuentos). El **sueldo líquido** se calcula como: `salarioBase + bonos - descuentos`.
+- **Documentación OpenAPI:** La API usa la especificación OpenAPI 3.0 (`openapi.yml`) y se visualiza mediante Swagger-UI. De esta forma se cumple el "Tip Excepcional" del desafío respetando la arquitectura de Servlets.
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+---
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+## Requisitos Previos
+- **Java Development Kit (JDK):** Versión 8 (1.8).
+- **Apache Maven:** Versión 3.5 o superior (Requisito oficial de Spring Boot 2.7.x).
+- **Puerto:** El puerto `8080` debe estar libre en la máquina local.
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+---
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
-
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+## Instalación y Ejecución
+**1. Clonar el repositorio:**
+```text
+git clone https://github.com/unicoast/desafio-legacy.git
+cd desafio-legacy
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+**2. Levantar el proyecto (opción A - desarrollo):**
+```text
+mvn clean spring-boot:run
+```
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+**Levantar el proyecto (opción B - JAR empaquetado):**
+```text
+mvn clean package -DskipTests
+java -jar target/desafio-legacy-1.0.0.jar
+```
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+**3. Accesos Locales:**
+- **Frontend:** http://localhost:8080
+- **Base de Datos (H2 Console):** http://localhost:8080/h2-console *(URL: `jdbc:h2:mem:desafioDB` | User: `sa` | Password: vacía. Al ser en memoria, los datos se reinician con cada ejecución)*
+- **Documentación API (Swagger):** http://localhost:8080/swagger-ui/index.html
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+## Pruebas Rápidas (cURL)
+
+**Listar Empleados (Mac/Linux - Bash/Zsh):**
+```bash
+curl http://localhost:8080/api/empleados
+```
+
+**Listar Empleados (Windows - PowerShell):**
+```powershell
+curl.exe http://localhost:8080/api/empleados
+```
+
+**Registrar Empleado (Mac/Linux - Bash/Zsh):**
+```bash
+curl -X POST http://localhost:8080/api/empleados \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Nicolás","apellido":"Astudillo","rut":"12345678-9","cargo":"Desarrollador","salarioBase":850000,"bonos":100000,"descuentos":50000}'
+```
+
+**Registrar Empleado (Windows - PowerShell):**
+```powershell
+curl.exe -X POST http://localhost:8080/api/empleados `
+  -H "Content-Type: application/json" `
+  -d '{"nombre":"Nicolás","apellido":"Astudillo","rut":"12345678-9","cargo":"Desarrollador","salarioBase":850000,"bonos":100000,"descuentos":50000}'
+```
+
+**Eliminar Empleado (Mac/Linux - Bash/Zsh):**
+```bash
+curl -X DELETE "http://localhost:8080/api/empleados?id=1"
+```
+
+**Eliminar Empleado (Windows - PowerShell):**
+```powershell
+curl.exe -X DELETE "http://localhost:8080/api/empleados?id=1"
+```
