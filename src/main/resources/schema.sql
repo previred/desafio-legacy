@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS empleados (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    rut VARCHAR(15) NOT NULL UNIQUE,
+    cargo VARCHAR(100) NOT NULL,
+    salario DECIMAL(15, 2) NOT NULL,
+    bonos DECIMAL(15, 2) DEFAULT 0,
+    descuentos DECIMAL(15, 2) DEFAULT 0
+);
