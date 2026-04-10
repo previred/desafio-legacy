@@ -1,72 +1,233 @@
-# Desafío Técnico: Servlets y AJAX
+# 👥 Sistema de Gestión de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+> **Desafío Técnico** — Aplicación full-stack construida con **Java 8**, **Servlets nativos** y **JDBC puro**, utilizando Spring Boot **únicamente como runtime** (contenedor embebido).
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+![Java](https://img.shields.io/badge/Java-8-orange?style=flat-square&logo=java)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.7.18-brightgreen?style=flat-square&logo=springboot)
+![H2](https://img.shields.io/badge/Database-H2%20(In--Memory)-blue?style=flat-square)
+![Docker](https://img.shields.io/badge/Docker-Multi--Stage-2496ED?style=flat-square&logo=docker)
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+---
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+## 📋 Descripción
 
-  Datos esperados del empleado: 
+Sistema CRUD para la gestión de empleados que demuestra dominio de los **fundamentos de Java** sin depender de abstracciones de alto nivel como Spring Web MVC o Spring Data JPA.
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+### ¿Qué lo hace diferente?
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+| Concepto                | Lo que **NO** se usa       | Lo que **SÍ** se usa                       |
+|-------------------------|----------------------------|--------------------------------------------|
+| Controladores           | `@RestController`          | `HttpServlet` + `ServletRegistrationBean`  |
+| Acceso a datos          | `JpaRepository`            | `Connection` + `PreparedStatement` (JDBC)  |
+| Serialización JSON      | `@ResponseBody` automático | `ObjectMapper` de Jackson (manual)         |
+| Servidor                | Spring Web MVC             | Spring Boot Embedded Tomcat (solo runtime) |
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+---
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+## 🛠️ Requisitos Previos
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+| Herramienta | Versión Mínima | Enlace                                     |
+|-------------|----------------|--------------------------------------------|
+| Java JDK    | 8              | https://adoptium.net/                      |
+| Maven       | 3.6+           | https://maven.apache.org/download.cgi      |
+| Docker      | 20+            | https://www.docker.com/get-started (opcional) |
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+---
+
+## 🚀 Instrucciones de Ejecución
+
+### Opción 1: Ejecución Local (Maven)
+
+```bash
+# Clonar el repositorio
+git clone <url-del-repositorio>
+cd desafioTecnico
+
+# Compilar el proyecto
+mvn clean package -DskipTests
+
+# Ejecutar la aplicación
+java -jar target/gestion-empleados-1.0.0.jar
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+La aplicación estará disponible en: **http://localhost:8080**
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+### Opción 2: Ejecución con Docker
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+```bash
+# Construir la imagen
+docker build -t gestion-empleados .
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+# Ejecutar el contenedor
+docker run -d -p 8080:8080 --name empleados-app gestion-empleados
+
+# Ver logs
+docker logs -f empleados-app
+```
+
+### Opción 3: Ejecución con Maven (modo desarrollo)
+
+```bash
+mvn spring-boot:run
+```
+
+---
+
+## 🌐 Endpoints de la API
+
+| Método   | Ruta                    | Descripción                     |
+|----------|-------------------------|---------------------------------|
+| `GET`    | `/api/empleados/`       | Lista todos los empleados       |
+| `GET`    | `/api/empleados/{id}`   | Obtiene un empleado por ID      |
+| `POST`   | `/api/empleados/`       | Crea un nuevo empleado          |
+| `DELETE` | `/api/empleados/{id}`   | Elimina un empleado por ID      |
+
+### Ejemplo de Solicitud POST
+
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "rut": "12.345.678-9",
+  "cargo": "Desarrollador Senior",
+  "salarioBase": 850000,
+  "bonificaciones": 120000,
+  "descuentos": 95000
+}
+```
+
+### Ejemplo de Respuesta con Errores (HTTP 400)
+
+```json
+{
+  "status": 400,
+  "mensaje": "Errores de validación",
+  "errores": [
+    "El salario base debe ser al menos $400,000. Valor recibido: $300,000.",
+    "Ya existe un empleado con el RUT/DNI '12.345.678-9'."
+  ]
+}
+```
+
+---
+
+## 🏗️ Decisiones de Arquitectura
+
+### Principios SOLID Aplicados
+
+| Principio | Aplicación en el Proyecto |
+|-----------|---------------------------|
+| **S** — Single Responsibility | Cada clase tiene una única razón de cambio: `EmpleadoServlet` (HTTP), `EmpleadoService` (negocio), `EmpleadoRepository` (datos). |
+| **O** — Open/Closed | El repositorio se puede extender para diferentes bases de datos sin modificar el servicio. |
+| **L** — Liskov Substitution | Se usan DTOs como contratos; la capa de presentación no depende del modelo de persistencia. |
+| **I** — Interface Segregation | Cada capa expone solo los métodos necesarios para su consumidor. |
+| **D** — Dependency Inversion | El servicio depende de la abstracción del repositorio (inyección por constructor). |
+
+### Patrón DAO (Data Access Object)
+
+`EmpleadoRepository` implementa el patrón DAO para encapsular toda la lógica de acceso a datos:
+
+- **`findAll()`** — Consulta todos los registros.
+- **`findById(Long id)`** — Búsqueda por clave primaria con `Optional`.
+- **`save(Empleado)`** — Inserción con recuperación de ID generado.
+- **`deleteById(Long id)`** — Eliminación con verificación de éxito.
+- **`existsByRut(String rut)`** — Validación de unicidad.
+
+### Separación de Capas
+
+```
+┌─────────────────────────────────────────────────┐
+│  Frontend (index.html)                          │
+│  HTML + CSS + Fetch API                         │
+├─────────────────────────────────────────────────┤
+│  Controller (EmpleadoServlet)                   │
+│  HttpServlet nativo — manejo de HTTP y JSON     │
+├─────────────────────────────────────────────────┤
+│  Service (EmpleadoService)                      │
+│  Lógica de negocio + Validaciones               │
+├─────────────────────────────────────────────────┤
+│  Repository (EmpleadoRepository)                │
+│  JDBC puro — Connection, PreparedStatement      │
+├─────────────────────────────────────────────────┤
+│  Database (H2 In-Memory)                        │
+│  Tabla: empleados                               │
+└─────────────────────────────────────────────────┘
+```
+
+---
+
+## ✅ Reglas de Negocio Implementadas
+
+| # | Regla | Detalle |
+|---|-------|---------|
+| 1 | **Salario mínimo** | El salario base debe ser ≥ $400,000 CLP |
+| 2 | **Límite de bonificaciones** | Las bonificaciones deben ser < 50% del salario base |
+| 3 | **Límite de descuentos** | Los descuentos deben ser < salario base |
+| 4 | **RUT/DNI único** | No puede existir más de un empleado con el mismo RUT |
+| 5 | **Campos obligatorios** | Nombre, Apellido, RUT, Cargo y Salario son requeridos |
+| 6 | **Valores no negativos** | Bonificaciones y descuentos no pueden ser negativos |
+
+Las validaciones se aplican en **doble capa**:
+- **Frontend:** Validación inmediata en JavaScript antes de enviar la solicitud.
+- **Backend:** Validación en `EmpleadoService` antes de persistir en base de datos.
+
+---
+
+## 📁 Estructura del Proyecto
+
+```
+desafioTecnico/
+├── pom.xml                                    # Configuración Maven
+├── Dockerfile                                 # Docker multi-stage (build + runtime)
+├── .dockerignore                              # Archivos excluidos del build Docker
+├── README.md                                  # Documentación del proyecto
+└── src/main/
+    ├── java/com/desafio/
+    │   ├── EmpleadoApplication.java           # Punto de entrada Spring Boot
+    │   ├── config/
+    │   │   └── ServletConfig.java             # Registro del Servlet + ObjectMapper
+    │   ├── controller/
+    │   │   └── EmpleadoServlet.java           # HttpServlet nativo (GET/POST/DELETE)
+    │   ├── service/
+    │   │   └── EmpleadoService.java           # Lógica de negocio + validaciones
+    │   ├── repository/
+    │   │   └── EmpleadoRepository.java        # JDBC puro (DAO Pattern)
+    │   ├── model/
+    │   │   └── Empleado.java                  # Entidad de dominio
+    │   └── dto/
+    │       ├── EmpleadoDTO.java               # Data Transfer Object
+    │       └── ErrorResponse.java             # Respuesta de error estandarizada
+    └── resources/
+        ├── application.properties             # Configuración (H2, puerto, etc.)
+        ├── schema.sql                         # DDL de la tabla empleados
+        ├── data.sql                           # Datos de prueba iniciales
+        └── static/
+            └── index.html                     # Frontend completo (HTML/CSS/JS)
+```
+
+---
+
+## 🔧 Herramientas Adicionales
+
+- **Consola H2:** http://localhost:8080/h2-console
+  - JDBC URL: `jdbc:h2:mem:empleadosdb`
+  - Usuario: `sa`
+  - Contraseña: *(vacía)*
+
+---
+
+## 📝 Tecnologías Utilizadas
+
+- **Java 8** — Streams, Lambdas, Optional, Try-with-resources
+- **Spring Boot 2.7.18** — Solo como runtime (contenedor Tomcat embebido)
+- **HttpServlet** — Controlador nativo de Jakarta/Javax Servlet API
+- **JDBC** — Acceso a datos con Connection, PreparedStatement
+- **H2 Database** — Base de datos relacional en memoria
+- **Jackson** — Serialización/deserialización JSON
+- **HTML5 + CSS3 + JavaScript** — Frontend con Fetch API nativa
+- **Docker** — Contenedorización multi-stage
+
+---
+
+*Desarrollado como desafío técnico para demostrar dominio de los fundamentos de Java y arquitectura de software.*
+
