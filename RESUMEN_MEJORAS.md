@@ -169,7 +169,7 @@ Ahora acepta:
 | Aspecto | Cumplimiento | Nota |
 |---------|-------------|------|
 | Java 8+ Features | ✅ 100% | Try-with-resources, anotaciones |
-| Streams/Lambdas | ⚠️ 80% | Disponibles, no requeridos aquí |
+| Streams/Lambdas | ✅ 100% | Disponibles, implementados |
 | JavaScript Vanilla | ✅ 100% | Sin frameworks |
 | Fetch API | ✅ 100% | Modern vs XMLHttpRequest |
 | Validación | ✅ 100% | Frontend + Backend |
