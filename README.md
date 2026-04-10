@@ -1,72 +1,158 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Técnico: Servlets y AJAX - Gestión de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## Descripción
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+Aplicación web de gestión de empleados desarrollada con Java 17, Spring Boot, Servlets y AJAX nativo. Utiliza H2 como base de datos en memoria y JDBC para la persistencia.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+## Tecnologías
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+- **Java 17** (lambdas, streams)
+- **Spring Boot 3.2.5** con Apache Tomcat embebido
+- **Servlets** (Jakarta Servlet API)
+- **JDBC** con Spring JdbcTemplate
+- **H2 Database** (en memoria)
+- **Lombok** (reducción de boilerplate)
+- **HTML + CSS + JavaScript** vanilla (Fetch API)
+- **Maven** como gestor de dependencias
 
-  Datos esperados del empleado: 
+## Arquitectura
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+Separación en 3 capas siguiendo principios SOLID:
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+- **Servlet** (capa de presentación) - Manejo de peticiones HTTP
+- **Service** (capa de negocio) - Validaciones y reglas de negocio (interfaz + implementación)
+- **Repository** (capa de datos) - Acceso a base de datos con JDBC
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+Adicionalmente:
+- **DTO** - Objetos de transferencia para la API (no se expone la entidad)
+- **Mapper** - Conversión entre Entity y DTO (clase utilitaria con métodos estáticos)
+- **Model** - Entidad de dominio interna
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+## Requisitos Previos
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+- **Java 17** o superior instalado
+- **Maven 3.6+** instalado (o usar el wrapper incluido `mvnw`)
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+## Cómo Ejecutar
+
+### Opción 1: Con Maven Wrapper
+
+```bash
+# Linux/Mac
+./mvnw spring-boot:run
+
+# Windows
+mvnw.cmd spring-boot:run
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+### Opción 2: Con Maven instalado
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+```bash
+mvn spring-boot:run
+```
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+### Opción 3: Ejecutar el JAR
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```bash
+mvn clean package -DskipTests
+java -jar target/desafio-legacy-0.0.1-SNAPSHOT.jar
+```
+
+La aplicación estará disponible en: **http://localhost:8080**
+
+## Endpoints API
+
+| Método | URL | Descripción |
+|--------|-----|-------------|
+| GET | `/api/empleados` | Lista todos los empleados |
+| POST | `/api/empleados` | Crea un nuevo empleado |
+| DELETE | `/api/empleados?id={id}` | Elimina un empleado por ID |
+
+### Ejemplo de Body (POST)
+
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "rut": "12.345.678-9",
+  "cargo": "Desarrollador",
+  "salario": 500000,
+  "bonos": 100000,
+  "descuentos": 50000
+}
+```
+
+## Consola H2
+
+Disponible en: **http://localhost:8080/h2-console**
+
+- JDBC URL: `jdbc:h2:mem:empleadosdb`
+- Usuario: `sa`
+- Password: _(vacío)_
+
+## Reglas de Negocio
+
+### Validaciones Backend
+- RUT/DNI no puede estar duplicado
+- Salario base mínimo: $400,000
+- Bonos no pueden superar el 50% del salario base
+- Descuentos no pueden superar el salario base
+- Todos los campos son obligatorios
+- Formato de RUT válido (ej: 12.345.678-9)
+
+### Validaciones Frontend
+- Campos obligatorios completos
+- Formato de RUT/DNI válido
+- Salario base no menor a $400,000
+- Errores mostrados dinámicamente (sin alertas de JavaScript)
+
+## Estructura del Proyecto
+
+```
+src/main/java/app/v1/cl/desafiolegacy/
+├── DesafioLegacyApplication.java          # Clase principal Spring Boot
+├── config/
+│   └── ServletConfig.java                 # Registro del Servlet en Spring Boot
+├── dto/
+│   └── EmpleadoDTO.java                   # Objeto de transferencia (API)
+├── mapper/
+│   └── EmpleadoMapper.java                # Conversión Entity <-> DTO
+├── model/
+│   └── Empleado.java                      # Entidad de dominio
+├── repository/
+│   └── EmpleadoRepository.java            # Acceso a datos (JDBC)
+├── service/
+│   ├── EmpleadoValidationService.java     # Interfaz del servicio
+│   └── impl/
+│       └── EmpleadoValidationServiceImpl.java  # Implementación con reglas de negocio
+└── servlet/
+    └── EmpleadoServlet.java               # Servlet /api/empleados (GET, POST, DELETE)
+
+src/main/resources/
+├── application.properties                 # Configuración de la aplicación
+├── schema.sql                             # Esquema de la base de datos H2
+└── static/
+    └── index.html                         # Frontend HTML + CSS + JavaScript (AJAX)
+```
+
+## Cómo Probar
+
+1. Ejecutar la aplicación con alguna de las opciones anteriores
+2. Abrir `http://localhost:8080` en el navegador
+3. Usar el formulario para agregar empleados
+4. Verificar las validaciones ingresando datos inválidos (RUT mal formateado, salario bajo, etc.)
+5. Eliminar empleados desde la tabla
+6. Opcionalmente, probar la API directamente con curl:
+
+```bash
+# Listar empleados
+curl http://localhost:8080/api/empleados
+
+# Crear empleado
+curl -X POST http://localhost:8080/api/empleados \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Juan","apellido":"Pérez","rut":"12.345.678-9","cargo":"Desarrollador","salario":500000,"bonos":100000,"descuentos":50000}'
+
+# Eliminar empleado
+curl -X DELETE "http://localhost:8080/api/empleados?id=1"
+```
