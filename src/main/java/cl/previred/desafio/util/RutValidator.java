@@ -28,9 +28,9 @@ public final class RutValidator {
 
     private static String normalize(String rut) {
         return rut.trim()
-                  .replace(".", "")
-                  .replace("-", "")
-                  .toUpperCase();
+                .replace(".", "")
+                .replace("-", "")
+                .toUpperCase();
     }
 
     private static boolean isValidLength(String rut) {

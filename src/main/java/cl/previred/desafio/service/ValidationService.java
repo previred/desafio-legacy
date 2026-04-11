@@ -24,45 +24,68 @@ public class ValidationService {
     public List<ValidationError> validate(EmpleadoRequest request) {
         List<ValidationError> errores = new ArrayList<>();
 
-        if (request.getNombre() == null || request.getNombre().trim().isEmpty()) {
-            errores.add(new ValidationError("nombre", "El nombre es requerido"));
-        }
-
-        if (request.getApellido() == null || request.getApellido().trim().isEmpty()) {
-            errores.add(new ValidationError("apellido", "El apellido es requerido"));
-        }
-
-        if (request.getRut() == null || request.getRut().trim().isEmpty()) {
-            errores.add(new ValidationError("rut", "El RUT es requerido"));
-        } else if (!RutValidator.isValid(request.getRut())) {
-            errores.add(new ValidationError("rut", "RUT invalido (digito verificador incorrecto)"));
-        } else if (empleadoRepository.existsByRut(request.getRut())) {
-            errores.add(new ValidationError("rut", "RUT ya existe"));
-        }
-
-        if (request.getCargo() == null || request.getCargo().trim().isEmpty()) {
-            errores.add(new ValidationError("cargo", "El cargo es requerido"));
-        }
-
-        if (request.getSalario() == null) {
-            errores.add(new ValidationError("salario", "El salario es requerido"));
-        } else if (request.getSalario() < SALARIO_MINIMO) {
-            errores.add(new ValidationError("salario", "Salario debe ser >= $400,000"));
-        }
-
-        if (request.getBono() != null && request.getSalario() != null) {
-            double bonoMaximo = request.getSalario() * BONO_MAXIMO_PORCENTAJE;
-            if (request.getBono() > bonoMaximo) {
-                errores.add(new ValidationError("bono", "Bono no puede superar 50% del salario"));
-            }
-        }
-
-        if (request.getDescuentos() != null && request.getSalario() != null) {
-            if (request.getDescuentos() > request.getSalario()) {
-                errores.add(new ValidationError("descuentos", "Descuentos no pueden superar el salario"));
-            }
-        }
+        validateRequiredString(request.getNombre(), "nombre", "El nombre es requerido", errores);
+        validateRequiredString(request.getApellido(), "apellido", "El apellido es requerido", errores);
+        validateRut(request, errores);
+        validateRequiredString(request.getCargo(), "cargo", "El cargo es requerido", errores);
+        validateSalario(request, errores);
+        validateBono(request, errores);
+        validateDescuentos(request, errores);
 
         return errores;
+    }
+
+    private void validateRequiredString(
+            String value,
+            String fieldName,
+            String message,
+            List<ValidationError> errores) {
+        if (value == null || value.trim().isEmpty()) {
+            errores.add(new ValidationError(fieldName, message));
+        }
+    }
+
+    private void validateRut(EmpleadoRequest request, List<ValidationError> errores) {
+        String rut = request.getRut();
+        if (rut == null || rut.trim().isEmpty()) {
+            errores.add(new ValidationError("rut", "El RUT es requerido"));
+            return;
+        }
+        if (!RutValidator.isValid(rut)) {
+            errores.add(new ValidationError("rut", "RUT invalido (digito verificador incorrecto)"));
+            return;
+        }
+        if (empleadoRepository.existsByRut(rut)) {
+            errores.add(new ValidationError("rut", "RUT ya existe"));
+        }
+    }
+
+    private void validateSalario(EmpleadoRequest request, List<ValidationError> errores) {
+        if (request.getSalario() == null) {
+            errores.add(new ValidationError("salario", "El salario es requerido"));
+            return;
+        }
+        if (request.getSalario() < SALARIO_MINIMO) {
+            errores.add(new ValidationError("salario", "Salario debe ser >= $400,000"));
+        }
+    }
+
+    private void validateBono(EmpleadoRequest request, List<ValidationError> errores) {
+        if (request.getBono() == null || request.getSalario() == null) {
+            return;
+        }
+        double bonoMaximo = request.getSalario() * BONO_MAXIMO_PORCENTAJE;
+        if (request.getBono() > bonoMaximo) {
+            errores.add(new ValidationError("bono", "Bono no puede superar 50% del salario"));
+        }
+    }
+
+    private void validateDescuentos(EmpleadoRequest request, List<ValidationError> errores) {
+        if (request.getDescuentos() == null || request.getSalario() == null) {
+            return;
+        }
+        if (request.getDescuentos() > request.getSalario()) {
+            errores.add(new ValidationError("descuentos", "Descuentos no pueden superar el salario"));
+        }
     }
 }

@@ -37,7 +37,8 @@ public class EmpleadoService {
         LOG.debug("Creando empleado con RUT: {}", request.getRut());
         List<ValidationError> errores = validationService.validate(request);
         if (!errores.isEmpty()) {
-            LOG.warn("Validacion fallida para RUT {}: {} errores", request.getRut(), errores.size());
+            LOG.warn("Validacion fallida para RUT {}: {} errores", 
+                request.getRut(), errores.size());
             return errores;
         }
 
@@ -48,7 +49,8 @@ public class EmpleadoService {
         empleado.setCargo(request.getCargo());
         empleado.setSalario(request.getSalario());
         empleado.setBono(request.getBono() != null ? request.getBono() : 0.0);
-        empleado.setDescuentos(request.getDescuentos() != null ? request.getDescuentos() : 0.0);
+        empleado.setDescuentos(request.getDescuentos() != null ? 
+            request.getDescuentos() : 0.0);
 
         empleadoRepository.save(empleado);
         LOG.info("Empleado creado exitosamente con RUT: {}", request.getRut());
