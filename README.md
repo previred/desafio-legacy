@@ -1,72 +1,177 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Técnico: Gestión de Empleados (Servlets + AJAX)
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## 📌 Descripción
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+Aplicación web para la gestión de empleados que permite:
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+- Listar empleados
+- Crear nuevos empleados
+- Eliminar empleados
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+La aplicación está construida utilizando:
 
-  Datos esperados del empleado: 
+- Java 17
+- Spring Boot (como runtime)
+- Servlets (sin usar @RestController)
+- JDBC puro
+- Base de datos en memoria H2
+- Frontend con HTML, CSS y JavaScript (Fetch API - AJAX)
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+---
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+## ⚙️ Tecnologías utilizadas
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+- Java 17
+- Spring Boot
+- Servlets (Jakarta)
+- JDBC
+- H2 Database (in-memory)
+- Maven
+- HTML + CSS + JavaScript
+- Fetch API (AJAX)
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+---
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+## 🚀 Cómo ejecutar la aplicación
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
-```
+### 1. Clonar el repositorio
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+git clone <URL_DEL_REPO>  
+cd desafio-legacy
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+---
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+### 2. Ejecutar la aplicación
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+mvn spring-boot:run
+
+o bien:
+
+mvn clean install  
+java -jar target/desafio-legacy-0.0.1-SNAPSHOT.jar
+
+---
+
+### 3. Acceder a la aplicación
+
+Frontend:
+
+http://localhost:8080/
+
+---
+
+## 🗄️ Consola H2 (opcional)
+
+Para inspeccionar la base de datos:
+
+http://localhost:8080/h2-console
+
+Configuración:
+
+- JDBC URL: jdbc:h2:mem:employeesdb
+- User: sa
+- Password: (vacío)
+
+---
+
+## 📡 API
+
+### 🔹 GET /api/empleados
+
+Obtiene la lista de empleados.
+
+---
+
+### 🔹 POST /api/empleados
+
+Crea un nuevo empleado.
+
+Ejemplo:
+
+{
+  "name": "Pedro",
+  "lastName": "Rojas",
+  "documentNumber": "12345678-9",
+  "position": "Desarrollador",
+  "compensation": {
+    "baseSalary": 700000,
+    "bonus": 50000,
+    "discounts": 10000
+  }
+}
+
+---
+
+### 🔹 DELETE /api/empleados?id={id}
+
+Elimina un empleado por su ID.
+
+---
+
+## ⚠️ Validaciones
+
+### 🔹 Backend
+
+- RUT/DNI único
+- Salario base ≥ 400.000
+- Bono ≤ 50% del salario base
+- Descuentos ≤ salario base
+
+En caso de error, se retorna:
+
+{
+  "errors": [
+    {
+      "field": "campo",
+      "message": "mensaje de error"
+    }
+  ]
+}
+
+---
+
+### 🔹 Frontend
+
+- Campos obligatorios
+- Validación de formato RUT/DNI
+- Salario base mínimo
+
+---
+
+## 🧠 Decisiones de diseño
+
+- Separación en capas: Servlet → Service → Repository
+- Uso de JDBC directo para cumplir requerimiento del desafío
+- Uso de Fetch API para comunicación asincrónica (AJAX)
+
+---
+
+## 📁 Estructura del proyecto
+
+src/main/java
+ ├── config
+ ├── model
+ ├── repository
+ ├── service
+ ├── servlet
+ └── validation
+
+src/main/resources
+ └── statics principales en backend 
+     ├── index.html
+     ├── css/
+     └── js/
+
+---
+
+## 👤 Información del postulante
+
+- Nombre: Rodrigo Sepúlveda
+- Cargo: Desarrollador Backend Java
+- Email: rodrisepulveda@gmail.com
+
+---
+
+## 📝 Nota
+
+- La base de datos es en memoria, por lo que se reinicia en cada ejecución
