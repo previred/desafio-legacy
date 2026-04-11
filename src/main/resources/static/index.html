@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <h1>Gestión de Empleados</h1>
+
+    <div class="card">
+        <h2>Agregar Empleado</h2>
+        <form id="formEmpleado" class="form-grid" novalidate>
+            <div>
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" placeholder="Ej: Juan" required>
+            </div>
+            <div>
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" placeholder="Ej: Pérez" required>
+            </div>
+            <div>
+                <label for="rut">RUT/DNI</label>
+                <input type="text" id="rut" placeholder="Ej: 12345678-5" required>
+            </div>
+            <div>
+                <label for="cargo">Cargo</label>
+                <input type="text" id="cargo" placeholder="Ej: Desarrollador" required>
+            </div>
+            <div>
+                <label for="salarioBase">Salario Base ($)</label>
+                <input type="number" id="salarioBase" placeholder="Mínimo 400000" min="400000" required>
+            </div>
+            <div>
+                <label for="bonos">Bonos ($)</label>
+                <input type="number" id="bonos" placeholder="0" min="0" value="0">
+            </div>
+            <div>
+                <label for="descuentos">Descuentos ($)</label>
+                <input type="number" id="descuentos" placeholder="0" min="0" value="0">
+            </div>
+            <div class="error-container">
+                <ul id="errores" class="error-list" style="display:none;"></ul>
+            </div>
+            <div class="btn-container">
+                <button type="submit" class="btn btn-primary">Agregar Empleado</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>Lista de Empleados</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>RUT/DNI</th>
+                    <th>Cargo</th>
+                    <th class="salary">Salario Base</th>
+                    <th class="salary">Bonos</th>
+                    <th class="salary">Descuentos</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tablaEmpleados">
+                <tr><td colspan="9" class="empty-msg">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
