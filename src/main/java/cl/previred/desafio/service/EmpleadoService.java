@@ -1,7 +1,6 @@
 package cl.previred.desafio.service;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
-import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.repository.EmpleadoRepository;
 import org.slf4j.Logger;
@@ -34,14 +33,9 @@ public class EmpleadoService {
         return empleadoRepository.findById(id);
     }
 
-    public List<ValidationError> crearEmpleado(EmpleadoRequest request) {
+    public void crearEmpleado(EmpleadoRequest request) {
         LOG.debug("Creando empleado con RUT: {}", request.getRut());
-        List<ValidationError> errores = validationService.validate(request);
-        if (!errores.isEmpty()) {
-            LOG.warn("Validacion fallida para RUT {}: {} errores", 
-                request.getRut(), errores.size());
-            return errores;
-        }
+        validationService.validate(request);
 
         Empleado empleado = new Empleado();
         empleado.setNombre(request.getNombre());
@@ -55,7 +49,6 @@ public class EmpleadoService {
 
         empleadoRepository.save(empleado);
         LOG.info("Empleado creado exitosamente con RUT: {}", request.getRut());
-        return errores;
     }
 
     public boolean eliminarEmpleado(Long id) {

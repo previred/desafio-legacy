@@ -1,6 +1,6 @@
 package cl.previred.desafio.exception;
 
-public class RepositoryException extends RuntimeException {
+public class RepositoryException extends TechnicalException {
 
     public RepositoryException(String message) {
         super(message);

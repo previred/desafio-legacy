@@ -2,6 +2,7 @@ package cl.previred.desafio.service;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ValidationError;
+import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.repository.EmpleadoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +35,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void getAllEmpleados_delegatesToRepository() {
+    public void obtenerTodosLosEmpleadosDelegaAlRepositorio() {
         Empleado emp = new Empleado();
         emp.setId(1L);
         when(empleadoRepository.findAll()).thenReturn(Arrays.asList(emp));
@@ -46,7 +47,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void crearEmpleado_conValidacionExitosa_guardaEmpleado() {
+    public void crearEmpleadoConValidacionExitosaCreaEmpleado() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -54,33 +55,33 @@ public class EmpleadoServiceTest {
         request.setCargo("Desarrollador");
         request.setSalario(new BigDecimal("500000"));
 
-        when(validationService.validate(request)).thenReturn(Arrays.<ValidationError>asList());
+        doNothing().when(validationService).validate(request);
         when(empleadoRepository.save(any(Empleado.class))).thenAnswer(i -> i.getArgument(0));
 
-        List<ValidationError> errores = empleadoService.crearEmpleado(request);
-
-        assertTrue(errores.isEmpty());
+        assertDoesNotThrow(() -> empleadoService.crearEmpleado(request));
         verify(empleadoRepository).save(any(Empleado.class));
     }
 
     @Test
-    public void crearEmpleado_conValidacionFallida_retornaErrores() {
+    public void crearEmpleadoConValidacionFallidaLanzaExcepcion() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("");
         request.setRut("INVALID");
 
         ValidationError error = new ValidationError("nombre", "El nombre es requerido");
-        when(validationService.validate(request)).thenReturn(Arrays.asList(error));
+        ValidationExceptionList ex = new ValidationExceptionList(Arrays.asList(error));
+        doThrow(ex).when(validationService).validate(request);
 
-        List<ValidationError> errores = empleadoService.crearEmpleado(request);
+        ValidationExceptionList thrown = assertThrows(ValidationExceptionList.class,
+            () -> empleadoService.crearEmpleado(request));
 
-        assertEquals(1, errores.size());
-        assertEquals("nombre", errores.get(0).getCampo());
+        assertEquals(1, thrown.getErrores().size());
+        assertEquals("nombre", thrown.getErrores().get(0).getCampo());
         verify(empleadoRepository, never()).save(any());
     }
 
     @Test
-    public void crearEmpleado_conBonoNulo_asignaCero() {
+    public void crearEmpleadoConBonoNuloAsignaCero() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -89,7 +90,7 @@ public class EmpleadoServiceTest {
         request.setSalario(new BigDecimal("500000"));
         request.setBono(null);
 
-        when(validationService.validate(request)).thenReturn(Arrays.<ValidationError>asList());
+        doNothing().when(validationService).validate(request);
         when(empleadoRepository.save(any(Empleado.class))).thenAnswer(i -> i.getArgument(0));
 
         empleadoService.crearEmpleado(request);
@@ -98,7 +99,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void eliminarEmpleado_delegatesToRepository() {
+    public void eliminarEmpleadoDelegaAlRepositorio() {
         when(empleadoRepository.deleteById(1L)).thenReturn(true);
 
         boolean result = empleadoService.eliminarEmpleado(1L);

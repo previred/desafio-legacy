@@ -2,6 +2,7 @@ package cl.previred.desafio.service;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ValidationError;
+import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.repository.EmpleadoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void validate_salarioMinimoValido_retornaSinErrores() {
+    public void validarSalarioMinimoValidoNoLanzaExcepcion() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -39,13 +40,11 @@ public class ValidationServiceTest {
         request.setBono(new BigDecimal("100000"));
         request.setDescuentos(new BigDecimal("50000"));
 
-        List<ValidationError> errores = validationService.validate(request);
-
-        assertTrue(errores.isEmpty(), "No deberia haber errores con salario minimo valido");
+        assertDoesNotThrow(() -> validationService.validate(request));
     }
 
     @Test
-    public void validate_salarioMenor400Mil_retornaError() {
+    public void validarSalarioMenor400MilLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -53,14 +52,16 @@ public class ValidationServiceTest {
         request.setCargo("Desarrollador");
         request.setSalario(new BigDecimal("399999"));
 
-        List<ValidationError> errores = validationService.validate(request);
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
 
+        List<ValidationError> errores = ex.getErrores();
         assertEquals(1, errores.size());
         assertEquals("salario", errores.get(0).getCampo());
     }
 
     @Test
-    public void validate_bonoSupera50Porciento_retornaError() {
+    public void validarBonoSupera50PorcientoLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -69,13 +70,14 @@ public class ValidationServiceTest {
         request.setSalario(new BigDecimal("500000"));
         request.setBono(new BigDecimal("300000"));
 
-        List<ValidationError> errores = validationService.validate(request);
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
 
-        assertTrue(errores.stream().anyMatch(e -> e.getCampo().equals("bono")));
+        assertTrue(ex.getErrores().stream().anyMatch(e -> e.getCampo().equals("bono")));
     }
 
     @Test
-    public void validate_descuentosSuperaSalario_retornaError() {
+    public void validarDescuentosSuperaSalarioLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -84,13 +86,14 @@ public class ValidationServiceTest {
         request.setSalario(new BigDecimal("400000"));
         request.setDescuentos(new BigDecimal("400001"));
 
-        List<ValidationError> errores = validationService.validate(request);
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
 
-        assertTrue(errores.stream().anyMatch(e -> e.getCampo().equals("descuentos")));
+        assertTrue(ex.getErrores().stream().anyMatch(e -> e.getCampo().equals("descuentos")));
     }
 
     @Test
-    public void validate_rutDuplicado_retornaError() {
+    public void validarRutDuplicadoLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -102,17 +105,19 @@ public class ValidationServiceTest {
 
         when(empleadoRepository.existsByRut("11111111-1")).thenReturn(true);
 
-        List<ValidationError> errores = validationService.validate(request);
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
 
-        assertTrue(errores.stream().anyMatch(e -> e.getCampo().equals("rut") && e.getMensaje().contains("ya existe")));
+        assertTrue(ex.getErrores().stream().anyMatch(e -> e.getCampo().equals("rut") && e.getMensaje().contains("ya existe")));
     }
 
     @Test
-    public void validate_camposRequeridosFaltantes_retornaErrores() {
+    public void validarCamposRequeridosFaltantesLanzaExcepcionConErrores() {
         EmpleadoRequest request = new EmpleadoRequest();
 
-        List<ValidationError> errores = validationService.validate(request);
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
 
-        assertTrue(errores.size() >= 3);
+        assertTrue(ex.getErrores().size() >= 3);
     }
 }

@@ -3,9 +3,11 @@ package cl.previred.desafio.servlet;
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ErrorResponse;
 import cl.previred.desafio.dto.ValidationError;
+import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.service.EmpleadoService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -15,7 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -25,9 +27,9 @@ public class EmpleadoServlet extends HttpServlet {
     private static final Logger LOG = LoggerFactory.getLogger(EmpleadoServlet.class);
 
     private final EmpleadoService empleadoService;
-    private final ObjectMapper objectMapper;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
-    public EmpleadoServlet(EmpleadoService empleadoService, ObjectMapper objectMapper) {
+    public EmpleadoServlet(EmpleadoService empleadoService, com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
         this.empleadoService = empleadoService;
         this.objectMapper = objectMapper;
     }
@@ -51,18 +53,9 @@ public class EmpleadoServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
 
         try {
-            EmpleadoRequest request = objectMapper.readValue(req.getInputStream(), 
-            EmpleadoRequest.class);
+            EmpleadoRequest request = objectMapper.readValue(req.getInputStream(), EmpleadoRequest.class);
             LOG.debug("POST /api/empleados - Request parsed: RUT={}", request.getRut());
-            List<ValidationError> errores = empleadoService.crearEmpleado(request);
-
-            if (!errores.isEmpty()) {
-                LOG.warn("POST /api/empleados - Validation errors: {}", errores);
-                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                ErrorResponse errorResponse = new ErrorResponse(errores);
-                resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-                return;
-            }
+            empleadoService.crearEmpleado(request);
 
             List<Empleado> empleados = empleadoService.getAllEmpleados();
             Empleado ultimoCreado = empleados.isEmpty() ? null : empleados.get(empleados.size() - 1);
@@ -70,14 +63,26 @@ public class EmpleadoServlet extends HttpServlet {
             resp.setStatus(HttpServletResponse.SC_CREATED);
             resp.getWriter().write(objectMapper.writeValueAsString(ultimoCreado));
 
-        } catch (Exception e) {
-            LOG.error("POST /api/empleados - Error al procesar solicitud", e);
+        } catch (ValidationExceptionList ex) {
+            LOG.warn("POST /api/empleados - Validation errors: {}", ex.getErrores());
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ErrorResponse errorResponse = new ErrorResponse(
-                    Arrays.asList(new ValidationError("general", 
-                    "Error al procesar la solicitud: " + e.getMessage()))
-            );
-            resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+            resp.getWriter().write(objectMapper.writeValueAsString(new ErrorResponse(ex.getErrores())));
+        } catch (InvalidFormatException ex) {
+            LOG.warn("POST /api/empleados - Formato invalido: {}", ex.getMessage());
+            String campo = ex.getPath().isEmpty() ? "json" : ex.getPath().get(0).getFieldName();
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(objectMapper.writeValueAsString(
+                    new ErrorResponse(Collections.singletonList(new ValidationError(campo, "Formato invalido para el campo: " + campo)))));
+        } catch (MismatchedInputException ex) {
+            LOG.warn("POST /api/empleados - JSON invalido: {}", ex.getMessage());
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.getWriter().write(objectMapper.writeValueAsString(
+                    new ErrorResponse(Collections.singletonList(new ValidationError("json", "JSON invalido o no pudo ser parseado")))));
+        } catch (Exception ex) {
+            LOG.error("POST /api/empleados - Error al procesar solicitud", ex);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            resp.getWriter().write(objectMapper.writeValueAsString(
+                    new ErrorResponse(Collections.singletonList(new ValidationError("internal", "Error interno del servidor")))));
         }
     }
 
@@ -87,9 +92,8 @@ public class EmpleadoServlet extends HttpServlet {
         if (pathInfo == null || pathInfo.equals("/")) {
             LOG.warn("DELETE /api/empleados - ID no proporcionado");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ErrorResponse errorResponse = new ErrorResponse(
-                    Arrays.asList(new ValidationError("id", "ID es requerido")));
-            resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+            resp.getWriter().write(objectMapper.writeValueAsString(
+                    new ErrorResponse(Collections.singletonList(new ValidationError("id", "ID es requerido")))));
             return;
         }
 
@@ -106,16 +110,14 @@ public class EmpleadoServlet extends HttpServlet {
             } else {
                 LOG.warn("DELETE /api/empleados/{} - Empleado no encontrado", id);
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                ErrorResponse errorResponse = new ErrorResponse(
-                        Arrays.asList(new ValidationError("id", "Empleado no encontrado")));
-                resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+                resp.getWriter().write(objectMapper.writeValueAsString(
+                        new ErrorResponse(Collections.singletonList(new ValidationError("id", "Empleado no encontrado")))));
             }
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException ex) {
             LOG.warn("DELETE /api/empleados - ID invalido: {}", idParam);
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            ErrorResponse errorResponse = new ErrorResponse(
-                    Arrays.asList(new ValidationError("id", "ID invalido")));
-            resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+            resp.getWriter().write(objectMapper.writeValueAsString(
+                    new ErrorResponse(Collections.singletonList(new ValidationError("id", "ID invalido")))));
         }
     }
 }

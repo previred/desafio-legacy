@@ -2,8 +2,12 @@ package cl.previred.desafio.service;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ValidationError;
+import cl.previred.desafio.exception.ValidationExceptionList;
+import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.repository.EmpleadoRepository;
 import cl.previred.desafio.util.RutValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -22,7 +26,7 @@ public class ValidationService {
         this.empleadoRepository = empleadoRepository;
     }
 
-    public List<ValidationError> validate(EmpleadoRequest request) {
+    public void validate(EmpleadoRequest request) {
         List<ValidationError> errores = new ArrayList<>();
 
         validateRequiredString(request.getNombre(), "nombre", "El nombre es requerido", errores);
@@ -33,7 +37,9 @@ public class ValidationService {
         validateBono(request, errores);
         validateDescuentos(request, errores);
 
-        return errores;
+        if (!errores.isEmpty()) {
+            throw new ValidationExceptionList(errores);
+        }
     }
 
     private void validateRequiredString(
