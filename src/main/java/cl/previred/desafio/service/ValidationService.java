@@ -3,6 +3,7 @@ package cl.previred.desafio.service;
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.repository.EmpleadoRepository;
+import cl.previred.desafio.util.RutValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,6 +34,8 @@ public class ValidationService {
 
         if (request.getRut() == null || request.getRut().trim().isEmpty()) {
             errores.add(new ValidationError("rut", "El RUT es requerido"));
+        } else if (!RutValidator.isValid(request.getRut())) {
+            errores.add(new ValidationError("rut", "RUT invalido (digito verificador incorrecto)"));
         } else if (empleadoRepository.existsByRut(request.getRut())) {
             errores.add(new ValidationError("rut", "RUT ya existe"));
         }

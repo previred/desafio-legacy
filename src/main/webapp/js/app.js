@@ -1,5 +1,4 @@
 const API_URL = '/api/empleados';
-const RUT_REGEX = /^(\d{1,2}\.\d{3}\.\d{3}-[\dkK]|\d{7,8}-[\dkK])$/;
 const SALARIO_MINIMO = 400000;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -11,22 +10,82 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupRutFormatter() {
     const rutInput = document.getElementById('rut');
     rutInput.addEventListener('blur', () => {
-        const rawValue = rutInput.value.replace(/[.\-]/g, '');
-        if (rawValue.length >= 7 && rawValue.length <= 9) {
-            rutInput.value = formatearRut(rawValue);
+        const normalizado = normalizarRut(rutInput.value);
+        if (normalizado.length >= 8 && normalizado.length <= 9) {
+            rutInput.value = formatearRut(normalizado);
         }
     });
 }
 
+function normalizarRut(rut) {
+    return rut.replace(/\./g, '').replace(/-/g, '').toUpperCase();
+}
+
+function esRutValido(rut) {
+    const normalizado = normalizarRut(rut);
+    
+    if (normalizado.length < 8 || normalizado.length > 9) {
+        return false;
+    }
+    
+    const cuerpo = normalizado.substring(0, normalizado.length - 1);
+    const verificador = normalizado.charAt(normalizado.length - 1);
+    
+    for (var i = 0; i < cuerpo.length; i++) {
+        if (!esDigito(cuerpo.charAt(i))) {
+            return false;
+        }
+    }
+    
+    var verificadorEsperado = calcularVerificador(cuerpo);
+    return verificador === verificadorEsperado;
+}
+
+function esDigito(caracter) {
+    return caracter >= '0' && caracter <= '9';
+}
+
+function calcularVerificador(cuerpo) {
+    var suma = 0;
+    var multiplicador = 2;
+    
+    for (var i = cuerpo.length - 1; i >= 0; i--) {
+        suma = suma + parseInt(cuerpo.charAt(i)) * multiplicador;
+        multiplicador++;
+        if (multiplicador === 8) {
+            multiplicador = 2;
+        }
+    }
+    
+    var resto = suma % 11;
+    var verificador = 11 - resto;
+    
+    if (verificador === 10) {
+        return 'K';
+    } else if (verificador === 11) {
+        return '0';
+    } else {
+        return verificador.toString();
+    }
+}
+
 function formatearRut(rut) {
-    rut = rut.replace(/[^\dkK]/gi, '');
-    if (rut.length < 7) return rut;
+    if (rut.length < 7) {
+        return rut;
+    }
     
-    let body = rut.slice(0, -1);
-    let dv = rut.slice(-1).toUpperCase();
+    var cuerpo = rut.substring(0, rut.length - 1);
+    var verificador = rut.charAt(rut.length - 1);
     
-    body = body.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-    return body + '-' + dv;
+    var cuerpoFormateado = '';
+    for (var i = 0; i < cuerpo.length; i++) {
+        if (i > 0 && (cuerpo.length - i) % 3 === 0) {
+            cuerpoFormateado = cuerpoFormateado + '.';
+        }
+        cuerpoFormateado = cuerpoFormateado + cuerpo.charAt(i);
+    }
+    
+    return cuerpoFormateado + '-' + verificador;
 }
 
 function setupForm() {
@@ -64,8 +123,8 @@ function validarFormulario() {
     if (!rut) {
         mostrarError('rut', 'El RUT es requerido');
         esValido = false;
-    } else if (!RUT_REGEX.test(rut)) {
-        mostrarError('rut', 'Formato RUT invalido (XX.XXX.XXX-X)');
+    } else if (!esRutValido(rut)) {
+        mostrarError('rut', 'RUT invalido');
         esValido = false;
     }
 
@@ -75,7 +134,7 @@ function validarFormulario() {
     }
 
     if (!salario || salario < SALARIO_MINIMO) {
-        mostrarError('salario', `Salario debe ser >= $400,000`);
+        mostrarError('salario', 'Salario debe ser >= $400,000');
         esValido = false;
     }
 
@@ -93,7 +152,7 @@ function validarFormulario() {
 }
 
 function mostrarError(campo, mensaje) {
-    const errorSpan = document.getElementById(`error-${campo}`);
+    const errorSpan = document.getElementById('error-' + campo);
     if (errorSpan) {
         errorSpan.textContent = mensaje;
     }
@@ -125,17 +184,15 @@ function renderizarTabla(empleados) {
 
     empleados.forEach(emp => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${emp.id}</td>
-            <td>${emp.nombre}</td>
-            <td>${emp.apellido}</td>
-            <td>${emp.rut}</td>
-            <td>${emp.cargo}</td>
-            <td>$${formatearNumero(emp.salario)}</td>
-            <td>$${formatearNumero(emp.bono)}</td>
-            <td>$${formatearNumero(emp.descuentos)}</td>
-            <td><button class="delete-btn" onclick="eliminarEmpleado(${emp.id})">Eliminar</button></td>
-        `;
+        tr.innerHTML = '<td>' + emp.id + '</td>' +
+            '<td>' + emp.nombre + '</td>' +
+            '<td>' + emp.apellido + '</td>' +
+            '<td>' + emp.rut + '</td>' +
+            '<td>' + emp.cargo + '</td>' +
+            '<td>$' + formatearNumero(emp.salario) + '</td>' +
+            '<td>$' + formatearNumero(emp.bono) + '</td>' +
+            '<td>$' + formatearNumero(emp.descuentos) + '</td>' +
+            '<td><button class="delete-btn" onclick="eliminarEmpleado(' + emp.id + ')">Eliminar</button></td>';
         tbody.appendChild(tr);
     });
 }
@@ -187,7 +244,7 @@ async function eliminarEmpleado(id) {
     if (!confirm('Esta seguro de eliminar este empleado?')) return;
 
     try {
-        const response = await fetch(`${API_URL}?id=${id}`, { method: 'DELETE' });
+        const response = await fetch(API_URL + '?id=' + id, { method: 'DELETE' });
 
         if (response.status === 204) {
             mostrarMensaje('Empleado eliminado', 'success');
@@ -205,6 +262,6 @@ async function eliminarEmpleado(id) {
 function mostrarMensaje(texto, tipo) {
     const msg = document.getElementById('message');
     msg.textContent = texto;
-    msg.className = `message ${tipo}`;
+    msg.className = 'message ' + tipo;
     setTimeout(() => { msg.className = 'message'; }, 3000);
 }
