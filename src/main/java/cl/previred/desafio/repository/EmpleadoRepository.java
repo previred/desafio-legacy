@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
@@ -32,9 +33,9 @@ public class EmpleadoRepository {
         emp.setApellido(rs.getString("apellido"));
         emp.setRut(rs.getString("rut"));
         emp.setCargo(rs.getString("cargo"));
-        emp.setSalario(rs.getDouble("salario"));
-        emp.setBono(rs.getDouble("bono"));
-        emp.setDescuentos(rs.getDouble("descuentos"));
+        emp.setSalario(rs.getBigDecimal("salario"));
+        emp.setBono(rs.getBigDecimal("bono"));
+        emp.setDescuentos(rs.getBigDecimal("descuentos"));
         return emp;
     };
 
@@ -92,9 +93,9 @@ public class EmpleadoRepository {
                     ps.setString(2, empleado.getApellido());
                     ps.setString(3, empleado.getRut());
                     ps.setString(4, empleado.getCargo());
-                    ps.setDouble(5, empleado.getSalario());
-                    ps.setDouble(6, empleado.getBono() != null ? empleado.getBono() : 0.0);
-                    ps.setDouble(7, empleado.getDescuentos() != null ? empleado.getDescuentos() : 0.0);
+                    ps.setBigDecimal(5, empleado.getSalario());
+                    ps.setBigDecimal(6, empleado.getBono() != null ? empleado.getBono() : BigDecimal.ZERO);
+                    ps.setBigDecimal(7, empleado.getDescuentos() != null ? empleado.getDescuentos() : BigDecimal.ZERO);
                     return ps;
                 }, keyHolder);
                 Number key = keyHolder.getKey();

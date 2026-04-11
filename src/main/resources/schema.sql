@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS empleados (
     apellido VARCHAR(100) NOT NULL,
     rut VARCHAR(20) NOT NULL UNIQUE,
     cargo VARCHAR(100) NOT NULL,
-    salario DOUBLE NOT NULL,
-    bono DOUBLE DEFAULT 0,
-    descuentos DOUBLE DEFAULT 0
+    salario DECIMAL(15,2) NOT NULL,
+    bono DECIMAL(15,2) DEFAULT 0,
+    descuentos DECIMAL(15,2) DEFAULT 0
 );

@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -48,9 +49,9 @@ public class EmpleadoService {
         empleado.setRut(request.getRut());
         empleado.setCargo(request.getCargo());
         empleado.setSalario(request.getSalario());
-        empleado.setBono(request.getBono() != null ? request.getBono() : 0.0);
+        empleado.setBono(request.getBono() != null ? request.getBono() : BigDecimal.ZERO);
         empleado.setDescuentos(request.getDescuentos() != null ? 
-            request.getDescuentos() : 0.0);
+            request.getDescuentos() : BigDecimal.ZERO);
 
         empleadoRepository.save(empleado);
         LOG.info("Empleado creado exitosamente con RUT: {}", request.getRut());

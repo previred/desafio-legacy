@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-@WebServlet("/api/empleados")
+@WebServlet("/api/empleados/*")
 public class EmpleadoServlet extends HttpServlet {
 
     private static final Logger LOG = LoggerFactory.getLogger(EmpleadoServlet.class);
@@ -83,32 +83,39 @@ public class EmpleadoServlet extends HttpServlet {
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String idParam = req.getParameter("id");
-        LOG.debug("DELETE /api/empleados?id={} - Iniciando solicitud", idParam);
-
-        if (idParam == null || idParam.trim().isEmpty()) {
+        String pathInfo = req.getPathInfo();
+        if (pathInfo == null || pathInfo.equals("/")) {
             LOG.warn("DELETE /api/empleados - ID no proporcionado");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\":\"ID es requerido\"}");
+            ErrorResponse errorResponse = new ErrorResponse(
+                    Arrays.asList(new ValidationError("id", "ID es requerido")));
+            resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
             return;
         }
+
+        String idParam = pathInfo.substring(1);
+        LOG.debug("DELETE /api/empleados/{} - Iniciando solicitud", idParam);
 
         try {
             Long id = Long.parseLong(idParam);
             boolean eliminado = empleadoService.eliminarEmpleado(id);
 
             if (eliminado) {
-                LOG.info("DELETE /api/empleados?id={} - Empleado eliminado", id);
+                LOG.info("DELETE /api/empleados/{} - Empleado eliminado", id);
                 resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
-                LOG.warn("DELETE /api/empleados?id={} - Empleado no encontrado", id);
+                LOG.warn("DELETE /api/empleados/{} - Empleado no encontrado", id);
                 resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                resp.getWriter().write("{\"error\":\"Empleado no encontrado\"}");
+                ErrorResponse errorResponse = new ErrorResponse(
+                        Arrays.asList(new ValidationError("id", "Empleado no encontrado")));
+                resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
             }
         } catch (NumberFormatException e) {
             LOG.warn("DELETE /api/empleados - ID invalido: {}", idParam);
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            resp.getWriter().write("{\"error\":\"ID invalido\"}");
+            ErrorResponse errorResponse = new ErrorResponse(
+                    Arrays.asList(new ValidationError("id", "ID invalido")));
+            resp.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         }
     }
 }

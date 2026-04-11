@@ -244,7 +244,7 @@ async function eliminarEmpleado(id) {
     if (!confirm('Esta seguro de eliminar este empleado?')) return;
 
     try {
-        const response = await fetch(API_URL + '?id=' + id, { method: 'DELETE' });
+        const response = await fetch(API_URL + '/' + id, { method: 'DELETE' });
 
         if (response.status === 204) {
             mostrarMensaje('Empleado eliminado', 'success');

@@ -6,14 +6,15 @@ import cl.previred.desafio.repository.EmpleadoRepository;
 import cl.previred.desafio.util.RutValidator;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ValidationService {
 
-    private static final double SALARIO_MINIMO = 400000.0;
-    private static final double BONO_MAXIMO_PORCENTAJE = 0.50;
+    private static final BigDecimal SALARIO_MINIMO = new BigDecimal("400000");
+    private static final BigDecimal BONO_MAXIMO_PORCENTAJE = new BigDecimal("0.50");
 
     private final EmpleadoRepository empleadoRepository;
 
@@ -65,7 +66,7 @@ public class ValidationService {
             errores.add(new ValidationError("salario", "El salario es requerido"));
             return;
         }
-        if (request.getSalario() < SALARIO_MINIMO) {
+        if (request.getSalario().compareTo(SALARIO_MINIMO) < 0) {
             errores.add(new ValidationError("salario", "Salario debe ser >= $400,000"));
         }
     }
@@ -74,8 +75,8 @@ public class ValidationService {
         if (request.getBono() == null || request.getSalario() == null) {
             return;
         }
-        double bonoMaximo = request.getSalario() * BONO_MAXIMO_PORCENTAJE;
-        if (request.getBono() > bonoMaximo) {
+        BigDecimal bonoMaximo = request.getSalario().multiply(BONO_MAXIMO_PORCENTAJE);
+        if (request.getBono().compareTo(bonoMaximo) > 0) {
             errores.add(new ValidationError("bono", "Bono no puede superar 50% del salario"));
         }
     }
@@ -84,7 +85,7 @@ public class ValidationService {
         if (request.getDescuentos() == null || request.getSalario() == null) {
             return;
         }
-        if (request.getDescuentos() > request.getSalario()) {
+        if (request.getDescuentos().compareTo(request.getSalario()) > 0) {
             errores.add(new ValidationError("descuentos", "Descuentos no pueden superar el salario"));
         }
     }

@@ -1,20 +1,22 @@
 package cl.previred.desafio.model;
 
+import java.math.BigDecimal;
+
 public class Empleado {
     private Long id;
     private String nombre;
     private String apellido;
     private String rut;
     private String cargo;
-    private Double salario;
-    private Double bono;
-    private Double descuentos;
+    private BigDecimal salario;
+    private BigDecimal bono;
+    private BigDecimal descuentos;
 
     public Empleado() {
     }
 
     public Empleado(Long id, String nombre, String apellido, String rut, String cargo,
-                    Double salario, Double bono, Double descuentos) {
+                    BigDecimal salario, BigDecimal bono, BigDecimal descuentos) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -65,27 +67,27 @@ public class Empleado {
         this.cargo = cargo;
     }
 
-    public Double getSalario() {
+    public BigDecimal getSalario() {
         return salario;
     }
 
-    public void setSalario(Double salario) {
+    public void setSalario(BigDecimal salario) {
         this.salario = salario;
     }
 
-    public Double getBono() {
+    public BigDecimal getBono() {
         return bono;
     }
 
-    public void setBono(Double bono) {
+    public void setBono(BigDecimal bono) {
         this.bono = bono;
     }
 
-    public Double getDescuentos() {
+    public BigDecimal getDescuentos() {
         return descuentos;
     }
 
-    public void setDescuentos(Double descuentos) {
+    public void setDescuentos(BigDecimal descuentos) {
         this.descuentos = descuentos;
     }
 }
