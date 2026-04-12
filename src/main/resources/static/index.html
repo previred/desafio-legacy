@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Empleados | RRHH</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+<body>
+
+<!-- Barra de navegacion superior -->
+<header class="header-top">
+    <div class="container">
+        <a href="/" class="header-logo">
+            <div class="logo-icon">RH</div>
+            <span>Empleados RRHH</span>
+        </a>
+        <nav class="header-nav">
+            <a href="/" class="active">Empleados</a>
+            <a href="/swagger-ui/index.html">API Docs</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Barra de titulo de seccion -->
+<div class="header-bar">
+    <div class="container">
+        <h1>Gesti&oacute;n de Empleados</h1>
+        <p>Administra el registro de personal de la empresa</p>
+    </div>
+</div>
+
+<main class="container">
+
+    <!-- Formulario de registro -->
+    <section class="card">
+        <div class="card-title">
+            <div class="icon">+</div>
+            <h2>Registrar Nuevo Empleado</h2>
+        </div>
+        <div class="card-body">
+            <form id="form-empleado" novalidate>
+                <div class="form-grid">
+
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre"
+                               placeholder="Ej: Juan" maxlength="100" required>
+                        <span class="field-error" id="error-nombre"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" name="apellido"
+                               placeholder="Ej: P&eacute;rez" maxlength="100" required>
+                        <span class="field-error" id="error-apellido"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rut">RUT</label>
+                        <input type="text" id="rut" name="rut"
+                               placeholder="Ej: 12.345.678-9" maxlength="12" required>
+                        <span class="field-error" id="error-rut"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cargo">Cargo</label>
+                        <input type="text" id="cargo" name="cargo"
+                               placeholder="Ej: Desarrollador" maxlength="100" required>
+                        <span class="field-error" id="error-cargo"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salario">Salario Base ($)</label>
+                        <input type="number" id="salario" name="salario"
+                               placeholder="M&iacute;nimo 400,000" min="0" required>
+                        <span class="field-error" id="error-salario"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="bono">Bono ($)</label>
+                        <input type="number" id="bono" name="bono"
+                               placeholder="M&aacute;x. 50% del salario" min="0" value="0">
+                        <span class="field-error" id="error-bono"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="descuentos">Descuentos ($)</label>
+                        <input type="number" id="descuentos" name="descuentos"
+                               placeholder="No mayor al salario" min="0" value="0">
+                        <span class="field-error" id="error-descuentos"></span>
+                    </div>
+
+                    <div class="btn-row">
+                        <button type="button" class="btn btn-secondary" id="btn-limpiar">
+                            Limpiar
+                        </button>
+                        <button type="submit" class="btn btn-primary" id="btn-guardar">
+                            Guardar Empleado
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Tabla de empleados -->
+    <section class="card">
+        <div class="card-title">
+            <div class="icon">&#9776;</div>
+            <h2>Listado de Empleados</h2>
+        </div>
+        <div class="card-body" style="padding: 0;">
+
+            <div id="loading" class="loading">Cargando empleados...</div>
+
+            <div id="tabla-container" style="display:none;">
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre Completo</th>
+                                <th>RUT</th>
+                                <th>Cargo</th>
+                                <th>Salario</th>
+                                <th>Bono</th>
+                                <th>Descuentos</th>
+                                <th>L&iacute;quido</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-body"></tbody>
+                    </table>
+                </div>
+
+                <div id="mobile-cards" class="mobile-cards" style="padding: 16px;"></div>
+            </div>
+
+            <div id="empty-state" class="empty-state" style="display:none;">
+                <div class="empty-icon">&#128203;</div>
+                <p>No hay empleados registrados a&uacute;n.</p>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        Sistema de Gesti&oacute;n de Empleados &mdash;
+        <a href="/swagger-ui/index.html">Documentaci&oacute;n API</a>
+    </div>
+</footer>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JS: orden de carga respeta dependencias -->
+<script src="js/utils.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
