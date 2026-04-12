@@ -67,7 +67,7 @@ Esto permite desacoplar la persistencia de la representación externa.
 GET /api/empleados
 
 **Respuesta:**
-
+``` json
 [
   {
     "id": 1,
@@ -81,7 +81,7 @@ GET /api/empleados
     "valorNeto": 850000
   }
 ]
-
+```
 ---
 
 ### 📌 POST - Crear empleado
@@ -90,7 +90,7 @@ POST /api/empleados
 Content-Type: application/json
 
 **Request:**
-
+``` json
 {
   "nombre": "Ana",
   "apellido": "Gómez",
@@ -100,6 +100,7 @@ Content-Type: application/json
   "bono": 50000,
   "descuentos": 20000
 }
+```
 
 **Respuesta:**
 
@@ -179,7 +180,6 @@ Acceso:
 ## ⚙️ Instrucciones de Ejecución
 
 git clone https://github.com/TU-USUARIO/desafio-legacy.git
-cd desafio-legacy
 
 Levantar servidor (Tomcat)
 
