@@ -212,7 +212,7 @@ https://editor.swagger.io/
 
 ---
 
-## ⚙️ INSTRUCCIONES DE INSTALACIÓN Y EJECUCIÓN (DETALLADO)
+## ⚙️ INSTRUCCIONES DE INSTALACIÓN Y EJECUCIÓN
 
 # 🖥️ 1. REQUISITOS PREVIOS
 
@@ -343,12 +343,6 @@ http://localhost:8080/api/empleados
 ```
 
 Si cambia el puerto de Tomcat, actualizar en JS.
-
----
-
-# 📘 DOCUMENTACIÓN API (SWAGGER)
-
-[https://editor.swagger.io/](https://editor.swagger.io/)
 
 ---
 
