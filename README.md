@@ -29,6 +29,7 @@ El sistema permite realizar operaciones CRUD (listar, crear y eliminar empleados
 - Consumo del backend mediante Fetch API (AJAX)
 - Renderizado dinámico sin recarga de página
 - Manejo de estado en el navegador
+- Se implementa la visualización dinámica de mensajes de error de validación en la interfaz, los cuales se muestran durante un periodo de 6 segundos.
 
 ---
 
