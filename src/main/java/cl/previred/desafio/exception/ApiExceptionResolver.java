@@ -57,14 +57,14 @@ public class ApiExceptionResolver {
             ValidationException validationEx = (ValidationException) ex;
             LOG.warn("ValidationException en {} - Campo: {}", requestUri, validationEx.getCampo());
             return new ResolvedErrorResponse(400,
-                    ErrorResponseFactory.validationError(validationEx.getCampo(), validationEx.getMessage()));
+                    ErrorResponseFactory.badRequest(validationEx.getCampo(), validationEx.getMessage()));
         }
 
         if (ex instanceof ResourceNotFoundException) {
             ResourceNotFoundException notFoundEx = (ResourceNotFoundException) ex;
             LOG.warn("ResourceNotFoundException en {} - Campo: {}", requestUri, notFoundEx.getCampo());
             return new ResolvedErrorResponse(404,
-                    ErrorResponseFactory.validationError(notFoundEx.getCampo(), notFoundEx.getMessage()));
+                    ErrorResponseFactory.notFound(notFoundEx.getCampo(), notFoundEx.getMessage()));
         }
 
         if (ex instanceof InvalidFormatException) {
@@ -72,7 +72,7 @@ public class ApiExceptionResolver {
             String campo = invalidFormatEx.getPath().isEmpty() ? "json" : invalidFormatEx.getPath().get(0).getFieldName();
             LOG.warn("InvalidFormat en {} - Campo: {}", requestUri, campo);
             return new ResolvedErrorResponse(400,
-                    ErrorResponseFactory.validationError(campo, "Formato invalido para el campo: " + campo));
+                    ErrorResponseFactory.badRequest(campo, "Formato invalido para el campo: " + campo));
         }
 
         if (ex instanceof MismatchedInputException) {

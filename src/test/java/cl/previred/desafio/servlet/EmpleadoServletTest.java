@@ -5,6 +5,7 @@ import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.exception.ApiExceptionResolver;
 import cl.previred.desafio.exception.RepositoryException;
 import cl.previred.desafio.exception.ResourceNotFoundException;
+import cl.previred.desafio.exception.TechnicalException;
 import cl.previred.desafio.exception.ValidationException;
 import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.model.Empleado;
@@ -206,6 +207,73 @@ class EmpleadoServletTest {
                 .thenThrow(new RepositoryException("Error de base de datos"));
 
         empleadoServlet.doDelete(req, resp);
+
+        assertEquals(500, resp.getStatus());
+        assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));
+    }
+
+    @Test
+    void doGetSinEmpleadosRetorna200YListaVacia() throws Exception {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockHttpServletResponse resp = new MockHttpServletResponse();
+        req.setMethod("GET");
+
+        when(empleadoService.getAllEmpleados()).thenReturn(Collections.emptyList());
+
+        empleadoServlet.doGet(req, resp);
+
+        assertEquals(200, resp.getStatus());
+        assertTrue(resp.getContentAsString().contains("[]"));
+    }
+
+    @Test
+    void doGetConEmpleadosRetorna200YListaDeEmpleados() throws Exception {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockHttpServletResponse resp = new MockHttpServletResponse();
+        req.setMethod("GET");
+
+        Empleado emp1 = new Empleado();
+        emp1.setId(1L);
+        emp1.setNombre("Juan");
+        emp1.setApellido("Perez");
+        emp1.setRut("11111111-1");
+        emp1.setCargo("Dev");
+        emp1.setSalario(new BigDecimal("500000"));
+
+        when(empleadoService.getAllEmpleados()).thenReturn(Arrays.asList(emp1));
+
+        empleadoServlet.doGet(req, resp);
+
+        assertEquals(200, resp.getStatus());
+        assertTrue(resp.getContentAsString().contains("\"id\":1"));
+        assertTrue(resp.getContentAsString().contains("Juan"));
+    }
+
+    @Test
+    void doGetConRepositoryExceptionRetorna500() throws Exception {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockHttpServletResponse resp = new MockHttpServletResponse();
+        req.setMethod("GET");
+
+        when(empleadoService.getAllEmpleados())
+                .thenThrow(new RepositoryException("Error de base de datos"));
+
+        empleadoServlet.doGet(req, resp);
+
+        assertEquals(500, resp.getStatus());
+        assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));
+    }
+
+    @Test
+    void doGetConTechnicalExceptionRetorna500() throws Exception {
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        MockHttpServletResponse resp = new MockHttpServletResponse();
+        req.setMethod("GET");
+
+        when(empleadoService.getAllEmpleados())
+                .thenThrow(new TechnicalException("Error tecnico"));
+
+        empleadoServlet.doGet(req, resp);
 
         assertEquals(500, resp.getStatus());
         assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));

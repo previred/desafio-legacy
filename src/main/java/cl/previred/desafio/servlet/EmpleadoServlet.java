@@ -122,6 +122,53 @@ public class EmpleadoServlet extends HttpServlet {
     }
 
     /**
+     * Ejecuta una accion dentro de una plantilla comun que prepara la respuesta JSON
+     * y maneja excepciones de forma unificada.
+     *
+     * <p>Este metodo encapsula la plantilla operativa compartida por todos los
+     * endpoints del servlet:</p>
+     * <ul>
+     *   <li>Preparacion del content-type y encoding UTF-8</li>
+     *   <li>Ejecucion del caso de uso via el handler proporcionado</li>
+     *   <li>Resolucion unificada de excepciones via ApiExceptionResolver</li>
+     * </ul>
+     *
+     * @param req    peticion HTTP
+     * @param resp   respuesta HTTP
+     * @param handler accion a ejecutar con acceso al contexto HTTP
+     * @throws IOException si ocurre un error de entrada/salida
+     */
+    private void executeJsonRequest(HttpServletRequest req,
+                                     HttpServletResponse resp,
+                                     JsonRequestHandler handler) throws IOException {
+        prepareJsonResponse(req, resp);
+        try {
+            handler.handle();
+        } catch (Exception ex) {
+            writeResolvedError(resp, req, ex);
+        }
+    }
+
+    /**
+     * Interface funcional para handlers de solicitudes JSON.
+     */
+    @FunctionalInterface
+    private interface JsonRequestHandler {
+        void handle() throws Exception;
+    }
+
+    /**
+     * Prepara la respuesta HTTP para contenido JSON.
+     *
+     * @param req  peticion HTTP
+     * @param resp respuesta HTTP
+     */
+    private void prepareJsonResponse(HttpServletRequest req, HttpServletResponse resp) {
+        resp.setContentType(APPLICATION_JSON);
+        setCharacterEncodingSafe(req, resp);
+    }
+
+    /**
      * Maneja solicitudes GET para listar todos los empleados.
      *
      * @param req  peticion HTTP
@@ -131,12 +178,12 @@ public class EmpleadoServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LOG.debug("GET /api/empleados - Iniciando solicitud");
-        resp.setContentType(APPLICATION_JSON);
-        setCharacterEncodingSafe(req, resp);
 
-        List<Empleado> empleados = empleadoService.getAllEmpleados();
-        LOG.debug("GET /api/empleados - Retornando {} empleados", empleados.size());
-        writeJsonResponse(resp, empleados);
+        executeJsonRequest(req, resp, () -> {
+            List<Empleado> empleados = empleadoService.getAllEmpleados();
+            LOG.debug("GET /api/empleados - Retornando {} empleados", empleados.size());
+            writeJsonResponse(resp, empleados, HttpServletResponse.SC_OK);
+        });
     }
 
     /**
@@ -149,17 +196,13 @@ public class EmpleadoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LOG.debug("POST /api/empleados - Iniciando solicitud");
-        resp.setContentType(APPLICATION_JSON);
-        setCharacterEncodingSafe(req, resp);
 
-        try {
+        executeJsonRequest(req, resp, () -> {
             EmpleadoRequest request = parseEmpleadoRequest(req);
             Empleado empleadoCreado = empleadoService.crearEmpleado(request);
             LOG.info("POST /api/empleados - Empleado creado exitosamente");
             writeJsonResponse(resp, empleadoCreado, HttpServletResponse.SC_CREATED);
-        } catch (Exception ex) {
-            writeResolvedError(resp, req, ex);
-        }
+        });
     }
 
     /**
@@ -172,16 +215,12 @@ public class EmpleadoServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         LOG.debug("DELETE /api/empleados - Iniciando solicitud");
-        resp.setContentType(APPLICATION_JSON);
-        setCharacterEncodingSafe(req, resp);
 
-        try {
+        executeJsonRequest(req, resp, () -> {
             Long id = parseEmpleadoId(req);
             eliminarEmpleado(id);
             resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        } catch (Exception ex) {
-            writeResolvedError(resp, req, ex);
-        }
+        });
     }
 
     /**

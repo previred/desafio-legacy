@@ -10,14 +10,22 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Manejador centralizado de excepciones para toda la aplicacion.
+ * Manejador centralizado de excepciones para controladores Spring MVC.
  *
- * <p>Esta clase actua como un interceptor global para excepciones no controladas,
+ * <p>Esta clase actua como un interceptor global via {@code @ControllerAdvice}
+ * para excepciones no controladas que ocurren en endpoints Spring MVC,
  * asegurando que todas las respuestas de error sean consistentes y esten
  * formateadas como {@link ErrorResponse}.</p>
  *
- * <p>Utiliza {@link ApiExceptionResolver} internamente para determinar
- * el codigo de estado HTTP y el cuerpo de la respuesta apropiados.</p>
+ * <p><strong>Rol arquitectonico:</strong> Este handler esta diseñado exclusivamente
+ * para el pipeline de Spring MVC (controladores REST anotados con
+ * {@code @RestController}). No reemplaza el manejo explicito requerido por
+ * {@link javax.servlet.http.HttpServlet} clasicos como {@link cl.previred.desafio.servlet.EmpleadoServlet},
+ * los cuales utilizan {@link ApiExceptionResolver} directamente.</p>
+ *
+ * <p>Ambos mecanismos ({@code GlobalExceptionHandler} y el manejo directo del servlet)
+ * reutilizan {@link ApiExceptionResolver} internamente para compartir el mismo
+ * contrato de errores.</p>
  *
  * @see ApiExceptionResolver
  * @see ErrorResponse
