@@ -25,7 +25,7 @@ public class EmpleadoService {
     private EmpleadoRepository repo;
 
     /**
-     * Obtiene todos los empleados registrados en el sistema.
+     * Obtiene todos los empleados registrados en el sistemas.
      * Convierte las entidades a DTO de respuesta para el cliente.
      */
     public List<EmpleadoResponse> getAll() {
