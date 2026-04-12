@@ -1,9 +1,7 @@
 package cl.previred.desafio.servlet;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
-import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.exception.ApiExceptionResolver;
-import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.service.EmpleadoService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,12 +15,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class EmpleadoServletTest {
