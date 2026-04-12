@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ValidationServiceTest {
+class ValidationServiceTest {
 
     @Mock
     private EmpleadoRepository empleadoRepository;
@@ -25,12 +25,12 @@ public class ValidationServiceTest {
     private ValidationService validationService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         validationService = new ValidationService(empleadoRepository);
     }
 
     @Test
-    public void validarSalarioMinimoValidoNoLanzaExcepcion() {
+    void validarSalarioMinimoValidoNoLanzaExcepcion() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -44,7 +44,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void validarSalarioMenor400MilLanzaExcepcionConError() {
+    void validarSalarioMenor400MilLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -61,7 +61,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void validarBonoSupera50PorcientoLanzaExcepcionConError() {
+    void validarBonoSupera50PorcientoLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -77,7 +77,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void validarDescuentosSuperaSalarioLanzaExcepcionConError() {
+    void validarDescuentosSuperaSalarioLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -93,7 +93,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void validarRutDuplicadoLanzaExcepcionConError() {
+    void validarRutDuplicadoLanzaExcepcionConError() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -112,7 +112,7 @@ public class ValidationServiceTest {
     }
 
     @Test
-    public void validarCamposRequeridosFaltantesLanzaExcepcionConErrores() {
+    void validarCamposRequeridosFaltantesLanzaExcepcionConErrores() {
         EmpleadoRequest request = new EmpleadoRequest();
 
         ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,

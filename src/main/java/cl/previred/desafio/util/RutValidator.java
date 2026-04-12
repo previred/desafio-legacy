@@ -1,8 +1,5 @@
 package cl.previred.desafio.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Utilidad para la validacion de RUT chileno.
  *
@@ -27,9 +24,6 @@ import org.slf4j.LoggerFactory;
  * @since 1.0
  */
 public final class RutValidator {
-
-    /** Logger para debug (opcional, puede removerse en produccion). */
-    private static final Logger LOG = LoggerFactory.getLogger(RutValidator.class);
 
     /**
      * Constructor privado para prevenir instanciacion.

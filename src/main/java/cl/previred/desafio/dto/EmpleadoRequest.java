@@ -55,6 +55,7 @@ public class EmpleadoRequest {
      * Requerido para deserializacion JSON de Jackson.
      */
     public EmpleadoRequest() {
+        // Default constructor for Jackson deserialization
     }
 
     /**

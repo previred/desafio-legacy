@@ -69,30 +69,7 @@ public class Empleado {
      * Requerido para frameworks que usan reflexion (Spring, Jackson).
      */
     public Empleado() {
-    }
-
-    /**
-     * Constructor con todos los campos.
-     *
-     * @param id         identificador unico del empleado
-     * @param nombre     nombre(s) del empleado
-     * @param apellido   apellido(s) del empleado
-     * @param rut        RUT del empleado
-     * @param cargo      cargo o puesto
-     * @param salario    salario base
-     * @param bono       bono adicional
-     * @param descuentos descuentos aplicados
-     */
-    public Empleado(Long id, String nombre, String apellido, String rut, String cargo,
-                    BigDecimal salario, BigDecimal bono, BigDecimal descuentos) {
-        this.id = id;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.rut = rut;
-        this.cargo = cargo;
-        this.salario = salario;
-        this.bono = bono;
-        this.descuentos = descuentos;
+        // Required by Jackson/JDBC mapping.
     }
 
     /**

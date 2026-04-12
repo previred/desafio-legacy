@@ -23,8 +23,10 @@ import java.util.List;
  */
 public class ValidationExceptionList extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     /** Lista de errores de validacion. */
-    private final List<ValidationError> errores;
+    private final transient List<ValidationError> errores;
 
     /**
      * Constructor con lista de errores.

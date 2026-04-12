@@ -64,13 +64,12 @@ public class EmpleadoRepository {
         String sql = "SELECT id, nombre, apellido, rut, cargo, salario, bono, descuentos FROM empleados";
         List<Empleado> empleados = new ArrayList<>();
         try (Connection conn = dataSource.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 empleados.add(mapRow(rs));
             }
         } catch (SQLException e) {
-            LOG.error("Error al obtener todos los empleados", e);
             throw new RepositoryException("Error al obtener empleados", e);
         }
         return empleados;
@@ -87,7 +86,7 @@ public class EmpleadoRepository {
         LOG.debug("Ejecutando query: SELECT empleado por id={}", id);
         String sql = "SELECT id, nombre, apellido, rut, cargo, salario, bono, descuentos FROM empleados WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -95,7 +94,6 @@ public class EmpleadoRepository {
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Error al obtener empleado por id={}", id, e);
             throw new RepositoryException("Error al obtener empleado", e);
         }
         return null;
@@ -112,7 +110,7 @@ public class EmpleadoRepository {
         LOG.debug("Ejecutando query: COUNT empleado por rut={}", rut);
         String sql = "SELECT COUNT(*) FROM empleados WHERE rut = ?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, rut);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -120,7 +118,6 @@ public class EmpleadoRepository {
                 }
             }
         } catch (SQLException e) {
-            LOG.error("Error al verificar existencia de rut={}", rut, e);
             throw new RepositoryException("Error al verificar rut", e);
         }
         return false;
@@ -146,7 +143,6 @@ public class EmpleadoRepository {
                 return updateEmpleado(conn, empleado);
             }
         } catch (SQLException e) {
-            LOG.error("Error al guardar empleado con rut={}", empleado.getRut(), e);
             throw new RepositoryException("Error al guardar empleado", e);
         }
     }
@@ -225,11 +221,10 @@ public class EmpleadoRepository {
         LOG.debug("Ejecutando DELETE para empleado con id={}", id);
         String sql = "DELETE FROM empleados WHERE id = ?";
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+            PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            LOG.error("Error al eliminar empleado con id={}", id, e);
             throw new RepositoryException("Error al eliminar empleado", e);
         }
     }

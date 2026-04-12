@@ -5,8 +5,6 @@ import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.repository.EmpleadoRepository;
 import cl.previred.desafio.util.RutValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -43,9 +41,6 @@ public class ValidationService {
 
     /** Porcentaje maximo permitido para bonos respecto al salario. */
     private static final BigDecimal BONO_MAXIMO_PORCENTAJE = new BigDecimal("0.50");
-
-    /** Logger para trazabilidad de validaciones. */
-    private static final Logger LOG = LoggerFactory.getLogger(ValidationService.class);
 
     /** Repositorio para verificar existencia de RUT. */
     private final EmpleadoRepository empleadoRepository;

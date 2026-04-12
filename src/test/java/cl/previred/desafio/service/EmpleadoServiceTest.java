@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class EmpleadoServiceTest {
+class EmpleadoServiceTest {
 
     @Mock
     private EmpleadoRepository empleadoRepository;
@@ -30,12 +30,12 @@ public class EmpleadoServiceTest {
     private EmpleadoService empleadoService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         empleadoService = new EmpleadoService(empleadoRepository, validationService);
     }
 
     @Test
-    public void obtenerTodosLosEmpleadosDelegaAlRepositorio() {
+    void obtenerTodosLosEmpleadosDelegaAlRepositorio() {
         Empleado emp = new Empleado();
         emp.setId(1L);
         when(empleadoRepository.findAll()).thenReturn(Arrays.asList(emp));
@@ -47,7 +47,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void crearEmpleadoConValidacionExitosaCreaEmpleado() {
+    void crearEmpleadoConValidacionExitosaCreaEmpleado() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -63,7 +63,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void crearEmpleadoConValidacionFallidaLanzaExcepcion() {
+    void crearEmpleadoConValidacionFallidaLanzaExcepcion() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("");
         request.setRut("INVALID");
@@ -81,7 +81,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void crearEmpleadoConBonoNuloAsignaCero() {
+    void crearEmpleadoConBonoNuloAsignaCero() {
         EmpleadoRequest request = new EmpleadoRequest();
         request.setNombre("Juan");
         request.setApellido("Perez");
@@ -99,7 +99,7 @@ public class EmpleadoServiceTest {
     }
 
     @Test
-    public void eliminarEmpleadoDelegaAlRepositorio() {
+    void eliminarEmpleadoDelegaAlRepositorio() {
         when(empleadoRepository.deleteById(1L)).thenReturn(true);
 
         boolean result = empleadoService.eliminarEmpleado(1L);

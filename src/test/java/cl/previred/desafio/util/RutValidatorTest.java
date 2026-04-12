@@ -4,30 +4,30 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class RutValidatorTest {
+class RutValidatorTest {
 
     @Test
-    public void isValid_rutValidoConGuion_retornaTrue() {
+    void isValidRutValidoConGuionRetornaTrue() {
         assertTrue(RutValidator.isValid("11111111-1"));
     }
 
     @Test
-    public void isValid_rutInvalido_retornaFalse() {
+    void isValidRutInvalidoRetornaFalse() {
         assertFalse(RutValidator.isValid("12345678-0"));
     }
 
     @Test
-    public void isValid_rutNulo_retornaFalse() {
+    void isValidRutNuloRetornaFalse() {
         assertFalse(RutValidator.isValid(null));
     }
 
     @Test
-    public void isValid_rutVacio_retornaFalse() {
+    void isValidRutVacioRetornaFalse() {
         assertFalse(RutValidator.isValid(""));
     }
 
     @Test
-    public void isValid_rutMuyCorto_retornaFalse() {
+    void isValidRutMuyCortoRetornaFalse() {
         assertFalse(RutValidator.isValid("1234567-9"));
     }
 }
