@@ -39,7 +39,7 @@ const EmpleadoValidator = {
             errors = true;
         }
 
-        //OPCIONAL: descuentos
+        //OPCIONAL: descuento
         if (data.descuentos && data.descuentos < 0) {
             this.showError("errDescuentos", "Descuentos inválidos");
             errors = true;
