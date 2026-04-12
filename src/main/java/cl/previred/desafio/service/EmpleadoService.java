@@ -1,7 +1,9 @@
 package cl.previred.desafio.service;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
+import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.model.Empleado;
+import cl.previred.desafio.repository.EmpleadoRepository;
 import cl.previred.desafio.repository.EmpleadoRepositoryPort;
 import cl.previred.desafio.util.RutValidator;
 import org.slf4j.Logger;
@@ -32,7 +34,7 @@ import java.util.List;
  * }</pre>
  *
  * @see ValidationService
- * @see cl.previred.desafio.repository.EmpleadoRepository
+ * @see EmpleadoRepository
  * @since 1.0
  */
 @Service
@@ -83,13 +85,13 @@ public class EmpleadoService {
      * Crea un nuevo empleado en el sistema.
      *
      * <p>Este metodo valida los datos del request antes de persistir.
-     * Si la validacion falla, se lanza {@link cl.previred.desafio.exception.ValidationExceptionList}.</p>
+     * Si la validacion falla, se lanza {@link ValidationExceptionList}.</p>
      *
      * <p>Los campos bono y descuentos se inicializan a BigDecimal.ZERO si son null.</p>
      *
      * @param request DTO con los datos del empleado a crear
      * @return el empleado creado con su id asignado
-     * @throws cl.previred.desafio.exception.ValidationExceptionList si los datos no son validos
+     * @throws ValidationExceptionList si los datos no son validos
      * @see ValidationService#validate(EmpleadoRequest)
      */
     public Empleado crearEmpleado(EmpleadoRequest request) {

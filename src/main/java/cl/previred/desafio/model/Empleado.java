@@ -22,8 +22,8 @@ import java.math.BigDecimal;
  * empleado.setSalario(new BigDecimal("1500000"));
  * }</pre>
  *
- * @see cl.previred.desafio.util.RutValidator
- * @see cl.previred.desafio.repository.EmpleadoRepository
+ * @see RutValidator
+ * @see EmpleadoRepository
  * @since 1.0
  */
 public class Empleado {
@@ -69,7 +69,6 @@ public class Empleado {
      * Requerido para frameworks que usan reflexion (Spring, Jackson).
      */
     public Empleado() {
-        // Required by Jackson/JDBC mapping.
     }
 
     /**

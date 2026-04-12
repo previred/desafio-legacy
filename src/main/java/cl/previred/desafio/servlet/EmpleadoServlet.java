@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Servlet REST para la gestion de empleados.
@@ -56,7 +57,7 @@ public class EmpleadoServlet extends HttpServlet {
     private final EmpleadoService empleadoService;
 
     /** ObjectMapper para serializacion/deserializacion JSON. */
-    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     /** Resolvedor de excepciones para respuestas de error. */
     private final ApiExceptionResolver apiExceptionResolver;
@@ -70,7 +71,7 @@ public class EmpleadoServlet extends HttpServlet {
      */
     public EmpleadoServlet(
             EmpleadoService empleadoService,
-            com.fasterxml.jackson.databind.ObjectMapper objectMapper,
+            ObjectMapper objectMapper,
             ApiExceptionResolver apiExceptionResolver) {
         this.empleadoService = empleadoService;
         this.objectMapper = objectMapper;
@@ -135,7 +136,11 @@ public class EmpleadoServlet extends HttpServlet {
         prepareJsonResponse(req, resp);
         try {
             handler.handle();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
+            LOG.error("Error de entrada/salida en petition HTTP", ex);
+            writeResolvedError(resp, req, ex);
+        } catch (RuntimeException ex) {
+            LOG.error("Error de dominio o infraestructura", ex);
             writeResolvedError(resp, req, ex);
         }
     }
@@ -145,7 +150,7 @@ public class EmpleadoServlet extends HttpServlet {
      */
     @FunctionalInterface
     private interface JsonRequestHandler {
-        void handle() throws Exception;
+        void handle() throws IOException;
     }
 
     /**

@@ -1,6 +1,7 @@
 package cl.previred.desafio.service;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
+import cl.previred.desafio.exception.ValidationExceptionList;
 
 /**
  * Interfaz para validacion de datos de empleados.
@@ -22,10 +23,10 @@ public interface EmpleadoValidator {
      * Valida los datos de un request de empleado.
      *
      * <p>Si la validacion falla, se debe lanzar una excepcion
-     * (normalmente {@link cl.previred.desafio.exception.ValidationExceptionList}).</p>
+     * (normalmente {@link ValidationExceptionList}).</p>
      *
      * @param request el DTO de empleado a validar
-     * @throws cl.previred.desafio.exception.ValidationExceptionList si los datos no son validos
+     * @throws ValidationExceptionList si los datos no son validos
      */
     void validate(EmpleadoRequest request);
 }

@@ -59,6 +59,7 @@ public class EmpleadoRepository implements EmpleadoRepositoryPort {
      * @return lista de empleados, nunca null (puede estar vacia)
      * @throws RepositoryException si ocurre un error al acceder a la base de datos
      */
+    @Override
     public List<Empleado> findAll() {
         LOG.debug("Ejecutando query: SELECT todos los empleados");
         String sql = "SELECT id, nombre, apellido, rut, cargo, salario, bono, descuentos FROM empleados";
@@ -82,6 +83,7 @@ public class EmpleadoRepository implements EmpleadoRepositoryPort {
      * @return el empleado encontrado, o null si no existe
      * @throws RepositoryException si ocurre un error al acceder a la base de datos
      */
+    @Override
     public Empleado findById(Long id) {
         LOG.debug("Ejecutando query: SELECT empleado por id={}", id);
         String sql = "SELECT id, nombre, apellido, rut, cargo, salario, bono, descuentos FROM empleados WHERE id = ?";
@@ -106,6 +108,7 @@ public class EmpleadoRepository implements EmpleadoRepositoryPort {
      * @return true si existe un empleado con ese RUT, false en caso contrario
      * @throws RepositoryException si ocurre un error al acceder a la base de datos
      */
+    @Override
     public boolean existsByRut(String rut) {
         LOG.debug("Ejecutando query: COUNT empleado por rut={}", rut);
         String sql = "SELECT COUNT(*) FROM empleados WHERE rut = ?";
@@ -133,6 +136,7 @@ public class EmpleadoRepository implements EmpleadoRepositoryPort {
      * @return el empleado con el id asignado (si fue insertado)
      * @throws RepositoryException si ocurre un error al acceder a la base de datos
      */
+    @Override
     public Empleado save(Empleado empleado) {
         try (Connection conn = dataSource.getConnection()) {
             if (empleado.getId() == null) {
@@ -217,6 +221,7 @@ public class EmpleadoRepository implements EmpleadoRepositoryPort {
      * @return true si se elimino el empleado, false si no se encontro
      * @throws RepositoryException si ocurre un error al acceder a la base de datos
      */
+    @Override
     public boolean deleteById(Long id) {
         LOG.debug("Ejecutando DELETE para empleado con id={}", id);
         String sql = "DELETE FROM empleados WHERE id = ?";

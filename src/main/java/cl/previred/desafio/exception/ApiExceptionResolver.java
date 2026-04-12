@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Componente que resuelve excepciones especificas de la API a sus
  * correspondientes respuestas HTTP.
@@ -50,20 +52,20 @@ public class ApiExceptionResolver {
         if (ex instanceof ValidationExceptionList) {
             ValidationExceptionList validationEx = (ValidationExceptionList) ex;
             LOG.warn("ValidationExceptionList en {} - {} errores", requestUri, validationEx.getErrores().size());
-            return new ResolvedErrorResponse(400, ErrorResponseFactory.validationError(validationEx.getErrores()));
+            return new ResolvedErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponseFactory.validationError(validationEx.getErrores()));
         }
 
         if (ex instanceof ValidationException) {
             ValidationException validationEx = (ValidationException) ex;
             LOG.warn("ValidationException en {} - Campo: {}", requestUri, validationEx.getCampo());
-            return new ResolvedErrorResponse(400,
+            return new ResolvedErrorResponse(HttpServletResponse.SC_BAD_REQUEST,
                     ErrorResponseFactory.badRequest(validationEx.getCampo(), validationEx.getMessage()));
         }
 
         if (ex instanceof ResourceNotFoundException) {
             ResourceNotFoundException notFoundEx = (ResourceNotFoundException) ex;
             LOG.warn("ResourceNotFoundException en {} - Campo: {}", requestUri, notFoundEx.getCampo());
-            return new ResolvedErrorResponse(404,
+            return new ResolvedErrorResponse(HttpServletResponse.SC_NOT_FOUND,
                     ErrorResponseFactory.notFound(notFoundEx.getCampo(), notFoundEx.getMessage()));
         }
 
@@ -71,26 +73,26 @@ public class ApiExceptionResolver {
             InvalidFormatException invalidFormatEx = (InvalidFormatException) ex;
             String campo = invalidFormatEx.getPath().isEmpty() ? "json" : invalidFormatEx.getPath().get(0).getFieldName();
             LOG.warn("InvalidFormat en {} - Campo: {}", requestUri, campo);
-            return new ResolvedErrorResponse(400,
+            return new ResolvedErrorResponse(HttpServletResponse.SC_BAD_REQUEST,
                     ErrorResponseFactory.badRequest(campo, "Formato invalido para el campo: " + campo));
         }
 
         if (ex instanceof MismatchedInputException) {
             LOG.warn("MismatchedInputException en {}", requestUri);
-            return new ResolvedErrorResponse(400, ErrorResponseFactory.jsonInvalidError());
+            return new ResolvedErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponseFactory.jsonInvalidError());
         }
 
         if (ex instanceof JsonParseException) {
             LOG.warn("JsonParseException en {}", requestUri);
-            return new ResolvedErrorResponse(400, ErrorResponseFactory.jsonInvalidError());
+            return new ResolvedErrorResponse(HttpServletResponse.SC_BAD_REQUEST, ErrorResponseFactory.jsonInvalidError());
         }
 
         if (ex instanceof RepositoryException || ex instanceof TechnicalException) {
             LOG.error("Error tecnico en {}", requestUri, ex);
-            return new ResolvedErrorResponse(500, ErrorResponseFactory.internalError("Error interno del servidor"));
+            return new ResolvedErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorResponseFactory.internalError("Error interno del servidor"));
         }
 
         LOG.error("Error no controlado en {}", requestUri, ex);
-        return new ResolvedErrorResponse(500, ErrorResponseFactory.internalError("Error interno del servidor"));
+        return new ResolvedErrorResponse(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, ErrorResponseFactory.internalError("Error interno del servidor"));
     }
 }

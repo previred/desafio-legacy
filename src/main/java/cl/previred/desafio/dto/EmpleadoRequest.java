@@ -23,8 +23,8 @@ import java.math.BigDecimal;
  *   <li>Descuentos: opcionales, <= salario</li>
  * </ul>
  *
- * @see cl.previred.desafio.service.ValidationService
- * @see cl.previred.desafio.model.Empleado
+ * @see ValidationService
+ * @see Empleado
  * @since 1.0
  */
 public class EmpleadoRequest {
@@ -55,7 +55,6 @@ public class EmpleadoRequest {
      * Requerido para deserializacion JSON de Jackson.
      */
     public EmpleadoRequest() {
-        // Default constructor for Jackson deserialization
     }
 
     /**
