@@ -212,9 +212,9 @@ https://editor.swagger.io/
 
 ---
 
-## ⚙️ INSTRUCCIONES DE INSTALACIÓN Y EJECUCIÓN
+## ⚙️ Instrucciones De Instalación Y Ejecución
 
-# 🖥️ 1. REQUISITOS PREVIOS
+## 🖥️ 1. Requisitos Previos
 
 Antes de iniciar asegúrate de tener instalado:
 
@@ -228,7 +228,7 @@ Antes de iniciar asegúrate de tener instalado:
 
 ---
 
-# 🧠 2. CLONAR EL PROYECTO
+## 🧠 2. Clonar El Proyecto
 
 Abre una terminal y ejecuta:
 
@@ -244,7 +244,7 @@ cd desafio-legacy
 
 ---
 
-# ⚙️ 3. EJECUTAR EL BACKEND (JAVA + TOMCAT)
+## ⚙️ 3. Ejecutar El Backend (Java + Tomcat)
 
 ## 📌 Opción: Desde IDE
 
@@ -264,7 +264,7 @@ http://localhost:8080/api/empleados
 
 ---
 
-# 🌐 4. EJECUTAR EL FRONTEND (LIVE SERVER)
+## 🌐 4.Ejecutar El Frontend (Live Server)
 
 ## 📌 IMPORTANTE
 
@@ -334,7 +334,7 @@ http://127.0.0.1:5500/index.html
 
 ---
 
-## ⚠️ IMPORTANTE (CONEXIÓN FRONT + BACK)
+## ⚠️ Importante (Conexión Front + Back)
 
 Verifica en el frontend que la URL del backend sea:
 
