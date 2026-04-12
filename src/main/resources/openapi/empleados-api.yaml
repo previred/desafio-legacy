@@ -1,0 +1,243 @@
+openapi: 3.0.3
+info:
+  title: API Gestión de Empleados
+  description: |
+    API REST para gestión de empleados con validaciones de reglas de negocio.
+    Implementada con Servlets, JDBC y H2 en memoria.
+  version: 1.0.0
+  contact:
+    name: Soporte
+    url: http://localhost:8080
+
+servers:
+  - url: http://localhost:8080
+    description: Servidor local
+
+tags:
+  - name: Empleados
+    description: Operaciones CRUD sobre empleados
+
+paths:
+  /api/empleados:
+    get:
+      tags:
+        - Empleados
+      summary: Listar todos los empleados
+      description: Retorna la lista completa de empleados registrados
+      operationId: listarEmpleados
+      responses:
+        '200':
+          description: Lista de empleados obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmpleadoResponse'
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Empleados
+      summary: Crear un nuevo empleado
+      description: |
+        Crea un empleado validando las reglas de negocio:
+        - RUT/DNI único
+        - Salario base >= $400,000
+        - Bono <= 50% del salario base
+        - Descuentos <= salario base
+      operationId: crearEmpleado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoRequest'
+      responses:
+        '201':
+          description: Empleado creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Error de validación
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                rutDuplicado:
+                  summary: RUT duplicado
+                  value:
+                    errores:
+                      - "Ya existe un empleado con el RUT 12.345.678-5"
+                salarioBajo:
+                  summary: Salario bajo
+                  value:
+                    errores:
+                      - "El salario base no puede ser menor a $400,000"
+                multiplesErrores:
+                  summary: Múltiples errores
+                  value:
+                    errores:
+                      - "El nombre es obligatorio"
+                      - "El salario base no puede ser menor a $400,000"
+                      - "El bono no puede superar el 50% del salario base"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/empleados/{id}:
+    delete:
+      tags:
+        - Empleados
+      summary: Eliminar un empleado por ID
+      description: Elimina un empleado existente por su identificador
+      operationId: eliminarEmpleado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID del empleado a eliminar
+          schema:
+            type: integer
+            format: int64
+            example: 1
+      responses:
+        '200':
+          description: Empleado eliminado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MensajeResponse'
+              example:
+                mensaje: "Empleado eliminado correctamente"
+        '404':
+          description: Empleado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                errores:
+                  - "No se encontró empleado con ID 999"
+        '500':
+          description: Error interno del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    EmpleadoRequest:
+      type: object
+      required:
+        - nombre
+        - apellido
+        - rut
+        - cargo
+        - salario
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+          description: Nombre del empleado
+          example: "Juan"
+        apellido:
+          type: string
+          maxLength: 100
+          description: Apellido del empleado
+          example: "Pérez"
+        rut:
+          type: string
+          maxLength: 12
+          pattern: '^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$'
+          description: "RUT/DNI en formato XX.XXX.XXX-X"
+          example: "12.345.678-5"
+        cargo:
+          type: string
+          maxLength: 100
+          description: Cargo del empleado
+          example: "Desarrollador"
+        salario:
+          type: integer
+          format: int64
+          minimum: 400000
+          description: "Salario base (mínimo $400,000)"
+          example: 500000
+        bono:
+          type: integer
+          format: int64
+          minimum: 0
+          description: "Bono (máximo 50% del salario base)"
+          example: 100000
+        descuentos:
+          type: integer
+          format: int64
+          minimum: 0
+          description: "Descuentos (no mayor al salario base)"
+          example: 50000
+
+    EmpleadoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: ID autogenerado
+          example: 1
+        nombre:
+          type: string
+          example: "Juan"
+        apellido:
+          type: string
+          example: "Pérez"
+        rut:
+          type: string
+          example: "12.345.678-5"
+        cargo:
+          type: string
+          example: "Desarrollador"
+        salario:
+          type: integer
+          format: int64
+          example: 500000
+        bono:
+          type: integer
+          format: int64
+          example: 100000
+        descuentos:
+          type: integer
+          format: int64
+          example: 50000
+        salarioLiquido:
+          type: integer
+          format: int64
+          description: "Salario + Bono - Descuentos"
+          example: 550000
+
+    ErrorResponse:
+      type: object
+      properties:
+        errores:
+          type: array
+          items:
+            type: string
+          description: Lista de mensajes de error
+
+    MensajeResponse:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          description: Mensaje de confirmación
