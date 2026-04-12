@@ -215,7 +215,7 @@ https://editor.swagger.io/
 ## ⚙️ Instrucciones de Ejecución
 
 ### Backend
-git clone https://github.com/TU-USUARIO/desafio-legacy.git
+git clone https://github.com/cpalacios1005900-sketch/desafio-legacy.git
 
 Deploy en Tomcat:
 http://localhost:8080/api/empleados
@@ -229,3 +229,8 @@ http://127.0.0.1:5500
 ## 🎯 Conclusión
 
 Proyecto full stack con buenas prácticas, arquitectura limpia y consumo de API REST.
+
+nombre: Cristian Palacios
+empresa:Tecmova
+correo : cristian.palacios08@hotmail.com
+cargo : Desarrollador full stack
