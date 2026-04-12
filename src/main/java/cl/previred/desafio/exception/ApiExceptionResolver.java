@@ -9,11 +9,43 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Componente que resuelve excepciones especificas de la API a sus
+ * correspondientes respuestas HTTP.
+ *
+ * <p>Este resolvedor implementa el patron Strategy para manejar diferentes
+ * tipos de excepciones y convertirlas en {@link ResolvedErrorResponse}
+ * con el codigo de estado HTTP y cuerpo apropiados.</p>
+ *
+ * <p>Excepciones manejadas:</p>
+ * <ul>
+ *   <li>{@link ValidationExceptionList} - 400 Bad Request</li>
+ *   <li>{@link ValidationException} - 400 Bad Request</li>
+ *   <li>{@link ResourceNotFoundException} - 404 Not Found</li>
+ *   <li>{@link InvalidFormatException} - 400 Bad Request</li>
+ *   <li>{@link MismatchedInputException} - 400 Bad Request</li>
+ *   <li>{@link JsonParseException} - 400 Bad Request</li>
+ *   <li>{@link RepositoryException} - 500 Internal Server Error</li>
+ *   <li>{@link TechnicalException} - 500 Internal Server Error</li>
+ * </ul>
+ *
+ * @see ResolvedErrorResponse
+ * @see ErrorResponse
+ * @since 1.0
+ */
 @Component
 public class ApiExceptionResolver {
 
+    /** Logger para trazabilidad de errores resueltos. */
     private static final Logger LOG = LoggerFactory.getLogger(ApiExceptionResolver.class);
 
+    /**
+     * Resuelve una excepcion a su respuesta HTTP correspondiente.
+     *
+     * @param ex        la excepcion a resolver
+     * @param requestUri URI de la peticion dondeoccurrio el error
+     * @return ResolvedErrorResponse con codigo de estado y cuerpo de respuesta
+     */
     public ResolvedErrorResponse resolve(Exception ex, String requestUri) {
         if (ex instanceof ValidationExceptionList) {
             ValidationExceptionList validationEx = (ValidationExceptionList) ex;
