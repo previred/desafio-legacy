@@ -191,7 +191,7 @@ DELETE /api/empleados?id=1
 - descuentos
 
 ✔ Justificación:
-Permiten enriquecer la lógica de negocio.
+existen algunas validaciones con estos campos; se decidió agregarlos de manera no obligatoria para cumplir con la validación. Permiten enriquecer la lógica de negocio.
 
 ---
 
