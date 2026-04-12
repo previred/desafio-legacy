@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Empleados</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="app-container">
+    <div id="toast-container" class="toast-container" role="status" aria-live="polite"></div>
+
+    <header class="app-header">
+        <h1>Gestion de Empleados</h1>
+    </header>
+
+    <section class="panel">
+        <div class="panel-title-row">
+            <h2>Empleados</h2>
+            <div class="panel-actions">
+                <button id="btn-open-modal" type="button">Nuevo empleado</button>
+                <button id="btn-recargar" type="button">Recargar</button>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <label class="filter-label" for="filtro-empleado">Buscar</label>
+            <input id="filtro-empleado" type="search" placeholder="Nombre, apellido, RUT/DNI o cargo">
+            <label class="filter-label" for="filtro-cargo">Cargo</label>
+            <input id="filtro-cargo" type="search" placeholder="Ej: Analista">
+            <button id="btn-buscar" type="button">Buscar</button>
+            <button id="btn-limpiar-filtros" class="btn-text" type="button">Limpiar</button>
+        </div>
+
+        <div id="list-errors" class="message-list message-error" role="alert" aria-live="polite"></div>
+
+        <table class="tabla-empleados">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>RUT/DNI</th>
+                <th>Cargo</th>
+                <th>Salario base</th>
+                <th>Bono</th>
+                <th>Descuentos</th>
+                <th>Acciones</th>
+            </tr>
+            </thead>
+            <tbody id="empleados-tbody"></tbody>
+        </table>
+    </section>
+
+    <div id="modal-overlay" class="modal-overlay" hidden></div>
+    <section id="empleado-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+        <div class="modal-header">
+            <h2 id="modal-title">Nuevo empleado</h2>
+            <button id="btn-close-modal" class="btn-text" type="button" aria-label="Cerrar">Cerrar</button>
+        </div>
+        <form id="empleado-form" novalidate>
+            <div class="grid-2">
+                <label>
+                    Nombre
+                    <input id="nombre" name="nombre" type="text" maxlength="100" required>
+                    <small id="error-nombre" class="field-error" aria-live="polite"></small>
+                </label>
+                <label>
+                    Apellido
+                    <input id="apellido" name="apellido" type="text" maxlength="100" required>
+                    <small id="error-apellido" class="field-error" aria-live="polite"></small>
+                </label>
+                <label>
+                    RUT/DNI
+                    <input id="rutDni" name="rutDni" type="text" maxlength="20" required>
+                    <small id="error-rutDni" class="field-error" aria-live="polite"></small>
+                </label>
+                <label>
+                    Cargo
+                    <input id="cargo" name="cargo" type="text" maxlength="100" required>
+                    <small id="error-cargo" class="field-error" aria-live="polite"></small>
+                </label>
+                <label>
+                    Salario base
+                    <input id="salarioBase" name="salarioBase" type="number" min="0" step="0.01" required>
+                    <small id="error-salarioBase" class="field-error" aria-live="polite"></small>
+                </label>
+                <label>
+                    Bono
+                    <input id="bono" name="bono" type="number" min="0" step="0.01">
+                    <small id="error-bono" class="field-error" aria-live="polite"></small>
+                </label>
+                <label>
+                    Descuentos
+                    <input id="descuentos" name="descuentos" type="number" min="0" step="0.01">
+                    <small id="error-descuentos" class="field-error" aria-live="polite"></small>
+                </label>
+            </div>
+
+            <div id="form-errors" class="message-list message-error" role="alert" aria-live="polite"></div>
+            <div id="form-success" class="message-list message-success" aria-live="polite"></div>
+
+            <div class="modal-actions">
+                <button class="btn-text" id="btn-cancelar-modal" type="button">Cancelar</button>
+                <button id="btn-guardar" type="submit">Guardar empleado</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script src="/js/api.js?v=3"></script>
+<script src="/js/validation.js?v=3"></script>
+<script src="/js/ui.js?v=3"></script>
+<script src="/js/events.js?v=3"></script>
+<script src="/js/main.js?v=3"></script>
+</body>
+</html>

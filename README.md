@@ -70,3 +70,35 @@ Se evaluará la solución en función de los siguientes criterios:
 - Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
 - Uso adecuado de Java y Javascript.
 - Claridad y completitud de la documentación.
+
+---
+
+## Cómo correr el proyecto
+
+Con Java 8+ y Maven 3.8+, levantarlo es directo:
+
+mvn spring-boot:run
+
+Con eso vas a tener:
+
+- UI en `http://localhost:8080/`
+- API en `http://localhost:8080/api/empleados`
+- Consola H2 en `http://localhost:8080/h2-console` (solo en `dev`)
+
+Si querés elegir perfil:
+
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
+
+- `dev`: habilita la consola H2
+- `prod`: deshabilita la consola H2
+
+Datos de conexión H2:
+
+- JDBC URL: `jdbc:h2:mem:desafiolegacy`
+- User: `sa`
+- Password: vacío
+
+## Tests
+
+mvn test
