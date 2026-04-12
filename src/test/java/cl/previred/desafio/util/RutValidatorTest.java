@@ -30,4 +30,24 @@ class RutValidatorTest {
     void isValidRutMuyCortoRetornaFalse() {
         assertFalse(RutValidator.isValid("1234567-9"));
     }
+
+    @Test
+    void isValidRutMinimoValidoRetornaTrue() {
+        assertTrue(RutValidator.isValid("1-9"));
+    }
+
+    @Test
+    void isValidRutMinimoSinGuionRetornaTrue() {
+        assertTrue(RutValidator.isValid("19"));
+    }
+
+    @Test
+    void isValidRutLongitudUnoRetornaFalse() {
+        assertFalse(RutValidator.isValid("1"));
+    }
+
+    @Test
+    void isValidRutMinimoConDvIncorrectoRetornaFalse() {
+        assertFalse(RutValidator.isValid("1-8"));
+    }
 }

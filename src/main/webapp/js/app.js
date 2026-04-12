@@ -11,7 +11,7 @@ function setupRutFormatter() {
     const rutInput = document.getElementById('rut');
     rutInput.addEventListener('blur', () => {
         const normalizado = normalizarRut(rutInput.value);
-        if (normalizado.length >= 8 && normalizado.length <= 9) {
+        if (normalizado.length >= 2 && normalizado.length <= 9) {
             rutInput.value = formatearRut(normalizado);
         }
     });
@@ -24,7 +24,7 @@ function normalizarRut(rut) {
 function esRutValido(rut) {
     const normalizado = normalizarRut(rut);
     
-    if (normalizado.length < 8 || normalizado.length > 9) {
+    if (normalizado.length < 2 || normalizado.length > 9) {
         return false;
     }
     
@@ -70,10 +70,6 @@ function calcularVerificador(cuerpo) {
 }
 
 function formatearRut(rut) {
-    if (rut.length < 7) {
-        return rut;
-    }
-    
     var cuerpo = rut.substring(0, rut.length - 1);
     var verificador = rut.charAt(rut.length - 1);
     

@@ -110,7 +110,7 @@ public class ValidationService implements EmpleadoValidator {
             return;
         }
         if (!RutValidator.isValid(rut)) {
-            errores.add(new ValidationError("rut", "RUT invalido (digito verificador incorrecto)"));
+            errores.add(new ValidationError("rut", "RUT invalido"));
             return;
         }
         if (empleadoRepository.existsByRut(rut)) {

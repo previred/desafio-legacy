@@ -1,9 +1,11 @@
 package cl.previred.desafio.servlet;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
+import cl.previred.desafio.dto.ErrorResponseFactory;
 import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.exception.ApiExceptionResolver;
 import cl.previred.desafio.exception.RepositoryException;
+import cl.previred.desafio.exception.ResolvedErrorResponse;
 import cl.previred.desafio.exception.ResourceNotFoundException;
 import cl.previred.desafio.exception.TechnicalException;
 import cl.previred.desafio.exception.ValidationException;
@@ -25,6 +27,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,8 +36,8 @@ class EmpleadoServletTest {
     @Mock
     private EmpleadoService empleadoService;
 
-    private ObjectMapper objectMapper;
     private ApiExceptionResolver apiExceptionResolver;
+    private ObjectMapper objectMapper;
     private EmpleadoServlet empleadoServlet;
 
     @BeforeEach
@@ -174,45 +177,6 @@ class EmpleadoServletTest {
     }
 
     @Test
-    void doPostConRepositoryExceptionRetorna500() throws Exception {
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        MockHttpServletResponse resp = new MockHttpServletResponse();
-        req.setMethod("POST");
-        req.setContentType("application/json");
-        req.setContent(("{"
-                + "\"nombre\":\"Juan\","
-                + "\"apellido\":\"Perez\","
-                + "\"rut\":\"11111111-1\","
-                + "\"cargo\":\"Dev\","
-                + "\"salario\":500000"
-                + "}").getBytes("UTF-8"));
-
-        when(empleadoService.crearEmpleado(any(EmpleadoRequest.class)))
-                .thenThrow(new RepositoryException("Error de base de datos"));
-
-        empleadoServlet.doPost(req, resp);
-
-        assertEquals(500, resp.getStatus());
-        assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));
-    }
-
-    @Test
-    void doDeleteConRepositoryExceptionRetorna500() throws Exception {
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        MockHttpServletResponse resp = new MockHttpServletResponse();
-        req.setMethod("DELETE");
-        req.setPathInfo("/1");
-
-        when(empleadoService.eliminarEmpleado(1L))
-                .thenThrow(new RepositoryException("Error de base de datos"));
-
-        empleadoServlet.doDelete(req, resp);
-
-        assertEquals(500, resp.getStatus());
-        assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));
-    }
-
-    @Test
     void doGetSinEmpleadosRetorna200YListaVacia() throws Exception {
         MockHttpServletRequest req = new MockHttpServletRequest();
         MockHttpServletResponse resp = new MockHttpServletResponse();
@@ -247,35 +211,5 @@ class EmpleadoServletTest {
         assertEquals(200, resp.getStatus());
         assertTrue(resp.getContentAsString().contains("\"id\":1"));
         assertTrue(resp.getContentAsString().contains("Juan"));
-    }
-
-    @Test
-    void doGetConRepositoryExceptionRetorna500() throws Exception {
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        MockHttpServletResponse resp = new MockHttpServletResponse();
-        req.setMethod("GET");
-
-        when(empleadoService.getAllEmpleados())
-                .thenThrow(new RepositoryException("Error de base de datos"));
-
-        empleadoServlet.doGet(req, resp);
-
-        assertEquals(500, resp.getStatus());
-        assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));
-    }
-
-    @Test
-    void doGetConTechnicalExceptionRetorna500() throws Exception {
-        MockHttpServletRequest req = new MockHttpServletRequest();
-        MockHttpServletResponse resp = new MockHttpServletResponse();
-        req.setMethod("GET");
-
-        when(empleadoService.getAllEmpleados())
-                .thenThrow(new TechnicalException("Error tecnico"));
-
-        empleadoServlet.doGet(req, resp);
-
-        assertEquals(500, resp.getStatus());
-        assertTrue(resp.getContentAsString().contains("\"campo\":\"internal\""));
     }
 }

@@ -38,7 +38,7 @@ public final class RutValidator {
      * <p>La validacion incluye:</p>
      * <ul>
      *   <li>Verificacion de null o vacio</li>
-     *   <li>Longitud valida (8-9 caracteres sin puntos ni guion)</li>
+     *   <li>Longitud valida (2-9 caracteres sin puntos ni guion)</li>
      *   <li>El cuerpo debe ser numerico</li>
      *   <li>Calculo del digito verificador</li>
      * </ul>
@@ -84,11 +84,11 @@ public final class RutValidator {
      * Verifica que la longitud del RUT normalizado sea valida.
      *
      * @param rut RUT ya normalizado
-     * @return true si la longitud es 8 o 9
+     * @return true si la longitud es entre 2 y 9 caracteres
      */
     private static boolean isValidLength(String rut) {
         int length = rut.length();
-        return length >= 8 && length <= 9;
+        return length >= 2 && length <= 9;
     }
 
     /**
