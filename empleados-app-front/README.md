@@ -160,6 +160,7 @@ GET http://localhost:8080/api/empleados
 
 ### Resultado esperado
 
+``` json
 [
     {
         "id": 1,
@@ -184,6 +185,7 @@ GET http://localhost:8080/api/empleados
         "salarioNeto": 600000.0
     }
 ]
+```
 
 ### Delete empleado
 
@@ -191,11 +193,12 @@ DELETE http://localhost:8080/api/empleados?id=1
 
 ### Resultado esperado
 
+``` json
 {
     "message": "Empleado eliminado"
 }
 
-
+```
 ------------------------------------------------------------------------
 
 ## 🎯 Conclusión
