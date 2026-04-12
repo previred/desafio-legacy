@@ -60,9 +60,9 @@ Se implementaron validaciones antes de enviar los datos:
 
 ## 🧠 Decisiones Técnicas
 
-### 📌 Inclusión de nuevos campos
+### 📌 Inclusión de nuevos campos 
 
-Se agregaron los siguientes campos:
+Se agregaron los siguientes campos para el formulario de formar no obligatoria :
 
 -   `bono`
 -   `descuentos`
@@ -71,7 +71,7 @@ Se agregaron los siguientes campos:
 
 Estos campos permiten enriquecer la lógica de negocio y alinearse con
 las reglas del backend, facilitando el cálculo del valor neto del
-empleado.
+empleado y realizar alguna validaciones solicitudes en la pruebas .
 
 ------------------------------------------------------------------------
 
@@ -149,8 +149,52 @@ Abrir el proyecto usando un servidor local:
 ### Resultado esperado
 
 ``` text
-Valor Neto: 550000
+{
+    "message": "Empleado creado correctamente"
+}
 ```
+
+### listar empleado
+
+GET http://localhost:8080/api/empleados 
+
+### Resultado esperado
+
+[
+    {
+        "id": 1,
+        "nombre": "Darwin",
+        "apellido": "Bolocho",
+        "dni": "43534534534",
+        "cargo": "Futbolist",
+        "salarioBase": 400000.0,
+        "bono": 200000.0,
+        "descuentos": 34.0,
+        "salarioNeto": 599966.0
+    },
+    {
+        "id": 2,
+        "nombre": "Darwin",
+        "apellido": "Bolocho",
+        "dni": "43534534533",
+        "cargo": "Futbolist",
+        "salarioBase": 400000.0,
+        "bono": 200000.0,
+        "descuentos": 0.0,
+        "salarioNeto": 600000.0
+    }
+]
+
+### Delete empleado
+
+DELETE http://localhost:8080/api/empleados?id=1
+
+### Resultado esperado
+
+{
+    "message": "Empleado eliminado"
+}
+
 
 ------------------------------------------------------------------------
 
