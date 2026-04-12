@@ -1,6 +1,11 @@
 const API_URL = '/api/empleados';
 const SALARIO_MINIMO = 400000;
 
+const PATTERN_NOMBRE_APELLIDO = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{2,50}$/;
+const PATTERN_CARGO = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s0-9.-]{2,100}$/;
+const PATTERN_SIMBOLOS_SOLO = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~`]+$/;
+const PATTERN_RUT_CHARS = /^[0-9.kK.-]+$/;
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarEmpleados();
     setupForm();
@@ -92,16 +97,57 @@ function setupForm() {
             await crearEmpleado();
         }
     });
+    setupInputSanitization();
+}
+
+function setupInputSanitization() {
+    const nombreInput = document.getElementById('nombre');
+    const apellidoInput = document.getElementById('apellido');
+    const cargoInput = document.getElementById('cargo');
+    const rutInput = document.getElementById('rut');
+
+    nombreInput.addEventListener('input', () => sanitizeTextInput(nombreInput, false));
+    apellidoInput.addEventListener('input', () => sanitizeTextInput(apellidoInput, false));
+    cargoInput.addEventListener('input', () => sanitizeTextInput(cargoInput, true));
+    rutInput.addEventListener('input', () => sanitizeRutInput(rutInput));
+}
+
+function sanitizeTextInput(input, allowNumbers) {
+    let value = input.value;
+    value = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s0-9.-]/g, '');
+    if (!allowNumbers) {
+        value = value.replace(/[0-9.-]/g, '');
+    }
+    value = value.trim().replace(/\s+/g, ' ');
+    input.value = value;
+}
+
+function sanitizeRutInput(input) {
+    let value = input.value;
+    value = value.replace(/[^0-9.kK.-]/g, '');
+    if (!PATTERN_RUT_CHARS.test(value)) {
+        value = value.replace(/[^0-9kK.-]/g, '');
+    }
+    input.value = value.toUpperCase();
+}
+
+function sanitizeText(value) {
+    if (!value) return '';
+    return value.trim().replace(/\s+/g, ' ');
+}
+
+function isOnlySymbols(text) {
+    return PATTERN_SIMBOLOS_SOLO.test(text);
 }
 
 function validarFormulario() {
     let esValido = true;
     limpiarErrores();
 
-    const nombre = document.getElementById('nombre').value.trim();
-    const apellido = document.getElementById('apellido').value.trim();
-    const rut = document.getElementById('rut').value.trim();
-    const cargo = document.getElementById('cargo').value.trim();
+    const nombre = sanitizeText(document.getElementById('nombre').value);
+    const apellido = sanitizeText(document.getElementById('apellido').value);
+    const rut = sanitizeText(document.getElementById('rut').value);
+    const cargo = sanitizeText(document.getElementById('cargo').value);
     const salario = parseFloat(document.getElementById('salario').value);
     const bono = parseFloat(document.getElementById('bono').value) || 0;
     const descuentos = parseFloat(document.getElementById('descuentos').value) || 0;
@@ -109,10 +155,28 @@ function validarFormulario() {
     if (!nombre) {
         mostrarError('nombre', 'El nombre es requerido');
         esValido = false;
+    } else if (nombre.length < 2) {
+        mostrarError('nombre', 'El nombre debe tener al menos 2 caracteres');
+        esValido = false;
+    } else if (nombre.length > 50) {
+        mostrarError('nombre', 'El nombre no puede exceder 50 caracteres');
+        esValido = false;
+    } else if (!PATTERN_NOMBRE_APELLIDO.test(nombre) || isOnlySymbols(nombre)) {
+        mostrarError('nombre', 'El nombre solo puede contener letras y espacios');
+        esValido = false;
     }
 
     if (!apellido) {
         mostrarError('apellido', 'El apellido es requerido');
+        esValido = false;
+    } else if (apellido.length < 2) {
+        mostrarError('apellido', 'El apellido debe tener al menos 2 caracteres');
+        esValido = false;
+    } else if (apellido.length > 50) {
+        mostrarError('apellido', 'El apellido no puede exceder 50 caracteres');
+        esValido = false;
+    } else if (!PATTERN_NOMBRE_APELLIDO.test(apellido) || isOnlySymbols(apellido)) {
+        mostrarError('apellido', 'El apellido solo puede contener letras y espacios');
         esValido = false;
     }
 
@@ -127,19 +191,43 @@ function validarFormulario() {
     if (!cargo) {
         mostrarError('cargo', 'El cargo es requerido');
         esValido = false;
+    } else if (cargo.length < 2) {
+        mostrarError('cargo', 'El cargo debe tener al menos 2 caracteres');
+        esValido = false;
+    } else if (cargo.length > 100) {
+        mostrarError('cargo', 'El cargo no puede exceder 100 caracteres');
+        esValido = false;
+    } else if (isOnlySymbols(cargo)) {
+        mostrarError('cargo', 'El cargo no puede ser solo simbolos');
+        esValido = false;
+    } else if (!PATTERN_CARGO.test(cargo)) {
+        mostrarError('cargo', 'El cargo contiene caracteres invalidos');
+        esValido = false;
     }
 
-    if (!salario || salario < SALARIO_MINIMO) {
+    if (!salario) {
+        mostrarError('salario', 'El salario es requerido');
+        esValido = false;
+    } else if (salario < 0) {
+        mostrarError('salario', 'El salario no puede ser negativo');
+        esValido = false;
+    } else if (salario < SALARIO_MINIMO) {
         mostrarError('salario', 'Salario debe ser >= $400,000');
         esValido = false;
     }
 
-    if (bono > salario * 0.5) {
+    if (bono < 0) {
+        mostrarError('bono', 'El bono no puede ser negativo');
+        esValido = false;
+    } else if (salario && bono > salario * 0.5) {
         mostrarError('bono', 'Bono no puede superar 50% del salario');
         esValido = false;
     }
 
-    if (descuentos > salario) {
+    if (descuentos < 0) {
+        mostrarError('descuentos', 'Los descuentos no pueden ser negativos');
+        esValido = false;
+    } else if (salario && descuentos > salario) {
         mostrarError('descuentos', 'Descuentos no pueden superar el salario');
         esValido = false;
     }

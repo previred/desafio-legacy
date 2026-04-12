@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * Objeto de Transferencia de Datos (DTO) para la creacion de empleados.
  *
- * <p>Esta clase actua como elRequest payload cuando un cliente desea crear
+ * <p>Esta clase actua como el Request payload cuando un cliente desea crear
  * o actualizar un empleado a traves de la API REST. Contiene todos los
  * campos editables de un empleado junto con validaciones de negocio.</p>
  *

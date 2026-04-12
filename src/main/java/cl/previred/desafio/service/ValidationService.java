@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * Servicio especializado en la validacion de datos de empleados.
@@ -23,6 +24,9 @@ import java.util.List;
  *   <li>Validacion de porcentaje maximo de bono (50% del salario)</li>
  *   <li>Validacion de que descuentos no superen el salario</li>
  *   <li>Validacion de unicidad de RUT</li>
+ *   <li>Validacion de formato de texto para nombre y apellido (solo letras y espacios)</li>
+ *   <li>Validacion de longitud minima y maxima de campos de texto</li>
+ *   <li>Validacion de no negativos en campos numericos opcionales</li>
  * </ul>
  *
  * <p>Todas las validaciones se ejecutan en conjunto y los errores se retornan
@@ -41,6 +45,15 @@ public class ValidationService implements EmpleadoValidator {
 
     /** Porcentaje maximo permitido para bonos respecto al salario. */
     private static final BigDecimal BONO_MAXIMO_PORCENTAJE = new BigDecimal("0.50");
+
+    /** Patrón para validar nombre y apellido: solo letras, espacios, tildes y ñ. */
+    private static final Pattern PATTERN_NOMBRE_APELLIDO = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s]{2,50}$");
+
+    /** Patrón para validar cargo: letras, espacios, tildes, ñ, numeros, puntos y guiones. */
+    private static final Pattern PATTERN_CARGO = Pattern.compile("^[a-zA-ZáéíóúÁÉÍÓÚñÑ\\s0-9.-]{2,100}$");
+
+    /** Patrón para detectar cadenas compuestas solo de simbolos. */
+    private static final Pattern PATTERN_SIMBOLOS_SOLO = Pattern.compile("^[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?~`]+$");
 
     /** Repositorio para verificar existencia de RUT. */
     private final EmpleadoRepositoryPort empleadoRepository;
@@ -67,10 +80,10 @@ public class ValidationService implements EmpleadoValidator {
     public void validate(EmpleadoRequest request) {
         List<ValidationError> errores = new ArrayList<>();
 
-        validateRequiredString(request.getNombre(), "nombre", "El nombre es requerido", errores);
-        validateRequiredString(request.getApellido(), "apellido", "El apellido es requerido", errores);
+        validateNombre(request.getNombre(), errores);
+        validateApellido(request.getApellido(), errores);
         validateRut(request, errores);
-        validateRequiredString(request.getCargo(), "cargo", "El cargo es requerido", errores);
+        validateCargo(request.getCargo(), errores);
         validateSalario(request, errores);
         validateBono(request, errores);
         validateDescuentos(request, errores);
@@ -81,21 +94,96 @@ public class ValidationService implements EmpleadoValidator {
     }
 
     /**
-     * Valida que un campo de texto no sea null ni vacio.
+     * Valida el campo nombre: requerido, longitud 2-50, solo letras y espacios.
      *
-     * @param value    valor a validar
-     * @param fieldName nombre del campo para el mensaje de error
-     * @param message  mensaje de error a agregar si falla la validacion
+     * @param nombre   valor a validar
      * @param errores  lista de errores donde agregar si hay falla
      */
-    private void validateRequiredString(
-            String value,
-            String fieldName,
-            String message,
-            List<ValidationError> errores) {
-        if (value == null || value.trim().isEmpty()) {
-            errores.add(new ValidationError(fieldName, message));
+    private void validateNombre(String nombre, List<ValidationError> errores) {
+        if (nombre == null || nombre.trim().isEmpty()) {
+            errores.add(new ValidationError("nombre", "El nombre es requerido"));
+            return;
         }
+        String sanitized = sanitizeText(nombre);
+        if (sanitized.length() < 2) {
+            errores.add(new ValidationError("nombre", "El nombre debe tener al menos 2 caracteres"));
+        }
+        if (sanitized.length() > 50) {
+            errores.add(new ValidationError("nombre", "El nombre no puede exceder 50 caracteres"));
+        }
+        if (!PATTERN_NOMBRE_APELLIDO.matcher(sanitized).matches() || isOnlySymbols(sanitized)) {
+            errores.add(new ValidationError("nombre", "El nombre solo puede contener letras y espacios"));
+        }
+    }
+
+    /**
+     * Valida el campo apellido: requerido, longitud 2-50, solo letras y espacios.
+     *
+     * @param apellido valor a validar
+     * @param errores  lista de errores donde agregar si hay falla
+     */
+    private void validateApellido(String apellido, List<ValidationError> errores) {
+        if (apellido == null || apellido.trim().isEmpty()) {
+            errores.add(new ValidationError("apellido", "El apellido es requerido"));
+            return;
+        }
+        String sanitized = sanitizeText(apellido);
+        if (sanitized.length() < 2) {
+            errores.add(new ValidationError("apellido", "El apellido debe tener al menos 2 caracteres"));
+        }
+        if (sanitized.length() > 50) {
+            errores.add(new ValidationError("apellido", "El apellido no puede exceder 50 caracteres"));
+        }
+        if (!PATTERN_NOMBRE_APELLIDO.matcher(sanitized).matches() || isOnlySymbols(sanitized)) {
+            errores.add(new ValidationError("apellido", "El apellido solo puede contener letras y espacios"));
+        }
+    }
+
+    /**
+     * Valida el campo cargo: requerido, longitud 2-100, caracteres alfanumericos y especiales permitidos.
+     *
+     * @param cargo    valor a validar
+     * @param errores  lista de errores donde agregar si hay falla
+     */
+    private void validateCargo(String cargo, List<ValidationError> errores) {
+        if (cargo == null || cargo.trim().isEmpty()) {
+            errores.add(new ValidationError("cargo", "El cargo es requerido"));
+            return;
+        }
+        String sanitized = sanitizeText(cargo);
+        if (sanitized.length() < 2) {
+            errores.add(new ValidationError("cargo", "El cargo debe tener al menos 2 caracteres"));
+        }
+        if (sanitized.length() > 100) {
+            errores.add(new ValidationError("cargo", "El cargo no puede exceder 100 caracteres"));
+        }
+        if (isOnlySymbols(sanitized)) {
+            errores.add(new ValidationError("cargo", "El cargo no puede ser solo simbolos"));
+        }
+        if (!PATTERN_CARGO.matcher(sanitized).matches()) {
+            errores.add(new ValidationError("cargo", "El cargo contiene caracteres invalidos"));
+        }
+    }
+
+    /**
+     * Normaliza texto: elimina espacios redundantes y trimea.
+     *
+     * @param text texto a sanitizar
+     * @return texto sanitizado
+     */
+    private String sanitizeText(String text) {
+        if (text == null) return "";
+        return text.trim().replaceAll("\\s+", " ");
+    }
+
+    /**
+     * Detecta si una cadena esta compuesta solo por simbolos.
+     *
+     * @param text texto a verificar
+     * @return true si solo contiene simbolos
+     */
+    private boolean isOnlySymbols(String text) {
+        return PATTERN_SIMBOLOS_SOLO.matcher(text).matches();
     }
 
     /**
@@ -121,7 +209,7 @@ public class ValidationService implements EmpleadoValidator {
     }
 
     /**
-     * Valida el salario: requerido y mayor o igual al minimo legal.
+     * Valida el salario: requerido, no negativo y mayor o igual al minimo legal.
      *
      * @param request request conteniendo el salario
      * @param errores lista de errores donde agregar si hay falla
@@ -131,19 +219,30 @@ public class ValidationService implements EmpleadoValidator {
             errores.add(new ValidationError("salario", "El salario es requerido"));
             return;
         }
+        if (request.getSalario().compareTo(BigDecimal.ZERO) < 0) {
+            errores.add(new ValidationError("salario", "El salario no puede ser negativo"));
+            return;
+        }
         if (request.getSalario().compareTo(SALARIO_MINIMO) < 0) {
             errores.add(new ValidationError("salario", "Salario debe ser >= $400,000"));
         }
     }
 
     /**
-     * Valida que el bono no supere el 50% del salario.
+     * Valida que el bono no sea negativo y no supere el 50% del salario.
      *
      * @param request request conteniendo el bono y salario
      * @param errores lista de errores donde agregar si hay falla
      */
     private void validateBono(EmpleadoRequest request, List<ValidationError> errores) {
-        if (request.getBono() == null || request.getSalario() == null) {
+        if (request.getBono() == null) {
+            return;
+        }
+        if (request.getBono().compareTo(BigDecimal.ZERO) < 0) {
+            errores.add(new ValidationError("bono", "El bono no puede ser negativo"));
+            return;
+        }
+        if (request.getSalario() == null) {
             return;
         }
         BigDecimal bonoMaximo = request.getSalario().multiply(BONO_MAXIMO_PORCENTAJE);
@@ -153,13 +252,20 @@ public class ValidationService implements EmpleadoValidator {
     }
 
     /**
-     * Valida que los descuentos no superen el salario.
+     * Valida que los descuentos no sean negativos y no superen el salario.
      *
      * @param request request conteniendo los descuentos y salario
      * @param errores lista de errores donde agregar si hay falla
      */
     private void validateDescuentos(EmpleadoRequest request, List<ValidationError> errores) {
-        if (request.getDescuentos() == null || request.getSalario() == null) {
+        if (request.getDescuentos() == null) {
+            return;
+        }
+        if (request.getDescuentos().compareTo(BigDecimal.ZERO) < 0) {
+            errores.add(new ValidationError("descuentos", "Los descuentos no pueden ser negativos"));
+            return;
+        }
+        if (request.getSalario() == null) {
             return;
         }
         if (request.getDescuentos().compareTo(request.getSalario()) > 0) {
