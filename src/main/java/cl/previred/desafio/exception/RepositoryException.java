@@ -16,7 +16,6 @@ package cl.previred.desafio.exception;
  * es un error de nivel tecnico/infrastructura.</p>
  *
  * @see TechnicalException
- * @see GlobalExceptionHandler
  * @since 1.0
  */
 public class RepositoryException extends TechnicalException {

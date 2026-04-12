@@ -14,7 +14,6 @@ package cl.previred.desafio.exception;
  * el feedback al usuario.</p>
  *
  * @see ValidationExceptionList
- * @see GlobalExceptionHandler
  * @since 1.0
  */
 public class ValidationException extends RuntimeException {

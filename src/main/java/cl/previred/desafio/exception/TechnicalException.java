@@ -16,7 +16,6 @@ package cl.previred.desafio.exception;
  * al cliente para evitar信息披露 de informacion sensible.</p>
  *
  * @see RepositoryException
- * @see GlobalExceptionHandler
  * @since 1.0
  */
 public class TechnicalException extends RuntimeException {

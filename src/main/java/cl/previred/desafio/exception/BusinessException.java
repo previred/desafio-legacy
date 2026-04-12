@@ -14,7 +14,6 @@ package cl.previred.desafio.exception;
  * <p>Incluye un codigo de error para facilitar el manejo programmatico
  * del error en la capa de presentacion.</p>
  *
- * @see GlobalExceptionHandler
  * @since 1.0
  */
 public class BusinessException extends RuntimeException {

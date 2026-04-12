@@ -11,7 +11,6 @@ package cl.previred.desafio.exception;
  *   <li>Referencia a entidad relacionada que no existe</li>
  * </ul>
  *
- * @see GlobalExceptionHandler
  * @since 1.0
  */
 public class ResourceNotFoundException extends RuntimeException {
