@@ -1,72 +1,76 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Previred - Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Solución al desafío técnico. Es una webapp simple para
+administrar empleados (listar, agregar, eliminar) usando servlets, JDBC y H2 en
+memoria. Spring Boot se usa solo para arrancar Tomcat embebido y resolver las
+dependencias, no como framework web.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## Requisitos
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+- Java 8
+- Maven 3.6+
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+Probado con Oracle OpenJDK 1.8.0_202.
 
-  Datos esperados del empleado: 
+## Cómo correrlo
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
-
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+```bash
+mvn spring-boot:run
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+Y abrir http://localhost:8080/ en el navegador.
 
+Si el puerto 8080 está ocupado, cambiarlo en `src/main/resources/application.properties`.
+
+## Endpoints
+
+| Método | URL | Descripción |
+|--------|-----|-------------|
+| GET    | `/api/empleados`         | Lista todos los empleados |
+| POST   | `/api/empleados`         | Crea un empleado (body JSON) |
+| DELETE | `/api/empleados?id={id}` | Elimina por id |
+
+Los errores del backend vuelven con HTTP 400 y un JSON tipo:
+
+```json
+{ "errors": ["..."], "empleado": { ... } }
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+## Cómo probarlo
+
+**Opción 1: desde el navegador**
+
+Abrir http://localhost:8080/, llenar el formulario y usar los botones de la
+tabla. Para revisar los datos persistidos directamente en H2:
+http://localhost:8080/h2-console (JDBC URL `jdbc:h2:mem:desafio`, usuario `sa`,
+sin contraseña).
+
+**Opción 2: con curl**
+
+Listar:
+
+```bash
+curl http://localhost:8080/api/empleados
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+Crear (caso válido):
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+```bash
+curl -X POST http://localhost:8080/api/empleados \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Juan","apellido":"Perez","rut":"12345678-5","cargo":"Dev","salarioBase":800000,"bonos":100000,"descuentos":50000}'
+```
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+Eliminar:
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```bash
+curl -X DELETE "http://localhost:8080/api/empleados?id=1"
+```
+
+**Casos de error para probar**:
+
+- Repetir el mismo RUT dos veces → "Ya existe un empleado con el RUT...".
+- Salario menor a 400000 → "El salario base debe ser mayor o igual a $400000".
+- Bonos > 50% del salario → "Los bonos no pueden superar el 50% del salario base".
+- Descuentos > salario → "Los descuentos no pueden superar el salario base".
+- RUT con dígito verificador inválido → "El RUT no tiene un formato valido".
