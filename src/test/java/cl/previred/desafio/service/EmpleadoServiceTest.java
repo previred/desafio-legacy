@@ -55,10 +55,22 @@ class EmpleadoServiceTest {
         request.setCargo("Desarrollador");
         request.setSalario(new BigDecimal("500000"));
 
-        doNothing().when(validationService).validate(request);
-        when(empleadoRepository.save(any(Empleado.class))).thenAnswer(i -> i.getArgument(0));
+        Empleado empleadoGuardado = new Empleado();
+        empleadoGuardado.setId(1L);
+        empleadoGuardado.setNombre("Juan");
+        empleadoGuardado.setApellido("Perez");
+        empleadoGuardado.setRut("11111111-1");
+        empleadoGuardado.setCargo("Desarrollador");
+        empleadoGuardado.setSalario(new BigDecimal("500000"));
 
-        assertDoesNotThrow(() -> empleadoService.crearEmpleado(request));
+        doNothing().when(validationService).validate(request);
+        when(empleadoRepository.save(any(Empleado.class))).thenReturn(empleadoGuardado);
+
+        Empleado result = empleadoService.crearEmpleado(request);
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("Juan", result.getNombre());
         verify(empleadoRepository).save(any(Empleado.class));
     }
 
@@ -96,6 +108,36 @@ class EmpleadoServiceTest {
         empleadoService.crearEmpleado(request);
 
         verify(empleadoRepository).save(argThat(emp -> emp.getBono().equals(BigDecimal.ZERO)));
+    }
+
+    @Test
+    void crearEmpleadoRetornaEmpleadoConIdAsignado() {
+        EmpleadoRequest request = new EmpleadoRequest();
+        request.setNombre("Juan");
+        request.setApellido("Perez");
+        request.setRut("11111111-1");
+        request.setCargo("Desarrollador");
+        request.setSalario(new BigDecimal("500000"));
+
+        Empleado empleadoCreado = new Empleado();
+        empleadoCreado.setId(42L);
+        empleadoCreado.setNombre("Juan");
+        empleadoCreado.setApellido("Perez");
+        empleadoCreado.setRut("11111111-1");
+        empleadoCreado.setCargo("Desarrollador");
+        empleadoCreado.setSalario(new BigDecimal("500000"));
+        empleadoCreado.setBono(BigDecimal.ZERO);
+        empleadoCreado.setDescuentos(BigDecimal.ZERO);
+
+        doNothing().when(validationService).validate(request);
+        when(empleadoRepository.save(any(Empleado.class))).thenReturn(empleadoCreado);
+
+        Empleado result = empleadoService.crearEmpleado(request);
+
+        assertEquals(42L, result.getId());
+        assertEquals("Juan", result.getNombre());
+        assertEquals("Perez", result.getApellido());
+        assertEquals("11111111-1", result.getRut());
     }
 
     @Test

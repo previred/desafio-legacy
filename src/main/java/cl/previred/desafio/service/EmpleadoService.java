@@ -87,10 +87,11 @@ public class EmpleadoService {
      * <p>Los campos bono y descuentos se inicializan a BigDecimal.ZERO si son null.</p>
      *
      * @param request DTO con los datos del empleado a crear
+     * @return el empleado creado con su id asignado
      * @throws cl.previred.desafio.exception.ValidationExceptionList si los datos no son validos
      * @see ValidationService#validate(EmpleadoRequest)
      */
-    public void crearEmpleado(EmpleadoRequest request) {
+    public Empleado crearEmpleado(EmpleadoRequest request) {
         LOG.debug("Creando empleado con RUT: {}", request.getRut());
         validationService.validate(request);
 
@@ -104,8 +105,9 @@ public class EmpleadoService {
         empleado.setDescuentos(request.getDescuentos() != null ? 
             request.getDescuentos() : BigDecimal.ZERO);
 
-        empleadoRepository.save(empleado);
+        Empleado empleadoCreado = empleadoRepository.save(empleado);
         LOG.info("Empleado creado exitosamente con RUT: {}", request.getRut());
+        return empleadoCreado;
     }
 
     /**
