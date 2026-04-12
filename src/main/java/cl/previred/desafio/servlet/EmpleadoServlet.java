@@ -111,15 +111,6 @@ public class EmpleadoServlet extends HttpServlet {
         }
     }
 
-    /**
-     * Escribe una respuesta JSON con codigo de estado 200 OK.
-     *
-     * @param resp respuesta HTTP
-     * @param data objeto a serializar como JSON
-     */
-    private void writeJsonResponse(HttpServletResponse resp, Object data) {
-        writeJsonResponse(resp, data, HttpServletResponse.SC_OK);
-    }
 
     /**
      * Ejecuta una accion dentro de una plantilla comun que prepara la respuesta JSON
@@ -139,8 +130,8 @@ public class EmpleadoServlet extends HttpServlet {
      * @throws IOException si ocurre un error de entrada/salida
      */
     private void executeJsonRequest(HttpServletRequest req,
-                                     HttpServletResponse resp,
-                                     JsonRequestHandler handler) throws IOException {
+                                    HttpServletResponse resp,
+                                    JsonRequestHandler handler) throws IOException {
         prepareJsonResponse(req, resp);
         try {
             handler.handle();
