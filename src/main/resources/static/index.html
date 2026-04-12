@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Desafio Previred - Empleados</title>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<main>
+    <h1>Gestion de Empleados</h1>
+
+    <section class="card">
+        <h2>Agregar empleado</h2>
+        <form id="empleado-form" novalidate>
+            <div class="row">
+                <label>Nombre
+                    <input type="text" name="nombre" required/>
+                    <span class="field-error" data-for="nombre"></span>
+                </label>
+                <label>Apellido
+                    <input type="text" name="apellido" required/>
+                    <span class="field-error" data-for="apellido"></span>
+                </label>
+            </div>
+            <div class="row">
+                <label>RUT / DNI
+                    <input type="text" name="rut" placeholder="12345678-9" required/>
+                    <span class="field-error" data-for="rut"></span>
+                </label>
+                <label>Cargo
+                    <input type="text" name="cargo" required/>
+                    <span class="field-error" data-for="cargo"></span>
+                </label>
+            </div>
+            <div class="row">
+                <label>Salario base
+                    <input type="number" name="salarioBase" min="0" step="1" required/>
+                    <span class="field-error" data-for="salarioBase"></span>
+                </label>
+                <label>Bonos
+                    <input type="number" name="bonos" min="0" step="1" value="0"/>
+                    <span class="field-error" data-for="bonos"></span>
+                </label>
+                <label>Descuentos
+                    <input type="number" name="descuentos" min="0" step="1" value="0"/>
+                    <span class="field-error" data-for="descuentos"></span>
+                </label>
+            </div>
+            <button type="submit">Agregar</button>
+            <div id="form-errors" class="errors"></div>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Empleados registrados</h2>
+        <div id="list-message"></div>
+        <table id="empleados-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>RUT</th>
+                <th>Cargo</th>
+                <th>Salario base</th>
+                <th>Bonos</th>
+                <th>Descuentos</th>
+                <th>Accion</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </section>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
