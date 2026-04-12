@@ -120,4 +120,42 @@ class ValidationServiceTest {
 
         assertTrue(ex.getErrores().size() >= 3);
     }
+
+    @Test
+    void validarRutCortoSinGuionYExisteConGuionDetectadoComoDuplicado() {
+        EmpleadoRequest request = new EmpleadoRequest();
+        request.setNombre("Juan");
+        request.setApellido("Perez");
+        request.setRut("19");
+        request.setCargo("Desarrollador");
+        request.setSalario(new BigDecimal("400000"));
+        request.setBono(BigDecimal.ZERO);
+        request.setDescuentos(BigDecimal.ZERO);
+
+        when(empleadoRepository.existsByRut("1-9")).thenReturn(true);
+
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
+
+        assertTrue(ex.getErrores().stream().anyMatch(e -> e.getCampo().equals("rut") && e.getMensaje().contains("ya existe")));
+    }
+
+    @Test
+    void validarRutConPuntosYExisteSinPuntosDetectadoComoDuplicado() {
+        EmpleadoRequest request = new EmpleadoRequest();
+        request.setNombre("Juan");
+        request.setApellido("Perez");
+        request.setRut("12.345.678-5");
+        request.setCargo("Desarrollador");
+        request.setSalario(new BigDecimal("400000"));
+        request.setBono(BigDecimal.ZERO);
+        request.setDescuentos(BigDecimal.ZERO);
+
+        when(empleadoRepository.existsByRut("12345678-5")).thenReturn(true);
+
+        ValidationExceptionList ex = assertThrows(ValidationExceptionList.class,
+            () -> validationService.validate(request));
+
+        assertTrue(ex.getErrores().stream().anyMatch(e -> e.getCampo().equals("rut") && e.getMensaje().contains("ya existe")));
+    }
 }

@@ -3,6 +3,7 @@ package cl.previred.desafio.service;
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.repository.EmpleadoRepositoryPort;
+import cl.previred.desafio.util.RutValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -98,7 +99,7 @@ public class EmpleadoService {
         Empleado empleado = new Empleado();
         empleado.setNombre(request.getNombre());
         empleado.setApellido(request.getApellido());
-        empleado.setRut(request.getRut());
+        empleado.setRut(RutValidator.toCanonicalFormat(request.getRut()));
         empleado.setCargo(request.getCargo());
         empleado.setSalario(request.getSalario());
         empleado.setBono(request.getBono() != null ? request.getBono() : BigDecimal.ZERO);

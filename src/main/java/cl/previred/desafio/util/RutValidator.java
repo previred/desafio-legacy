@@ -164,4 +164,34 @@ public final class RutValidator {
             return Character.forDigit(verifier, 10);
         }
     }
+
+    /**
+     * Convierte un RUT a su formato canonico: cuerpo-dv.
+     *
+     * <p>Ejemplos:</p>
+     * <ul>
+     *   <li>"19" -&gt; "1-9"</li>
+     *   <li>"1-9" -&gt; "1-9"</li>
+     *   <li>"12.345.678-5" -&gt; "12345678-5"</li>
+     *   <li>"123456785" -&gt; "12345678-5"</li>
+     * </ul>
+     *
+     * <p>Este metodo asume que el RUT ya fue validado previamente con {@link #isValid(String)}.
+     * Si el RUT no es valido, el comportamiento no esta definido.</p>
+     *
+     * @param rut RUT en cualquier formato valido (con o sin puntos y guion)
+     * @return RUT en formato canonico cuerpo-dv
+     * @throws IllegalArgumentException si el RUT es null o vacio
+     */
+    public static String toCanonicalFormat(String rut) {
+        if (rut == null || rut.trim().isEmpty()) {
+            throw new IllegalArgumentException("RUT no puede ser null ni vacio");
+        }
+
+        String normalized = normalize(rut);
+        String body = getBody(normalized);
+        char verifier = getVerifier(normalized);
+
+        return body + "-" + verifier;
+    }
 }

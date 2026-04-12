@@ -54,6 +54,67 @@ curl -X POST http://localhost:8080/api/empleados \
 curl -X DELETE http://localhost:8080/api/empleados/1
 ```
 
+### Contrato de Errores JSON
+
+Todas las respuestas de error de la API siguen un formato estandarizado:
+
+```json
+{
+  "errores": [
+    {
+      "campo": "nombre_del_campo",
+      "mensaje": "Descripcion del error"
+    }
+  ]
+}
+```
+
+#### Codigos de Estado
+
+| Codigo | Significado | Causas comunes |
+|--------|-------------|----------------|
+| 400 | Bad Request | JSON invalido, validacion de campos, formato incorrecto |
+| 404 | Not Found | Recurso inexistente para una clave valida |
+| 500 | Internal Server Error | Error interno tecnico, sin detalle sensible expuesto |
+
+#### Ejemplos
+
+**Error 400 - JSON invalido:**
+```json
+{
+  "errores": [
+    {"campo": "json", "mensaje": "JSON invalido o no pudo ser parseado"}
+  ]
+}
+```
+
+**Error 400 - Validacion de campo:**
+```json
+{
+  "errores": [
+    {"campo": "nombre", "mensaje": "El nombre es requerido"}
+  ]
+}
+```
+
+**Error 404 - Recurso no encontrado:**
+```json
+{
+  "errores": [
+    {"campo": "id", "mensaje": "Empleado no encontrado con id: 123"}
+  ]
+}
+```
+
+**Error 500 - Error interno:**
+```json
+{
+  "errores": [
+    {"campo": "internal", "mensaje": "Error interno del servidor"}
+  ]
+}
+```
+
 ### Validaciones Implementadas
 
 **Backend (Java):**

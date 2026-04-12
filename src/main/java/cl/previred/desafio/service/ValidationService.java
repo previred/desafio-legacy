@@ -113,7 +113,8 @@ public class ValidationService implements EmpleadoValidator {
             errores.add(new ValidationError("rut", "RUT invalido"));
             return;
         }
-        if (empleadoRepository.existsByRut(rut)) {
+        String canonicalRut = RutValidator.toCanonicalFormat(rut);
+        if (empleadoRepository.existsByRut(canonicalRut)) {
             errores.add(new ValidationError("rut", "RUT ya existe"));
         }
     }

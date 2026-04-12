@@ -150,4 +150,38 @@ class EmpleadoServiceTest {
         assertTrue(result);
         verify(empleadoRepository).deleteById(1L);
     }
+
+    @Test
+    void crearEmpleadoConRutSinGuionPersisteEnFormatoCanonico() {
+        EmpleadoRequest request = new EmpleadoRequest();
+        request.setNombre("Juan");
+        request.setApellido("Perez");
+        request.setRut("19");
+        request.setCargo("Desarrollador");
+        request.setSalario(new BigDecimal("500000"));
+
+        doNothing().when(empleadoValidator).validate(request);
+        when(empleadoRepository.save(any(Empleado.class))).thenAnswer(i -> i.getArgument(0));
+
+        empleadoService.crearEmpleado(request);
+
+        verify(empleadoRepository).save(argThat(emp -> "1-9".equals(emp.getRut())));
+    }
+
+    @Test
+    void crearEmpleadoConRutConPuntosPersisteEnFormatoCanonico() {
+        EmpleadoRequest request = new EmpleadoRequest();
+        request.setNombre("Juan");
+        request.setApellido("Perez");
+        request.setRut("12.345.678-5");
+        request.setCargo("Desarrollador");
+        request.setSalario(new BigDecimal("500000"));
+
+        doNothing().when(empleadoValidator).validate(request);
+        when(empleadoRepository.save(any(Empleado.class))).thenAnswer(i -> i.getArgument(0));
+
+        empleadoService.crearEmpleado(request);
+
+        verify(empleadoRepository).save(argThat(emp -> "12345678-5".equals(emp.getRut())));
+    }
 }
