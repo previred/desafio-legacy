@@ -216,4 +216,4 @@ Este proyecto demuestra:
 ## 👨‍💻 Autor
 
 Desarrollado como prueba técnica siguiendo buenas prácticas de
-desarrollo full stack.
+desarrollo full stack. Cristian Palacios
