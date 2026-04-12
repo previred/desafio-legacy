@@ -1,8 +1,12 @@
 const MessageUtils = {
 
+    timeout: null,
+
     show: function (texto, tipo = "success") {
         const msg = document.getElementById("msg");
         msg.innerHTML = `<div class="alert alert-${tipo}">${texto}</div>`;
+
+        this.resetTimer();
     },
 
     showList: function (errores = []) {
@@ -10,6 +14,18 @@ const MessageUtils = {
         msg.innerHTML = errores
             .map(err => `<div class="alert alert-error">${err}</div>`)
             .join("");
+
+        this.resetTimer();
+    },
+
+    resetTimer: function () {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+        }
+
+        this.timeout = setTimeout(() => {
+            this.clear();
+        }, 6000);
     },
 
     clear: function () {

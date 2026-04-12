@@ -29,7 +29,7 @@ const EmpleadoValidator = {
         }
 
         if (!data.salario || data.salario < 400000) {
-            this.showError("errSalario", "Salario mínimo 400000");
+            this.showError("errSalario", "Salario mínimo $400,000");
             errors = true;
         }
 
