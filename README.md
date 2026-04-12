@@ -1,72 +1,130 @@
 # Desafío Técnico: Servlets y AJAX
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+---
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## Documentación de Ejecución y Pruebas
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+### Requisitos Previos
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+- JDK 8 o superior
+- Maven 3.x
 
-  Datos esperados del empleado: 
+### Ejecutar la Aplicación
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+1. Compilar y ejecutar desde la raíz del proyecto:
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+```bash
+mvn spring-boot:run
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+2. La aplicación estará disponible en: `http://localhost:8080`
 
+### Endpoints de la API
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/empleados` | Lista todos los empleados |
+| POST | `/api/empleados` | Crea un nuevo empleado |
+| DELETE | `/api/empleados/{id}` | Elimina un empleado por ID |
+
+### Probar la Aplicación
+
+#### Via Navegador (GUI)
+1. Abrir `http://localhost:8080` en el navegador
+2. Usar el formulario para agregar empleados
+3. Ver la lista de empleados en la tabla
+4. Eliminar empleados con el botón correspondiente
+
+#### Via API (curl)
+
+**Listar empleados:**
+```bash
+curl http://localhost:8080/api/empleados
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+**Crear empleado:**
+```bash
+curl -X POST http://localhost:8080/api/empleados \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Juan","apellido":"Pérez","rut":"12.345.678-9","cargo":"Desarrollador","salario":500000,"bono":100000,"descuentos":50000}'
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+**Eliminar empleado:**
+```bash
+curl -X DELETE http://localhost:8080/api/empleados/1
+```
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+### Contrato de Errores JSON
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+Todas las respuestas de error de la API siguen un formato estandarizado:
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```json
+{
+  "errores": [
+    {
+      "campo": "nombre_del_campo",
+      "mensaje": "Descripcion del error"
+    }
+  ]
+}
+```
+
+#### Codigos de Estado
+
+| Codigo | Significado | Causas comunes |
+|--------|-------------|----------------|
+| 400 | Bad Request | JSON invalido, validacion de campos, formato incorrecto |
+| 404 | Not Found | Recurso inexistente para una clave valida |
+| 500 | Internal Server Error | Error interno tecnico, sin detalle sensible expuesto |
+
+#### Ejemplos
+
+**Error 400 - JSON invalido:**
+```json
+{
+  "errores": [
+    {"campo": "json", "mensaje": "JSON invalido o no pudo ser parseado"}
+  ]
+}
+```
+
+**Error 400 - Validacion de campo:**
+```json
+{
+  "errores": [
+    {"campo": "nombre", "mensaje": "El nombre es requerido"}
+  ]
+}
+```
+
+**Error 404 - Recurso no encontrado:**
+```json
+{
+  "errores": [
+    {"campo": "id", "mensaje": "Empleado no encontrado con id: 123"}
+  ]
+}
+```
+
+**Error 500 - Error interno:**
+```json
+{
+  "errores": [
+    {"campo": "internal", "mensaje": "Error interno del servidor"}
+  ]
+}
+```
+
+### Validaciones Implementadas
+
+**Backend (Java):**
+- RUT/DNI no puede estar duplicado
+- Salario base mínimo: $400,000
+- Bono no puede superar el 50% del salario base
+- Descuentos no pueden ser mayores al salario base
+
+**Frontend (JavaScript):**
+- Todos los campos obligatorios
+- Formato válido de RUT chileno
+- Salario mínimo $400,000
+- Mensajes de error dinámicos sin alertas

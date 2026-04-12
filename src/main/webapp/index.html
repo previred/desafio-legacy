@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Empleados - Previred</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestion de Empleados</h1>
+        
+        <div class="form-section">
+            <h2>Agregar Empleado</h2>
+            <form id="empleadoForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" id="nombre" name="nombre" required>
+                        <span class="error" id="error-nombre"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" id="apellido" name="apellido" required>
+                        <span class="error" id="error-apellido"></span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rut">RUT:</label>
+                        <input type="text" id="rut" name="rut" placeholder="12.345.678-9" required>
+                        <span class="error" id="error-rut"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cargo">Cargo:</label>
+                        <input type="text" id="cargo" name="cargo" required>
+                        <span class="error" id="error-cargo"></span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salario">Salario ($):</label>
+                        <input type="number" id="salario" name="salario" min="400000" step="1000" required>
+                        <span class="error" id="error-salario"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="bono">Bono ($):</label>
+                        <input type="number" id="bono" name="bono" step="1000" value="0">
+                        <span class="error" id="error-bono"></span>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="descuentos">Descuentos ($):</label>
+                        <input type="number" id="descuentos" name="descuentos" step="1000" value="0">
+                        <span class="error" id="error-descuentos"></span>
+                    </div>
+                    <div class="form-group button-group">
+                        <button type="submit">Agregar Empleado</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="table-section">
+            <h2>Lista de Empleados</h2>
+            <div id="message" class="message"></div>
+            <table id="empleadosTable" aria-describedby="empleadosTableDesc">
+                <caption id="empleadosTableDesc" class="sr-only">Lista de empleados registrados en el sistema</caption>
+                <thead>
+                    <tr>
+                        <th id="col-id" scope="col">ID</th>
+                        <th id="col-nombre" scope="col">Nombre</th>
+                        <th id="col-apellido" scope="col">Apellido</th>
+                        <th id="col-rut" scope="col">RUT</th>
+                        <th id="col-cargo" scope="col">Cargo</th>
+                        <th id="col-salario" scope="col">Salario</th>
+                        <th id="col-bono" scope="col">Bono</th>
+                        <th id="col-descuentos" scope="col">Descuentos</th>
+                        <th id="col-acciones" scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="empleadosBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>
