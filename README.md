@@ -1,72 +1,92 @@
 # Desafío Técnico: Servlets y AJAX
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## Descripción
+Aplicación web de gestión de empleados desarrollada con Java 8, Spring Boot 2.7, Servlets y AJAX (Fetch API).  
+Utiliza H2 como base de datos en memoria y JDBC para la persistencia.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
-
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
+## Arquitectura
 ```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+Controller (Servlet) → Service → Repository
+     ↕                    ↕
+   Model ← Mapper → Entity
+```
+- **Entity**: Representación de la tabla en BD (nunca se expone al cliente).
+- **Model**: DTO con `@SerializedName` para serialización JSON.
+- **Mapper**: Conversión Entity ↔ Model.
+- **Repository**: Acceso a datos con JDBC (`JdbcTemplate`).
+- **Service**: Lógica de negocio y validaciones.
+- **Servlet**: Controlador HTTP (`HttpServlet`) con endpoint RESTful.
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+## Requisitos Previos
+- Java 8 o superior
+- Maven 3.6+
 
-  Datos esperados del empleado: 
+## Cómo Ejecutar
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+```bash
+# Clonar el repositorio
+git clone <url-del-repositorio>
+cd desafio-legacy
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+# Compilar y ejecutar
+mvn spring-boot:run
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+La aplicación estará disponible en: **http://localhost:8080**
 
+## Endpoints
+
+| Método | URL                    | Descripción            |
+|--------|------------------------|------------------------|
+| GET    | `/api/empleados`       | Listar empleados       |
+| POST   | `/api/empleados`       | Crear empleado         |
+| DELETE | `/api/empleados/{id}`  | Eliminar empleado      |
+
+## Interfaces Disponibles
+
+| URL                        | Descripción                    |
+|----------------------------|--------------------------------|
+| http://localhost:8080      | Interfaz web (HTML + AJAX)     |
+| http://localhost:8080/h2-console | Consola H2 (JDBC URL: `jdbc:h2:mem:empleadosdb`) |
+| http://localhost:8080/swagger-ui.html | Swagger UI              |
+| http://localhost:8080/openapi.yaml | Especificación OpenAPI   |
+
+## Ejemplo de Uso (cURL)
+
+```bash
+# Listar empleados
+curl http://localhost:8080/api/empleados
+
+# Crear empleado
+curl -X POST http://localhost:8080/api/empleados \
+  -H "Content-Type: application/json" \
+  -d '{"nombre":"Juan","apellido":"Pérez","rut":"12345678-5","cargo":"Desarrollador","salario_base":500000,"bonos":100000,"descuentos":50000}'
+
+# Eliminar empleado
+curl -X DELETE http://localhost:8080/api/empleados/1
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
-```
+## Validaciones de Negocio (Backend)
+- RUT/DNI duplicado → HTTP 400
+- Salario base menor a $400,000 → HTTP 400
+- Bonos mayores al 50% del salario base → HTTP 400
+- Descuentos mayores al salario base → HTTP 400
+- Campos obligatorios vacíos → HTTP 400
+- Formato de RUT inválido → HTTP 400
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+## Validaciones Frontend
+- Campos obligatorios completos
+- Formato de RUT/DNI (ej: `12345678-5`)
+- Salario base mínimo $400,000
+- Errores mostrados dinámicamente (sin `alert()`)
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
-
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
-
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+## Tecnologías
+- Java 8
+- Spring Boot 2.7.18
+- Apache Tomcat (embebido)
+- H2 Database (en memoria)
+- JDBC (`JdbcTemplate`)
+- Servlets (`HttpServlet`)
+- Gson (serialización JSON)
+- HTML5 + CSS3 + JavaScript (Fetch API)
+- SpringDoc OpenAPI (Swagger UI)
