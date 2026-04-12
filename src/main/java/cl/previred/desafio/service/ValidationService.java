@@ -3,7 +3,7 @@ package cl.previred.desafio.service;
 import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.exception.ValidationExceptionList;
-import cl.previred.desafio.repository.EmpleadoRepository;
+import cl.previred.desafio.repository.EmpleadoRepositoryPort;
 import cl.previred.desafio.util.RutValidator;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +34,7 @@ import java.util.List;
  * @since 1.0
  */
 @Service
-public class ValidationService {
+public class ValidationService implements EmpleadoValidator {
 
     /** Salario minimo legal en Chile. */
     private static final BigDecimal SALARIO_MINIMO = new BigDecimal("400000");
@@ -43,14 +43,14 @@ public class ValidationService {
     private static final BigDecimal BONO_MAXIMO_PORCENTAJE = new BigDecimal("0.50");
 
     /** Repositorio para verificar existencia de RUT. */
-    private final EmpleadoRepository empleadoRepository;
+    private final EmpleadoRepositoryPort empleadoRepository;
 
     /**
      * Constructor con dependencia inyectada.
      *
      * @param empleadoRepository repositorio para verificar duplicados
      */
-    public ValidationService(EmpleadoRepository empleadoRepository) {
+    public ValidationService(EmpleadoRepositoryPort empleadoRepository) {
         this.empleadoRepository = empleadoRepository;
     }
 

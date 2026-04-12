@@ -4,7 +4,8 @@ import cl.previred.desafio.dto.EmpleadoRequest;
 import cl.previred.desafio.dto.ValidationError;
 import cl.previred.desafio.exception.ValidationExceptionList;
 import cl.previred.desafio.model.Empleado;
-import cl.previred.desafio.repository.EmpleadoRepository;
+import cl.previred.desafio.repository.EmpleadoRepositoryPort;
+import cl.previred.desafio.service.EmpleadoValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,16 +23,16 @@ import static org.mockito.Mockito.*;
 class EmpleadoServiceTest {
 
     @Mock
-    private EmpleadoRepository empleadoRepository;
+    private EmpleadoRepositoryPort empleadoRepository;
 
     @Mock
-    private ValidationService validationService;
+    private EmpleadoValidator empleadoValidator;
 
     private EmpleadoService empleadoService;
 
     @BeforeEach
     void setUp() {
-        empleadoService = new EmpleadoService(empleadoRepository, validationService);
+        empleadoService = new EmpleadoService(empleadoRepository, empleadoValidator);
     }
 
     @Test
@@ -63,7 +64,7 @@ class EmpleadoServiceTest {
         empleadoGuardado.setCargo("Desarrollador");
         empleadoGuardado.setSalario(new BigDecimal("500000"));
 
-        doNothing().when(validationService).validate(request);
+        doNothing().when(empleadoValidator).validate(request);
         when(empleadoRepository.save(any(Empleado.class))).thenReturn(empleadoGuardado);
 
         Empleado result = empleadoService.crearEmpleado(request);
@@ -82,7 +83,7 @@ class EmpleadoServiceTest {
 
         ValidationError error = new ValidationError("nombre", "El nombre es requerido");
         ValidationExceptionList ex = new ValidationExceptionList(Arrays.asList(error));
-        doThrow(ex).when(validationService).validate(request);
+        doThrow(ex).when(empleadoValidator).validate(request);
 
         ValidationExceptionList thrown = assertThrows(ValidationExceptionList.class,
             () -> empleadoService.crearEmpleado(request));
@@ -102,7 +103,7 @@ class EmpleadoServiceTest {
         request.setSalario(new BigDecimal("500000"));
         request.setBono(null);
 
-        doNothing().when(validationService).validate(request);
+        doNothing().when(empleadoValidator).validate(request);
         when(empleadoRepository.save(any(Empleado.class))).thenAnswer(i -> i.getArgument(0));
 
         empleadoService.crearEmpleado(request);
@@ -129,7 +130,7 @@ class EmpleadoServiceTest {
         empleadoCreado.setBono(BigDecimal.ZERO);
         empleadoCreado.setDescuentos(BigDecimal.ZERO);
 
-        doNothing().when(validationService).validate(request);
+        doNothing().when(empleadoValidator).validate(request);
         when(empleadoRepository.save(any(Empleado.class))).thenReturn(empleadoCreado);
 
         Empleado result = empleadoService.crearEmpleado(request);

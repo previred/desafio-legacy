@@ -1,12 +1,12 @@
 package cl.previred.desafio.servlet;
 
 import cl.previred.desafio.dto.EmpleadoRequest;
-import cl.previred.desafio.dto.ErrorResponseFactory;
-import cl.previred.desafio.exception.ValidationExceptionList;
+import cl.previred.desafio.exception.ApiExceptionResolver;
+import cl.previred.desafio.exception.ResolvedErrorResponse;
+import cl.previred.desafio.exception.ResourceNotFoundException;
+import cl.previred.desafio.exception.ValidationException;
 import cl.previred.desafio.model.Empleado;
 import cl.previred.desafio.service.EmpleadoService;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -22,33 +22,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-/**
- * Servlet REST para la gestion de empleados.
- *
- * <p>Expone endpoints de consulta, creacion y eliminacion sobre la ruta base
- * {@code /api/empleados}:</p>
- * <ul>
- *   <li>{@code GET /api/empleados} - Lista todos los empleados</li>
- *   <li>{@code POST /api/empleados} - Crea un nuevo empleado</li>
- *   <li>{@code DELETE /api/empleados/{id}} - Elimina un empleado por ID</li>
- * </ul>
- *
- * <p>Este servlet utiliza:</p>
- * <ul>
- *   <li>Jackson para serializacion/deserializacion JSON</li>
- *   <li>SLF4J para logging estructurado</li>
- *   <li>Inyeccion de dependencias via Spring</li>
- * </ul>
- *
- * <p>Las respuestas JSON se serializan con Jackson y los errores se construyen
- * de forma consistente mediante {@link ErrorResponseFactory}. Dependiendo del
- * caso, el servlet retorna HTTP 400 para errores de validacion o formato,
- * HTTP 404 cuando el empleado no existe y HTTP 500 para errores internos.</p>
- *
- * @see EmpleadoService
- * @see cl.previred.desafio.dto.ErrorResponse
- * @since 1.0
- */
 @Component
 @WebServlet("/api/empleados/*")
 public class EmpleadoServlet extends HttpServlet {
@@ -60,12 +33,16 @@ public class EmpleadoServlet extends HttpServlet {
     private static final String APPLICATION_JSON = "application/json";
 
     private final EmpleadoService empleadoService;
-
     private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
+    private final ApiExceptionResolver apiExceptionResolver;
 
-    public EmpleadoServlet(EmpleadoService empleadoService, com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
+    public EmpleadoServlet(
+            EmpleadoService empleadoService,
+            com.fasterxml.jackson.databind.ObjectMapper objectMapper,
+            ApiExceptionResolver apiExceptionResolver) {
         this.empleadoService = empleadoService;
         this.objectMapper = objectMapper;
+        this.apiExceptionResolver = apiExceptionResolver;
     }
 
     private void setCharacterEncodingSafe(HttpServletRequest req, HttpServletResponse resp) {
@@ -115,19 +92,8 @@ public class EmpleadoServlet extends HttpServlet {
             Empleado empleadoCreado = empleadoService.crearEmpleado(request);
             LOG.info("POST /api/empleados - Empleado creado exitosamente");
             writeJsonResponse(resp, empleadoCreado, HttpServletResponse.SC_CREATED);
-        } catch (ValidationExceptionList ex) {
-            LOG.warn("POST /api/empleados - Validation errors: {}", ex.getErrores());
-            writeJsonResponse(resp, ErrorResponseFactory.validationError(ex.getErrores()), HttpServletResponse.SC_BAD_REQUEST);
-        } catch (InvalidFormatException ex) {
-            LOG.warn("POST /api/empleados - Formato invalido: {}", ex.getMessage());
-            String campo = ex.getPath().isEmpty() ? "json" : ex.getPath().get(0).getFieldName();
-            writeJsonResponse(resp, ErrorResponseFactory.validationError(campo, "Formato invalido para el campo: " + campo), HttpServletResponse.SC_BAD_REQUEST);
-        } catch (MismatchedInputException ex) {
-            LOG.warn("POST /api/empleados - JSON invalido: {}", ex.getMessage());
-            writeJsonResponse(resp, ErrorResponseFactory.jsonInvalidError(), HttpServletResponse.SC_BAD_REQUEST);
         } catch (Exception ex) {
-            LOG.error("POST /api/empleados - Error al procesar solicitud", ex);
-            writeJsonResponse(resp, ErrorResponseFactory.internalError("Error interno del servidor"), HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            writeResolvedError(resp, req, ex);
         }
     }
 
@@ -137,24 +103,23 @@ public class EmpleadoServlet extends HttpServlet {
         resp.setContentType(APPLICATION_JSON);
         setCharacterEncodingSafe(req, resp);
 
-        Long id = parseEmpleadoId(req, resp);
-        if (id == null) {
-            return;
+        try {
+            Long id = parseEmpleadoId(req);
+            eliminarEmpleado(id);
+            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
+        } catch (Exception ex) {
+            writeResolvedError(resp, req, ex);
         }
-
-        eliminarEmpleado(resp, id);
     }
 
     private EmpleadoRequest parseEmpleadoRequest(HttpServletRequest req) throws IOException {
         return objectMapper.readValue(req.getInputStream(), EmpleadoRequest.class);
     }
 
-    private Long parseEmpleadoId(HttpServletRequest req, HttpServletResponse resp) {
+    private Long parseEmpleadoId(HttpServletRequest req) {
         String pathInfo = req.getPathInfo();
         if (pathInfo == null || pathInfo.equals("/")) {
-            LOG.warn("DELETE /api/empleados - ID no proporcionado");
-            writeJsonResponse(resp, ErrorResponseFactory.idRequiredError(), HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+            throw new ValidationException("id", "ID es requerido");
         }
 
         String idParam = pathInfo.substring(1);
@@ -163,21 +128,19 @@ public class EmpleadoServlet extends HttpServlet {
         try {
             return Long.parseLong(idParam);
         } catch (NumberFormatException ex) {
-            LOG.warn("DELETE /api/empleados - ID invalido: {}", idParam);
-            writeJsonResponse(resp, ErrorResponseFactory.idInvalidError(idParam), HttpServletResponse.SC_BAD_REQUEST);
-            return null;
+            throw new ValidationException("id", "ID invalido: " + idParam);
         }
     }
 
-    private void eliminarEmpleado(HttpServletResponse resp, Long id) {
+    private void eliminarEmpleado(Long id) {
         boolean eliminado = empleadoService.eliminarEmpleado(id);
-
-        if (eliminado) {
-            LOG.info("DELETE /api/empleados/{} - Empleado eliminado", id);
-            resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        } else {
-            LOG.warn("DELETE /api/empleados/{} - Empleado no encontrado", id);
-            writeJsonResponse(resp, ErrorResponseFactory.empleadoNotFoundError(id), HttpServletResponse.SC_NOT_FOUND);
+        if (!eliminado) {
+            throw new ResourceNotFoundException("id", "Empleado no encontrado con id: " + id);
         }
+    }
+
+    private void writeResolvedError(HttpServletResponse resp, HttpServletRequest req, Exception ex) {
+        ResolvedErrorResponse resolved = apiExceptionResolver.resolve(ex, req.getRequestURI());
+        writeJsonResponse(resp, resolved.getBody(), resolved.getStatus());
     }
 }

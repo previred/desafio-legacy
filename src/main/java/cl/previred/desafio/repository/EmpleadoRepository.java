@@ -36,7 +36,7 @@ import java.util.List;
  * @since 1.0
  */
 @Repository
-public class EmpleadoRepository {
+public class EmpleadoRepository implements EmpleadoRepositoryPort {
 
     /** Logger para trazabilidad de operaciones SQL. */
     private static final Logger LOG = LoggerFactory.getLogger(EmpleadoRepository.class);
