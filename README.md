@@ -1,72 +1,231 @@
-# Desafío Técnico: Servlets y AJAX
+# 🧩 Empleados App - Full Stack (Frontend + Backend)
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## 📌 Descripción General
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+**Empleados App** es una aplicación full stack desarrollada como prueba técnica, cuyo objetivo es la gestión de empleados mediante una arquitectura separada en frontend y backend.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
+El sistema permite realizar operaciones CRUD (listar, crear y eliminar empleados), aplicando buenas prácticas de desarrollo, validaciones de negocio y consumo de API REST mediante AJAX.
+
+---
+
+## 🧱 Arquitectura del Sistema
+
+### 🔹 Backend (Java 8 + Servlets + JDBC)
+
+- API RESTful expuesta en `/api/empleados`
+- Arquitectura en capas:
+  - Controller
+  - Service
+  - Repository
+  - Entity / DTO
+  - Validator
+  - Exception
+- Base de datos en memoria H2
+- Documentación con OpenAPI (Swagger)
+
+### 🔹 Frontend (HTML + JavaScript + Fetch API)
+
+- Interfaz web sin frameworks
+- Consumo del backend mediante Fetch API (AJAX)
+- Renderizado dinámico sin recarga de página
+- Manejo de estado en el navegador
+
+---
+
+## 🚀 Tecnologías Utilizadas
+
+### Backend
+- Java 8
+- Servlets
+- JDBC
+- H2 Database
+- JSON manual mapping
+- OpenAPI (Swagger)
+
+### Frontend
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Fetch API (AJAX)
+
+---
+
+## ⚙️ Funcionalidades Principales
+
+### 📋 Empleados
+
+- Listar empleados en tabla dinámica
+- Crear nuevos empleados
+- Eliminar empleados por ID
+- Visualización de salario neto calculado
+
+---
+
+## 🔗 Endpoints del Backend
+
+### 📍 Base URL
+
+/api/empleados
+
+---
+
+### 📌 GET - Obtener empleados
+
+GET /api/empleados
+
+**Respuesta:**
+``` json
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "rut": "12345678-9",
+    "cargo": "Developer",
+    "salarioBase": 800000,
+    "bono": 100000,
+    "descuentos": 50000,
+    "valorNeto": 850000
+  }
+]
+
 ```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+---
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+### 📌 POST - Crear empleado
 
-  Datos esperados del empleado: 
+POST /api/empleados
+Content-Type: application/json
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
-
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
-
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+**Request:**
+``` json
+{
+  "nombre": "Ana",
+  "apellido": "Gómez",
+  "rut": "98765432-1",
+  "cargo": "QA",
+  "salarioBase": 700000,
+  "bono": 50000,
+  "descuentos": 20000
+}
 
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+**Respuesta:**
+``` json
+{
+  "mensaje": "Empleado creado correctamente"
+}
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+---
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+### 📌 DELETE - Eliminar empleado
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+DELETE /api/empleados?id=1
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+**Respuesta:**
+``` json
+{
+  "mensaje": "Empleado eliminado correctamente"
+}
+```
+
+---
+
+## 📦 Modelo de Datos
+
+### 🔹 Campos del empleado
+
+- id (autogenerado)
+- nombre
+- apellido
+- rut / dni
+- cargo
+- salarioBase
+- bono (opcional)
+- descuentos (opcional)
+- valorNeto (calculado)
+
+---
+
+## ⚠️ Validaciones
+
+### 🔹 Frontend
+
+- Campos obligatorios
+- Validación de formato RUT/DNI
+- Salario base mínimo: 400,000
+- Mensajes de error dinámicos en UI
+
+### 🔹 Backend
+
+- RUT/DNI no duplicado
+- Salario base >= 400,000
+- Bono <= 50% del salario base
+- Descuentos <= salario base
+
+📌 En caso de error:
+- HTTP 400 (Bad Request)
+- JSON con detalle del error
+
+---
+
+## 🧠 Decisiones Técnicas
+
+### 🔹 Arquitectura en capas
+
+- Controller → manejo HTTP
+- Service → lógica de negocio
+- Repository → acceso a datos
+- DTO vs Entity → separación de modelo interno y externo
+
+### 🔹 Frontend sin frameworks
+
+- JavaScript puro
+- Fetch API para comunicación HTTP
+- Render dinámico sin recarga
+
+### 🔹 Campos adicionales
+
+- bono
+- descuentos
+
+✔ Justificación:
+Permiten enriquecer la lógica de negocio.
+
+---
+
+## 💡 Cálculo del Valor Neto
+
+Valor Neto = Salario Base + Bono - Descuentos
+
+✔ Importancia:
+- Representa ingreso real
+- Centraliza lógica en backend
+- Evita inconsistencias
+
+---
+
+## 📘 Documentación API (OpenAPI)
+
+https://editor.swagger.io/
+
+---
+
+## ⚙️ Instrucciones de Ejecución
+
+### Backend
+git clone https://github.com/TU-USUARIO/desafio-legacy.git
+
+Deploy en Tomcat:
+http://localhost:8080/api/empleados
+
+### Frontend
+Live Server:
+http://127.0.0.1:5500
+
+---
+
+## 🎯 Conclusión
+
+Proyecto full stack con buenas prácticas, arquitectura limpia y consumo de API REST.
