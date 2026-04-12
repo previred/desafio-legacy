@@ -246,7 +246,7 @@ cd desafio-legacy
 
 # ⚙️ 3. EJECUTAR EL BACKEND (JAVA + TOMCAT)
 
-## 📌 Opción: Desde IDE ()
+## 📌 Opción: Desde IDE
 
 1. Abre el proyecto en IntelliJ IDEA o Eclipse
 2. Importa como proyecto Maven o Dynamic Web Project
@@ -277,7 +277,7 @@ El frontend **NO usa frameworks**, solo HTML + JS.
 Ubica la carpeta:
 
 ```
-/frontend
+/empleados-app-front
 ```
 
 Dentro debe existir:
@@ -301,7 +301,7 @@ Abre VS Code
 Abre la carpeta:
 
 ```
-frontend
+empleados-app-front
 ```
 
 ### 🔹 Paso 3
