@@ -1,0 +1,10 @@
+com\desafio\legacy\repositories\impl\EmpleadoRepositoryImpl.class
+com\desafio\legacy\services\EmpleadoService.class
+com\desafio\legacy\config\WebConfig.class
+com\desafio\legacy\controllers\EmpleadoController.class
+com\desafio\legacy\DesafioLegacyApplication.class
+com\desafio\legacy\models\EmpleadoDTO.class
+com\desafio\legacy\validations\ValidacionesCampos.class
+com\desafio\legacy\repositories\EmpleadoRepository.class
+com\desafio\legacy\services\impl\EmpleadoServiceImpl.class
+com\desafio\legacy\entities\Empleado.class

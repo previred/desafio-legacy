@@ -1,0 +1,17 @@
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+.idea/
+*.iml
+out/
+gen/
+
+*.mv.db
+*.trace.db
+
+.DS_Store
+Thumbs.db
+*.log

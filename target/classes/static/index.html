@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Desafío Legacy</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container mt-4">
+    <div id="alertaGlobal" class="alert d-none mt-4 text-center" role="alert">
+        <span id="textoMensaje"></span>
+        <button type="button" class="btn-close float-end" onclick="cerrarAlerta()"></button>
+    </div>
+        <div class="text-center mb-4 mt-3">
+            <h2>Lista de Empleados</h2>
+        </div>
+
+        <div class="table-responsive mb-5">
+            <table class="table table-striped table-hover shadow-sm">
+                <thead class="table-dark">
+                <tr>
+                    <th class="text-center">Id</th>
+                    <th class="text-center">Nombre</th>
+                    <th class="text-center">Apellido</th>
+                    <th class="text-center">RUT/DNI</th>
+                    <th class="text-center">Cargo</th>
+                    <th class="text-center">Salario</th>
+                    <th class="text-center">Bonos</th>
+                    <th class="text-center">Descuentos</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="tablaEmpleadosBody">
+                </tbody>
+            </table>
+        </div>
+
+        <hr>
+    </div>
+
+    <div class="px-5">
+        <div class="text-center mb-4 mt-3">
+            <h2>Agregar empleado</h2>
+        </div>
+        <form id="registroForm">
+            <div id="mensajeExito" class="alert alert-success d-none mt-4" role="alert">
+                <h4 class="alert-heading">Empleado guardado con éxito</h4>
+                <hr>
+                <div id="detalleEmpleado"></div>
+                <button type="button" class="btn btn-outline-success btn-sm mt-2" onclick="cerrarCuadro()">Cerrar</button>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="nombre" class="col-form-label col-sm-2">Nombre</label>
+                <div class="col-sm-4">
+                    <input type="text" name="nombre" id="nombre" class="form-control">
+                    <div id="error-nombre" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="apellido" class="col-form-label col-sm-2">Apellido</label>
+                <div class="col-sm-4">
+                    <input type="text" name="apellido" id="apellido" class="form-control">
+                    <div id="error-apellido" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="rut_dni" class="col-form-label col-sm-2">Rut/DNI</label>
+                <div class="col-sm-4">
+                    <input type="text" name="rut_dni" id="rut_dni" class="form-control">
+                    <div id="error-rut_dni" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="cargo" class="col-form-label col-sm-2">Cargo</label>
+                <div class="col-sm-4">
+                    <input type="text" name="cargo" id="cargo" class="form-control">
+                    <div id="error-cargo" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="salario" class="col-form-label col-sm-2">Salario</label>
+                <div class="col-sm-4">
+                    <input type="number" name="salario" id="salario" class="form-control">
+                    <div id="error-salario" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="bono" class="col-form-label col-sm-2">Bonos</label>
+                <div class="col-sm-4">
+                    <input type="number" name="bono" id="bono" class="form-control" value="0">
+                    <div id="error-bono" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3 justify-content-center">
+                <label for="descuento" class="col-form-label col-sm-2">Descuentos</label>
+                <div class="col-sm-4">
+                    <input type="number" name="descuento" id="descuento" class="form-control" value="0">
+                    <div id="error-descuento" class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12 text-center">
+                    <input type="submit" class="btn btn-primary px-5" value="Guardar">
+                </div>
+            </div>
+        </form>
+    </div>
+
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="modalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar a este empleado?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnConfirmarEliminar" class="btn btn-danger">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="js/empleado.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/services.js"></script>
+</body>
+</html>

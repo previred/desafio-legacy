@@ -1,72 +1,70 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Legacy - Sistema de Gestión de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Este proyecto es una aplicación web Java para la gestión de empleados, usando servlets construida con una arquitectura de 3 capas (Controller, Service, Repository) y persistencia en base de datos H2.
+Para el frontend se uso html + ajax (Fetch Api).
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## Requisitos Previos
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+* **Java JDK 11** o superior.
+* **Maven**
+* Navegador web actualizado.
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+### 1. Instalación y Ejecución (Consola), en Windows
 
-  Datos esperados del empleado: 
+Si no deseas utilizar un IDE, puedes ejecutar la aplicación siguiendo estos pasos:
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+1. **Clonar o descargar el proyecto** en tu carpeta local.
+2. **Abrir una terminal** en la raíz del proyecto.
+3. **Limpiar y compilar el proyecto:**
+   ```cmd
+   mvn wrapper:wrapper
+   mvn clean package
+4. **Ejecutar la aplicación**
+   ```cmd
+   mvn spring-boot:run
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+### 2. Para probar la aplicación Web (Frontend)
+Accede desde tu navegador a: [http://localhost:8080/desafio-legacy/](http://localhost:8080/desafio-legacy/)
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+Desde esta interfaz podrás realizar las siguientes operaciones:
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+* **Crear:** Registrar nuevos empleados en el sistema de manera intuitiva.
+* **Listar:** Visualizar únicamente los empleados vigentes. Gracias a la **eliminación lógica**, los registros borrados no aparecerán en esta lista, permitiendo una interfaz limpia sin perder la integridad de los datos.
+* **Eliminar:** Al presionar eliminar, el sistema no destruye el registro; en su lugar, realiza un `UPDATE` en la base de datos cambiando el campo `activo` a `false`.
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+### 2. Base de Datos H2 (Consola Web)
+Para verificar que la **eliminación lógica** funciona correctamente (es decir, que los registros permanecen en la BD con `activo = false`), puedes inspeccionar el estado real de la tabla:
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+* **URL de acceso:** [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+* **JDBC URL:** `jdbc:h2:mem:desafiolegacydb`
+* **Usuario:** `sa`
+* **Password:** *12345*
+
+**Consulta de verificación:**
+Para visualizar todos los registros, incluidos aquellos marcados como "eliminados", ejecute la siguiente sentencia SQL:
+```sql
+SELECT * FROM empleados;
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+### 3. Pruebas de API (Postman / cURL)
+La aplicación expone endpoints **RESTful** que pueden ser consumidos directamente para pruebas de integración:
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+* **Obtener empleados (Listar):** `GET /api/empleados`
+* **Crear empleado:** `POST /api/empleados`
+* **Eliminar empleado:** `DELETE /api/empleados`
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+**Ejemplo (JSON) para la creación:**
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "rut": "12345678-9",
+  "cargo": "Desarrollador",
+  "salario": 950000,
+  "bono": 50000,
+  "descuento": 10000
+}
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+
+
+
