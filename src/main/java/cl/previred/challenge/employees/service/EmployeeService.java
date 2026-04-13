@@ -26,26 +26,28 @@ public class EmployeeService {
 	}
 
 	public List<ValidationError> save(Employee employee) {
-
-		log.info("Guardando empleado con documento {}", employee.getDocumentNumber());
-
-		List<ValidationError> errors = validator.validate(employee);
-
-		if (employeeRepository.existsByDocumentNumber(employee.getDocumentNumber())) {
-			errors.add(new ValidationError("documentNumber", "El RUT/DNI ya existe"));
-		}
-
-		if (!errors.isEmpty()) {
-			return errors;
-		}
-
 		try {
+
+			log.info("Guardando empleado con documento {}", employee.getDocumentNumber());
+
+			List<ValidationError> errors = validator.validate(employee);
+
+			if (employeeRepository.existsByDocumentNumber(employee.getDocumentNumber())) {
+				errors.add(new ValidationError("documentNumber", "El RUT/DNI ya existe"));
+			}
+
+			if (!errors.isEmpty()) {
+				return errors;
+			}
+
 			employeeRepository.save(employee);
+
+			return List.of();
+
 		} catch (RuntimeException e) {
-			log.error("Error al guardar empleado", e);
+			log.error("Error al guardar un nuevo empleado ", e);
 			throw new RuntimeException("Error al guardar empleado", e);
 		}
-		return List.of();
 	}
 
 	public boolean deleteById(Long id) {
