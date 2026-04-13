@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración de Personal</title>
+
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+
+        form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+            color: #555;
+        }
+
+        input {
+            padding: 7px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-top: 4px;
+        }
+
+        button {
+            grid-column: 1 / -1;
+            background: #2c7be5;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1a68d1;
+        }
+
+        .error {
+            background: #ffe5e5;
+            color: #b00020;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f0f2f4;
+            text-align: left;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        td {
+            padding: 8px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            border: none;
+            color: white;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Administración de Empleados</h1>
+
+    <div id="errores"></div>
+
+    <form id="formEmpleado">
+        <label>
+            Nombre
+            <input type="text" id="nombre">
+        </label>
+
+        <label>
+            Apellido
+            <input type="text" id="apellido">
+        </label>
+
+        <label>
+            RUT / DNI
+            <input type="text" id="rut">
+        </label>
+
+        <label>
+            Cargo
+            <input type="text" id="cargo">
+        </label>
+
+        <label>
+            Salario Base
+            <input type="number" id="salario">
+        </label>
+
+        <button type="submit">Registrar empleado</button>
+    </form>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>RUT</th>
+            <th>Cargo</th>
+            <th>Salario</th>
+            <th>Acción</th>
+        </tr>
+        </thead>
+        <tbody id="tablaEmpleados"></tbody>
+    </table>
+
+</div>
+
+<script>
+    const API_URL = '/api/empleados';
+
+    document.getElementById('formEmpleado').addEventListener('submit', crearEmpleado);
+
+    function cargarEmpleados() {
+        fetch(API_URL)
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById('tablaEmpleados');
+                tbody.innerHTML = '';
+
+                data.forEach(e => {
+                    const fila = document.createElement('tr');
+                    fila.innerHTML = `
+                        <td>${e.id}</td>
+                        <td>${e.nombre} ${e.apellido}</td>
+                        <td>${e.rut}</td>
+                        <td>${e.cargo}</td>
+                        <td>${e.salario}</td>
+                        <td>
+                            <button class="btn-delete" onclick="eliminarEmpleado(${e.id})">
+                                Eliminar
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(fila);
+                });
+            });
+    }
+
+    function crearEmpleado(event) {
+        event.preventDefault();
+        limpiarErrores();
+
+        const empleado = {
+            nombre: nombre.value.trim(),
+            apellido: apellido.value.trim(),
+            rut: rut.value.trim(),
+            cargo: cargo.value.trim(),
+            salario: Number(salario.value)
+        };
+
+        const errores = validarFormulario(empleado);
+        if (errores.length > 0) {
+            mostrarErrores(errores);
+            return;
+        }
+
+        fetch(API_URL, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(empleado)
+        }).then(res => {
+            if (res.ok) {
+                formEmpleado.reset();
+                cargarEmpleados();
+            } else {
+                res.json().then(err => mostrarErrores(err));
+            }
+        });
+    }
+
+    function eliminarEmpleado(id) {
+        fetch(API_URL + '?id=' + id, {method: 'DELETE'})
+            .then(() => cargarEmpleados());
+    }
+
+    function validarFormulario(e) {
+        const errores = [];
+
+        if (!e.nombre) errores.push("Nombre obligatorio");
+        if (!e.apellido) errores.push("Apellido obligatorio");
+        if (!e.rut) errores.push("RUT/DNI obligatorio");
+        if (!/^[0-9A-Za-z\-]+$/.test(e.rut))
+            errores.push("Formato de RUT/DNI inválido");
+        if (e.salario < 400000)
+            errores.push("El salario mínimo es $400.000");
+
+        return errores;
+    }
+
+    function mostrarErrores(errores) {
+        document.getElementById('errores').innerHTML =
+            `<div class="error">${errores.join("<br>")}</div>`;
+    }
+
+    function limpiarErrores() {
+        document.getElementById('errores').innerHTML = '';
+    }
+
+    cargarEmpleados();
+</script>
+
+</body>
+</html>
