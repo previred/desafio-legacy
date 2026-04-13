@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <script src="js/jquery-4.0.0.js"></script>
+        <script src="js/usuario.js? defer"></script>
+        <link rel="stylesheet" href="css/styles.css">
+        <title>Mantenedor de Empleados para Previred</title>
+        <meta charset="UTF-8" />
+        <meta name="description"
+              content="Página para agregar, mostrar y eliminar Empleados" />
+    </head>
+    <body>
+        <header>
+            <div id="response"></div>
+            <div id="response2"></div>
+            <h1>MANTENEDOR DE EMPLEADOS DE PREVIRED</h1>
+        </header>
+        <main>
+            <section id="seccion_crear">
+                <div style="align-items: center"><h2>Datos nuevo Empleado</h2></div>
+                <form id="form_crear">
+                    <div class="campo">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" size="100" maxlength="100" name="nombre" id="nombre"
+                               placeholder="Nombre del Empleado" required>
+                    </div>
+                    <div class="campo">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" size="100" maxlength="100" name="apellido" id="apellido"
+                               placeholder="Apellido del Empleado" required>
+                    </div>
+                    <div class="campo">
+                        <label for="rut">Rut/DNI (sin puntos, con guion y dígito verificador)</label>
+                        <input type="text" size="10" maxlength="10" name="rut" id="rut"
+                               placeholder="12345678-K" required>
+                    </div>
+                    <div class="campo">
+                        <label for="cargo">Cargo</label>
+                        <input type="text" size="100" maxlength="100" name="cargo" id="cargo"
+                               placeholder="Cargo" required>
+                    </div>
+                    <div class="campo">
+                        <label for="salario">Salario (CLP)</label>
+                        <input type="number" min="400000" max="9950000" step="50000" class="num"
+                               value="400000" name="salario" id="salario" inputmode="numeric" required>
+                    </div>
+                    <input type="button" class="button" value="Crear" onclick="crearUsuario()">
+                </form>
+            </section>
+            <section id="seccion_bono" style="display:none">
+                <h2>Bonificación para Empleado</h2>
+                <form id="form_bono">
+                    <input type="hidden" name="idbonificar" id="idbonificar" value="0">
+                    <div class="campo">
+                        <label for="base">Salario (CLP)</label>
+                        <input type="text" name="base" id="base" readonly>
+                    </div>
+                    <div class="campo">
+                        <label for="bono">Bono</label>
+                        <input type="number" min="1" max="9950000" step="1000" class="num"
+                               value="1" name="bono" id="bono" inputmode="numeric" required>
+                    </div>
+                    <input type="button" class="button" value="Aplicar Bono" onclick="aplicarBono()">
+                    <input type="button" class="button" value="Nuevo Empleado" onclick="formNuevoUsuario()">
+                </form>
+            </section>
+            <section id="seccion_descuento" style="display:none">
+                <h2>Descuentos para Empleado</h2>
+                <input type="hidden" name="iddescontar" id="iddescontar" value="0">
+                <input type="hidden" name="numdescuentos" id="numdescuentos" value="1">
+                <div class="campo">
+                    <label for="based">Salario (CLP)</label>
+                    <input type="text" name="based" id="based" readonly>
+                </div>
+                <div id="descuentos">
+                    <div class="campo">
+                        <label for="descuento1">Descuento 1</label>
+                        <input type="number" min="1" max="9950000" step="1000" class="num"
+                               value="1000" name="descuento1" id="descuento1" inputmode="numeric" required>
+                    </div>
+                </div>
+                <input type="button" class="button" value="Aplicar Descuentos" onclick="aplicarDescuentos()">
+                <input type="button" class="button" value="Agregar Otro Descuento" onclick="agregarOtroDescuento()">
+                <input type="button" class="button" value="Nuevo Empleado" onclick="formNuevoUsuario()">
+            </section>
+            <section id="seccion_buscar">
+                <h2>Lista de Empleados</h2>
+                <table id="tabla" style="display:none">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>Rut/DNI</th>
+                            <th>Cargo</th>
+                            <th>Salario</th>
+                            <th>Monto</th>
+                            <th colspan="3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="resultados"></tbody>
+                </table>
+            </section>
+        </main>
+        <footer>
+            <h6>Marco Araneda Soto, 2026</h6>
+        </footer>
+    </body>
+</html>
