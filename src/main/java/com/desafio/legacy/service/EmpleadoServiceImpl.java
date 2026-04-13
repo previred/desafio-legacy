@@ -12,7 +12,9 @@ import com.desafio.legacy.dto.EmpleadoResponse;
 import com.desafio.legacy.exception.BusinessValidationException;
 import com.desafio.legacy.exception.ResourceNotFoundException;
 import com.desafio.legacy.model.Empleado;
-import com.desafio.legacy.repository.EmpleadoRepository;
+import com.desafio.legacy.repository.contract.EmpleadoRepository;
+import com.desafio.legacy.service.contract.EmpleadoService;
+import com.desafio.legacy.service.contract.EmpleadoValidator;
 
 @Service
 public class EmpleadoServiceImpl implements EmpleadoService {

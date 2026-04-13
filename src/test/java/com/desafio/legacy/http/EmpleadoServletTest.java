@@ -1,4 +1,4 @@
-package com.desafio.legacy.api;
+package com.desafio.legacy.http;
 
 import java.math.BigDecimal;
 

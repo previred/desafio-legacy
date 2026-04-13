@@ -142,6 +142,18 @@
     }
 
     function bindEvents(context) {
+        if (context.form && context.form.rutDni && context.validation && context.validation.formatRutForInput) {
+            context.form.rutDni.addEventListener("input", function () {
+                var formatted = context.validation.formatRutForInput(context.form.rutDni.value);
+                context.form.rutDni.value = formatted;
+            });
+
+            context.form.rutDni.addEventListener("blur", function () {
+                var formatted = context.validation.formatRutForInput(context.form.rutDni.value);
+                context.form.rutDni.value = formatted;
+            });
+        }
+
         context.form.addEventListener("submit", function (event) {
             event.preventDefault();
 
@@ -165,6 +177,7 @@
                 context.ui.renderMessages(context.formErrors, ["Hay errores de validacion en valores numericos"]);
                 return;
             }
+            apiPayload.rutDni = context.validation.normalizeRutForApi(apiPayload.rutDni);
             debugLog("Payload a API", apiPayload);
 
             context.api.createEmpleado(apiPayload)

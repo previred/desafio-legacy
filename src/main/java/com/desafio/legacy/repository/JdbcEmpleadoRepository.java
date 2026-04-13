@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import com.desafio.legacy.model.Empleado;
+import com.desafio.legacy.repository.contract.EmpleadoRepository;
 
 @Repository
 public class JdbcEmpleadoRepository implements EmpleadoRepository {

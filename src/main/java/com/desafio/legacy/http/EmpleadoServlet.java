@@ -1,4 +1,4 @@
-package com.desafio.legacy.api;
+package com.desafio.legacy.http;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,8 +24,14 @@ import com.desafio.legacy.dto.EmpleadoResponse;
 import com.desafio.legacy.dto.ErrorResponse;
 import com.desafio.legacy.exception.BusinessValidationException;
 import com.desafio.legacy.exception.ResourceNotFoundException;
-import com.desafio.legacy.service.EmpleadoService;
+import com.desafio.legacy.service.contract.EmpleadoService;
 
+/**
+ * Servlet nativo para operaciones de empleados.
+ * No usa @RestController.
+ * Se registra con ServletRegistrationBean.
+ * Endpoints: GET /api/empleados, POST /api/empleados, DELETE /api/empleados/{id}.
+ */
 public class EmpleadoServlet extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmpleadoServlet.class);
@@ -40,6 +46,9 @@ public class EmpleadoServlet extends HttpServlet {
         this.validator = validator;
     }
 
+    /**
+     * Lista empleados y permite filtrar por query params opcionales.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
@@ -52,6 +61,9 @@ public class EmpleadoServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Crea un empleado validando formato de entrada y reglas de negocio.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
@@ -96,6 +108,9 @@ public class EmpleadoServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Elimina un empleado por ID recibido en el path.
+     */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         Long id = extractId(request);

@@ -7,8 +7,8 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.desafio.legacy.api.EmpleadoServlet;
-import com.desafio.legacy.service.EmpleadoService;
+import com.desafio.legacy.http.EmpleadoServlet;
+import com.desafio.legacy.service.contract.EmpleadoService;
 
 @Configuration
 public class ServletConfig {

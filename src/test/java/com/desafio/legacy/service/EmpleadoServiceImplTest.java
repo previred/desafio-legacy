@@ -16,7 +16,8 @@ import com.desafio.legacy.dto.EmpleadoResponse;
 import com.desafio.legacy.exception.BusinessValidationException;
 import com.desafio.legacy.exception.ResourceNotFoundException;
 import com.desafio.legacy.model.Empleado;
-import com.desafio.legacy.repository.EmpleadoRepository;
+import com.desafio.legacy.repository.contract.EmpleadoRepository;
+import com.desafio.legacy.service.contract.EmpleadoValidator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

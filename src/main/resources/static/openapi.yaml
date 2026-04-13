@@ -1,0 +1,185 @@
+openapi: 3.0.3
+info:
+  title: API Gestion de Empleados
+  version: 1.0.0
+  description: |
+    API basada en Servlet nativo para listar, crear y eliminar empleados.
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/empleados:
+    get:
+      summary: Lista empleados
+      description: Lista empleados con filtros opcionales por texto libre y cargo.
+      parameters:
+        - in: query
+          name: q
+          required: false
+          schema:
+            type: string
+          description: Busca por nombre, apellido, rutDni o cargo.
+        - in: query
+          name: cargo
+          required: false
+          schema:
+            type: string
+          description: Filtra por cargo.
+      responses:
+        '200':
+          description: Lista de empleados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmpleadoResponse'
+        '500':
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Crea un empleado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmpleadoRequest'
+      responses:
+        '201':
+          description: Empleado creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmpleadoResponse'
+        '400':
+          description: Error de validacion o JSON invalido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/empleados/{id}:
+    delete:
+      summary: Elimina un empleado por ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Empleado eliminado
+        '400':
+          description: Parametro invalido o regla de negocio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Empleado no encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Error inesperado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    EmpleadoRequest:
+      type: object
+      required:
+        - nombre
+        - apellido
+        - rutDni
+        - cargo
+        - salarioBase
+      properties:
+        nombre:
+          type: string
+          maxLength: 100
+        apellido:
+          type: string
+          maxLength: 100
+        rutDni:
+          type: string
+          minLength: 5
+          maxLength: 20
+          pattern: '^[0-9A-Za-z.-]{5,20}$'
+        cargo:
+          type: string
+          maxLength: 100
+        salarioBase:
+          type: number
+          format: double
+          minimum: 400000
+          multipleOf: 0.01
+        bono:
+          type: number
+          format: double
+          minimum: 0
+          default: 0
+          multipleOf: 0.01
+        descuentos:
+          type: number
+          format: double
+          minimum: 0
+          default: 0
+          multipleOf: 0.01
+
+    EmpleadoResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        nombre:
+          type: string
+        apellido:
+          type: string
+        rutDni:
+          type: string
+        cargo:
+          type: string
+        salarioBase:
+          type: number
+          format: double
+          multipleOf: 0.01
+        bono:
+          type: number
+          format: double
+          multipleOf: 0.01
+        descuentos:
+          type: number
+          format: double
+          multipleOf: 0.01
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Hay errores de validacion
+        details:
+          type: array
+          items:
+            type: string

@@ -7,7 +7,11 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.desafio.legacy.dto.EmpleadoRequest;
+import com.desafio.legacy.service.contract.EmpleadoValidator;
 
+/**
+ * Implementacion de validaciones de negocio para empleados.
+ */
 @Component
 public class EmpleadoBusinessValidator implements EmpleadoValidator {
 
