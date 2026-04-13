@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f5f5f0;
+            color: #1a1a1a;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .app { max-width: 960px; margin: 0 auto; }
+
+        header { margin-bottom: 2rem; }
+        header h1 { font-size: 24px; font-weight: 600; color: #1a1a1a; }
+        header p { font-size: 14px; color: #6b6b6b; margin-top: 4px; }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e5e0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f0f0eb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group.full { grid-column: 1 / -1; }
+
+        label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6b6b6b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        input {
+            padding: 9px 12px;
+            border: 1px solid #e5e5e0;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #1a1a1a;
+            background: #fafafa;
+            outline: none;
+            transition: border-color 0.15s, background 0.15s;
+            width: 100%;
+        }
+
+        input:focus { border-color: #1a1a1a; background: #fff; }
+        input.error { border-color: #e24b4a; background: #fff8f8; }
+        input::placeholder { color: #b0b0a8; }
+
+        .err-msg {
+            font-size: 11px;
+            color: #e24b4a;
+            display: none;
+            margin-top: 2px;
+        }
+        .err-msg.visible { display: block; }
+
+        .btn-submit {
+            margin-top: 1.25rem;
+            width: 100%;
+            padding: 11px;
+            font-size: 14px;
+            font-weight: 600;
+            background: #1a1a1a;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-submit:hover { background: #333; }
+        .btn-submit:active { transform: scale(0.99); }
+
+        .alert {
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 1rem;
+            display: none;
+            border: 1px solid transparent;
+        }
+        .alert.visible { display: block; }
+        .alert.success { background: #eaf3de; color: #27500a; border-color: #97c459; }
+        .alert.danger  { background: #fcebeb; color: #791f1f; border-color: #f09595; }
+
+        .table-wrap { overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            table-layout: fixed;
+        }
+
+        th {
+            text-align: left;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b6b6b;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            padding: 8px 10px;
+            border-bottom: 1px solid #f0f0eb;
+        }
+
+        td {
+            padding: 11px 10px;
+            border-bottom: 1px solid #f5f5f0;
+            color: #1a1a1a;
+            word-break: break-word;
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: #fafaf8; }
+
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 99px;
+            background: #f0f0eb;
+            color: #444441;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e6f1fb;
+            color: #0c447c;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .name-cell { display: flex; align-items: center; gap: 8px; }
+
+        .btn-delete {
+            font-size: 11px;
+            font-weight: 500;
+            color: #a32d2d;
+            background: none;
+            border: 1px solid #f09595;
+            border-radius: 6px;
+            padding: 4px 10px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-delete:hover { background: #fcebeb; }
+
+        .empty {
+            text-align: center;
+            padding: 2.5rem;
+            color: #b0b0a8;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b6b6b;
+            font-size: 13px;
+        }
+
+        .mono { font-family: 'Courier New', monospace; font-size: 12px; }
+
+        .salary { font-weight: 600; color: #1a1a1a; }
+
+        @media (max-width: 600px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app">
+
+    <header>
+        <h1>Gestión de empleados</h1>
+        <p>Administración de personal — Desafío Técnico Previred</p>
+    </header>
+
+    <div class="card">
+        <p class="card-title">Agregar empleado</p>
+
+        <div id="form-alert" class="alert"></div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" placeholder="Ej: Juan">
+                <span class="err-msg" id="err-nombre">Campo requerido</span>
+            </div>
+            <div class="form-group">
+                <label for="apellido">Apellido</label>
+                <input type="text" id="apellido" placeholder="Ej: Pérez">
+                <span class="err-msg" id="err-apellido">Campo requerido</span>
+            </div>
+            <div class="form-group">
+                <label for="rut">RUT / DNI</label>
+                <input type="text" id="rut" placeholder="Ej: 12345678-9" minlength="11" maxlength="12" oninput="onRutInput(this)" >
+                <span class="err-msg" id="err-rut">Formato inválido (ej: 12345678-9)</span>
+            </div>
+            <div class="form-group">
+                <label for="cargo">Cargo</label>
+                <input type="text" id="cargo" placeholder="Ej: Desarrollador">
+                <span class="err-msg" id="err-cargo">Campo requerido</span>
+            </div>
+            <div class="form-group">
+                <label for="salario">Salario base ($)</label>
+                <input type="number" id="salario" placeholder="Mínimo $400.000" min="400000">
+                <span class="err-msg" id="err-salario">El salario mínimo es $400.000</span>
+            </div>
+            <div class="form-group">
+                <label for="bono">Bono ($) — opcional</label>
+                <input type="number" id="bono" placeholder="Máx. 50% del salario" min="0">
+                <span class="err-msg" id="err-bono">El bono no puede superar el 50% del salario</span>
+            </div>
+            <div class="form-group full">
+                <label for="descuentos">Descuentos ($) — opcional</label>
+                <input type="number" id="descuentos" placeholder="No puede superar el salario base" min="0">
+                <span class="err-msg" id="err-descuentos">Los descuentos no pueden superar el salario base</span>
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitEmpleado()">Agregar empleado</button>
+    </div>
+
+    <div class="card">
+        <p class="card-title">Lista de empleados</p>
+        <div id="list-alert" class="alert"></div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th style="width:50px">ID</th>
+                    <th style="width:180px">Empleado</th>
+                    <th style="width:120px">RUT / DNI</th>
+                    <th>Cargo</th>
+                    <th style="width:120px">Salario</th>
+                    <th>Fecha Ingreso</th>
+                    <th style="width:80px"></th>
+                </tr>
+                </thead>
+                <tbody id="tabla-empleados">
+                <tr><td colspan="6"><div class="loading">Cargando empleados...</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const API = 'http://localhost:8040/api/empleados';
+
+    function formatNum(n) {
+        return '$' + Number(n).toLocaleString('es-CL');
+    }
+
+    function formatearRut(rut) {
+        let valor = rut.replace(/[^0-9kK]/g, '');
+        if (valor.length < 2) return valor;
+        let cuerpo = valor.slice(0, -1);
+        let dv = valor.slice(-1).toUpperCase();
+        let cuerpoFormateado = cuerpo
+            .split('').reverse().join('')
+            .replace(/(\d{3})(?=\d)/g, '$1.')
+            .split('').reverse().join('');
+        return `${cuerpoFormateado}-${dv}`;
+    }
+
+    function onRutInput(input) {
+        const cursorPos = input.selectionStart;
+        const prevLen = input.value.length;
+        input.value = formatearRut(input.value);
+        const newLen = input.value.length;
+        input.setSelectionRange(cursorPos + (newLen - prevLen), cursorPos + (newLen - prevLen));
+    }
+
+    function validarRut(rut) {
+        return /^\d{1,2}\.\d{3}\.\d{3}-[\dkK]$/.test(rut.trim()) ||
+            /^\d{7,8}-[\dkK]$/.test(rut.trim());
+    }
+
+    function initials(nombre, apellido) {
+        return ((nombre || '')[0] || '') + ((apellido || '')[0] || '');
+    }
+
+    function showAlert(id, msg, type) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.className = 'alert visible ' + type;
+        setTimeout(() => { el.className = 'alert'; }, 5000);
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.err-msg').forEach(e => e.classList.remove('visible'));
+        document.querySelectorAll('input').forEach(i => i.classList.remove('error'));
+    }
+
+    function showError(field, msg) {
+        const input = document.getElementById(field);
+        const err = document.getElementById('err-' + field);
+        input.classList.add('error');
+        if (msg) err.textContent = msg;
+        err.classList.add('visible');
+    }
+
+    function validateForm(data) {
+        let valid = true;
+        clearErrors();
+
+        if (!data.nombre.trim()) { showError('nombre'); valid = false; }
+        if (!data.apellido.trim()) { showError('apellido'); valid = false; }
+        if (!validarRut(data.rut)) { showError('rut', 'Formato inválido (ej: 12.345.678-9)'); valid = false; }
+        if (!data.cargo.trim()) { showError('cargo'); valid = false; }
+
+        const salario = Number(data.salario);
+        if (!data.salario || salario < 400000) {
+            showError('salario', 'El salario mínimo es $400.000');
+            valid = false;
+        }
+
+        const bono = Number(data.bono) || 0;
+        if (bono > 0 && bono > salario * 0.5) {
+            showError('bono', 'El bono no puede superar el 50% del salario');
+            valid = false;
+        }
+
+        const desc = Number(data.descuentos) || 0;
+        if (desc > salario) {
+            showError('descuentos', 'Los descuentos no pueden superar el salario base');
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    async function cargarEmpleados() {
+        const tbody = document.getElementById('tabla-empleados');
+        try {
+            const res = await fetch(API);
+            if (!res.ok) throw new Error('Error al cargar');
+            const empleados = await res.json();
+
+            if (!empleados.length) {
+                tbody.innerHTML = '<tr><td colspan="6"><div class="empty">No hay empleados registrados</div></td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = empleados.map(e => `
+                <tr>
+                    <td><span class="badge">${e.id}</span></td>
+                    <td>
+                        <div class="name-cell">
+                            <div class="avatar">${initials(e.nombre, e.apellido).toUpperCase()}</div>
+                            <span>${e.nombre} ${e.apellido}</span>
+                        </div>
+                    </td>
+                    <td><span class="mono">${e.rut}</span></td>
+                    <td>${e.cargo}</td>
+                    <td><span class="salary">${formatNum(e.salario)}</span></td>
+                    <td><span >${e.fecha_creacion}</span></td>
+                    <td>
+                        <button class="btn-delete" onclick="eliminarEmpleado(${e.id})">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                <path d="M10 11v6"></path>
+                                <path d="M14 11v6"></path>
+                                <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                            </svg>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        } catch (err) {
+            tbody.innerHTML = '<tr><td colspan="6"><div class="empty">Error al cargar empleados</div></td></tr>';
+        }
+    }
+
+    async function submitEmpleado() {
+        const data = {
+            nombre:      document.getElementById('nombre').value,
+            apellido:    document.getElementById('apellido').value,
+            rut:         document.getElementById('rut').value,
+            cargo:       document.getElementById('cargo').value,
+            salario:     document.getElementById('salario').value,
+            bono:        document.getElementById('bono').value || 0,
+            descuentos:  document.getElementById('descuentos').value || 0,
+        };
+
+        if (!validateForm(data)) return;
+
+        try {
+            const res = await fetch(API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (res.status === 201 || res.ok) {
+                showAlert('form-alert', 'Empleado agregado correctamente', 'success');
+                ['nombre','apellido','rut','cargo','salario','bono','descuentos']
+                    .forEach(f => document.getElementById(f).value = '');
+                clearErrors();
+                cargarEmpleados();
+            } else {
+                const body = await res.json();
+                const msg = body.errores
+                    ? body.errores.join(' | ')
+                    : (body.mensaje || 'Error al agregar empleado');
+                showAlert('form-alert', msg, 'danger');
+            }
+        } catch (err) {
+            showAlert('form-alert', 'No se pudo conectar con el servidor', 'danger');
+        }
+    }
+
+    async function eliminarEmpleado(id) {
+        try {
+            const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+            if (res.ok || res.status === 204) {
+                showAlert('list-alert', 'Empleado eliminado correctamente', 'success');
+                cargarEmpleados();
+            } else {
+                const body = await res.json().catch(() => ({}));
+                const msg = body.errores ? body.errores.join(' | ') : 'No se pudo eliminar el empleado';
+                showAlert('list-alert', msg, 'danger');
+            }
+        } catch (err) {
+            showAlert('list-alert', 'No se pudo conectar con el servidor', 'danger');
+        }
+    }
+
+    cargarEmpleados();
+</script>
+
+</body>
+</html>
