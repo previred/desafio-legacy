@@ -44,10 +44,22 @@ Compatibilidad validada en este repo:
 mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
+En PowerShell usar comillas para evitar problemas de parsing:
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=dev"
+```
+
 ### Ejecutar en productivo
 
 ```bash
 mvn spring-boot:run -Dspring-boot.run.profiles=prod
+```
+
+En PowerShell usar comillas:
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=prod"
 ```
 
 ### URLs
