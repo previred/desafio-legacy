@@ -119,9 +119,11 @@ components:
           maxLength: 100
         rutDni:
           type: string
-          minLength: 5
-          maxLength: 20
-          pattern: '^[0-9A-Za-z.-]{5,20}$'
+          minLength: 8
+          maxLength: 12
+          description: RUT chileno con digito verificador. Acepta formato compacto, con guion o con puntos y guion.
+          pattern: '^(\d{7,8}[0-9kK]|\d{7,8}-[0-9kK]|\d{1,2}\.\d{3}\.\d{3}-[0-9kK])$'
+          example: '21.669.740-5'
         cargo:
           type: string
           maxLength: 100
