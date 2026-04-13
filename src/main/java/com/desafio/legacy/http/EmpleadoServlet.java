@@ -27,9 +27,7 @@ import com.desafio.legacy.exception.ResourceNotFoundException;
 import com.desafio.legacy.service.contract.EmpleadoService;
 
 /**
- * Servlet nativo para operaciones de empleados.
- * No usa @RestController.
- * Se registra con ServletRegistrationBean.
+ * Servlet para gestion de empleados.
  * Endpoints: GET /api/empleados, POST /api/empleados, DELETE /api/empleados/{id}.
  */
 public class EmpleadoServlet extends HttpServlet {
