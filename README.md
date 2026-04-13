@@ -36,11 +36,13 @@ La aplicación está construida utilizando:
 
 ### 1. Clonar el repositorio
 
+```bash
 git clone https://github.com/rodrisepulveda/desafio-legacy.git
 
 cd desafio-legacy
 
 git checkout solucion-rodrigo
+```
 
 ---
 
@@ -48,11 +50,15 @@ git checkout solucion-rodrigo
 
 Linux / Mac:
 
+```bash
 ./mvnw spring-boot:run
+```
 
 Windows:
 
+```bash
 mvnw.cmd spring-boot:run
+```
 
 ---
 
@@ -111,9 +117,7 @@ Obtiene la lista de empleados.
 CURL:
 
 ```bash
-
 curl -X GET http://localhost:8080/api/empleados
-
 ```
 
 ---
@@ -125,9 +129,7 @@ Elimina un empleado por su ID.
 CURL:
 
 ```bash
-
 curl -X DELETE "http://localhost:8080/api/empleados?id=1"
-
 ```
 ---
 
@@ -142,6 +144,7 @@ curl -X DELETE "http://localhost:8080/api/empleados?id=1"
 
 En caso de error, se retorna:
 
+```bash
 {
   "errors": [
     {
@@ -150,6 +153,7 @@ En caso de error, se retorna:
     }
   ]
 }
+```
 
 ---
 
@@ -171,19 +175,23 @@ En caso de error, se retorna:
 
 ## 📁 Estructura del proyecto
 
+```text
 src/main/java
- ├── config
- ├── model
- ├── repository
- ├── service
- ├── servlet
- └── validation
+├── config
+├── model
+├── repository
+├── service
+├── servlet
+└── validation
 
 src/main/resources
- └── statics principales en backend 
-     ├── index.html
-     ├── css/
-     └── js/
+├── application.yaml
+├── schema.sql
+└── static
+    ├── index.html
+    ├── css/
+    └── js/
+```
 
 ---
 
