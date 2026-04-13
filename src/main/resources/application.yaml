@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: desafio-legacy
+  datasource:
+    url: jdbc:h2:mem:employeesdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
