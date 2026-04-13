@@ -1,72 +1,200 @@
-# Desafío Técnico: Servlets y AJAX
+# Gestion de Empleados - Prueba Tecnica (Servlet + AJAX)
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Aplicacion para administrar empleados con enfoque backend clasico: Servlet nativo + JDBC, usando Spring Boot como runtime y configuracion.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## Alcance funcional
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+- Listar empleados
+- Crear empleado
+- Eliminar empleado por ID
+- Buscar con filtros por texto (`q`) y cargo (`cargo`)
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+## Stack
 
-  Datos esperados del empleado: 
+- Java 8+ (compilacion configurada en 1.8)
+- Spring Boot 2.7 (Tomcat embebido)
+- API de Servlets (`javax.servlet`)
+- JDBC (`JdbcTemplate`)
+- H2 en memoria
+- Maven
+- Frontend: HTML + CSS + JavaScript (Fetch API)
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+## Arquitectura
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+- Flujo principal: `http -> service -> repository`
+- Capa HTTP implementada con `HttpServlet` (sin `@RestController`)
+- Contratos separados por interfaz en `service/contract` y `repository/contract`
+- Validacion en dos capas: frontend y backend
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+## Arranque rapido
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+### Requisitos
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+- JDK 8 o superior
+- Maven 3.8 o superior
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+Compatibilidad validada en este repo:
+
+- Compila con `java.version=1.8` (`pom.xml`)
+- Tests ejecutados correctamente en JDK 17
+
+### Ejecutar en desarrollo
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+En PowerShell usar comillas para evitar problemas de parsing:
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=dev"
+```
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+### Ejecutar en productivo
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=prod
+```
+
+En PowerShell usar comillas:
+
+```powershell
+mvn spring-boot:run "-Dspring-boot.run.profiles=prod"
+```
+
+### URLs
+
+- UI: `http://localhost:8080/`
+- API: `http://localhost:8080/api/empleados`
+- OpenAPI: `http://localhost:8080/openapi.yaml`
+- H2 Console (solo `dev`): `http://localhost:8080/h2-console`
+
+## API
+
+### `GET /api/empleados`
+
+Filtros opcionales:
+
+- `q`: nombre, apellido, rutDni o cargo
+- `cargo`: filtro por cargo
+
+Ejemplo:
+
+```http
+GET /api/empleados?q=garcia&cargo=analista
+```
+
+### `POST /api/empleados`
+
+Ejemplo:
+
+```json
+{
+  "nombre": "Carla",
+  "apellido": "Mendez",
+  "rutDni": "16543210-4",
+  "cargo": "Analista",
+  "salarioBase": 650000,
+  "bono": 30000,
+  "descuentos": 15000
+}
+```
+
+Notas de montos:
+
+- `salarioBase`, `bono` y `descuentos` se manejan con `BigDecimal`
+- OpenAPI define precision de 2 decimales con `multipleOf: 0.01`
+
+### `DELETE /api/empleados/{id}`
+
+Ejemplo:
+
+```http
+DELETE /api/empleados/7
+```
+
+## Validaciones
+
+### Backend
+
+- No permite `rutDni` duplicado
+- `salarioBase` minimo: `400000`
+- `bono` maximo: 50% del salario base
+- `descuentos` no puede superar salario base
+
+Codigos de error manejados:
+
+- `VALIDATION_ERROR`
+- `INVALID_JSON`
+- `INVALID_PARAMETER`
+- `EMPLEADO_NOT_FOUND`
+- `UNEXPECTED_ERROR`
+
+### Frontend
+
+- Campos obligatorios
+- Validacion de montos y reglas de negocio base
+- Validacion de RUT chileno real (modulo 11)
+- Autoformato de RUT al escribir (ejemplo: `216697405` -> `21.669.740-5`)
+- Errores en pantalla sin `alert()`
+
+## Base de datos
+
+- JDBC URL: `jdbc:h2:mem:desafiolegacy`
+- Usuario: `sa`
+- Password: vacio
+
+Nota: al ser in-memory, los datos se pierden al detener la aplicacion.
+
+## Pruebas
+
+Ejecutar:
+
+```bash
+mvn test
+```
+
+Estado actual de suite (ultima ejecucion local):
+
+- Tests: `28`
+- Failures: `0`
+- Errors: `0`
+
+Suites:
+
+- `EmpleadoServletTest`
+- `JdbcEmpleadoRepositoryTest`
+- `EmpleadoBusinessValidatorTest`
+- `EmpleadoServiceImplTest`
+- `DesafioLegacyApplicationTests`
+
+## Estructura del proyecto
+
+```text
+src/main/java/com/desafio/legacy
+  |- config
+  |- dto
+  |- exception
+  |- http
+  |- model
+  |- repository
+  |  |- contract
+  |- service
+  |  |- contract
+
+src/main/resources
+  |- application.properties
+  |- application-dev.properties
+  |- application-prod.properties
+  |- schema.sql
+  |- static/
+     |- index.html
+     |- styles.css
+     |- js/
+```
+
+## Datos del postulante
+
+- Nombre: Felipe Benitez Sura
+- Cargo: Desarrollador Backend Java
+- Email: felipebenitezsura@gmail.com
