@@ -36,19 +36,23 @@ La aplicación está construida utilizando:
 
 ### 1. Clonar el repositorio
 
-git clone <URL_DEL_REPO>  
+git clone https://github.com/rodrisepulveda/desafio-legacy.git
+
 cd desafio-legacy
+
+git checkout solucion-rodrigo
 
 ---
 
 ### 2. Ejecutar la aplicación
 
-mvn spring-boot:run
+Linux / Mac:
 
-o bien:
+./mvnw spring-boot:run
 
-mvn clean install  
-java -jar target/desafio-legacy-0.0.1-SNAPSHOT.jar
+Windows:
+
+mvnw.cmd spring-boot:run
 
 ---
 
