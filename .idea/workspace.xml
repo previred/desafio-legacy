@@ -4,8 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d76fe7b4-8906-4217-9aa6-a946ebf380c3" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    <list default="true" id="d76fe7b4-8906-4217-9aa6-a946ebf380c3" name="Changes" comment="Prueba desafío legacy CRUD empleados usando servlets y ajax.">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,6 +64,7 @@
     "Maven.webapp [clean].executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SONARLINT_PRECOMMIT_ANALYSIS": "true",
     "Smart Tomcat.tomcat-10.executor": "Debug",
     "git-widget-placeholder": "feature-crud-empleados",
     "kotlin-language-version-configured": "true",
@@ -172,6 +173,27 @@
       <option name="presentableId" value="Default" />
       <updated>1775878482246</updated>
     </task>
+    <task id="LOCAL-00001" summary="Prueba desafío legacy CRUD empleados usando servlets y ajax.">
+      <option name="closed" value="true" />
+      <created>1776113770819</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1776113770819</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Prueba desafío legacy CRUD empleados usando servlets y ajax.">
+      <option name="closed" value="true" />
+      <created>1776114102986</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1776114102986</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Prueba desafío legacy CRUD empleados usando servlets y ajax." />
+    <option name="LAST_COMMIT_MESSAGE" value="Prueba desafío legacy CRUD empleados usando servlets y ajax." />
   </component>
 </project>
