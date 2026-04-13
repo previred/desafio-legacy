@@ -80,36 +80,55 @@ Configuración:
 
 ## 📡 API
 
-### 🔹 GET /api/empleados
-
-Obtiene la lista de empleados.
-
----
-
 ### 🔹 POST /api/empleados
 
 Crea un nuevo empleado.
 
-Ejemplo:
+CURL:
 
-{
-  "name": "Pedro",
-  "lastName": "Rojas",
-  "documentNumber": "12345678-9",
-  "position": "Desarrollador",
-  "compensation": {
-    "baseSalary": 700000,
-    "bonus": 50000,
-    "discounts": 10000
-  }
-}
+```bash
+curl -X POST http://localhost:8080/api/empleados \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Pedro",
+    "lastName": "Rojas",
+    "documentNumber": "12345678-9",
+    "position": "Desarrollador",
+    "compensation": {
+      "baseSalary": 700000,
+      "bonus": 50000,
+      "discounts": 10000
+    }
+  }'
+```
 
 ---
 
-### 🔹 DELETE /api/empleados?id={id}
+### 🔹 GET /api/empleados
+
+Obtiene la lista de empleados.
+
+CURL:
+
+```bash
+
+curl -X GET http://localhost:8080/api/empleados
+
+```
+
+---
+
+### 🔹 DELETE /api/empleados
 
 Elimina un empleado por su ID.
 
+CURL:
+
+```bash
+
+curl -X DELETE "http://localhost:8080/api/empleados?id=1"
+
+```
 ---
 
 ## ⚠️ Validaciones
