@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Gestión de Empleados</h1>
+
+    <section class="card">
+        <h2>Registrar empleado</h2>
+
+        <div id="globalMessage"></div>
+        <div id="validationErrors"></div>
+
+        <form id="empleadoForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre">
+                </div>
+
+                <div class="form-group">
+                    <label for="apellido">Apellido</label>
+                    <input type="text" id="apellido" name="apellido">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rutDni">RUT/DNI</label>
+                    <input type="text" id="rutDni" name="rutDni" placeholder="12345678-9">
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo">Cargo</label>
+                    <input type="text" id="cargo" name="cargo">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="salarioBase">Salario base</label>
+                    <input type="number" id="salarioBase" name="salarioBase" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="bono">Bono</label>
+                    <input type="number" id="bono" name="bono" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="descuentos">Descuentos</label>
+                    <input type="number" id="descuentos" name="descuentos" min="0" value="0">
+                </div>
+            </div>
+
+            <button type="submit">Guardar empleado</button>
+        </form>
+    </section>
+
+    <section class="card">
+        <h2>Lista de empleados</h2>
+        <button id="btnRecargar" type="button">Recargar lista</button>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>RUT/DNI</th>
+                    <th>Cargo</th>
+                    <th>Salario Base</th>
+                    <th>Bono</th>
+                    <th>Descuentos</th>
+                    <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody id="empleadosBody">
+                <tr>
+                    <td colspan="9">Cargando empleados...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
