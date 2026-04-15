@@ -39,8 +39,14 @@ public class EmpleadoServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response) throws IOException {
         logger.info("GET /api/empleados");
-        List<Empleado> empleados = empleadoService.obtenerTodos();
-        enviarRespuestaJson(response, HttpServletResponse.SC_OK, empleados);
+        try {
+            List<Empleado> empleados = empleadoService.obtenerTodos();
+            enviarRespuestaJson(response, HttpServletResponse.SC_OK, empleados);
+        } catch (Exception e) {
+            logger.error("Error procesando GET /api/empleados: {}", e.getMessage());
+            enviarRespuestaJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    Map.of("error", "Error al obtener la lista de empleados"));
+        }
     }
 
     @Override

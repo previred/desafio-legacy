@@ -14,6 +14,9 @@ public class EmpleadoValidator {
 
     private static final Logger logger = LoggerFactory.getLogger(EmpleadoValidator.class);
 
+    private static final BigDecimal SALARIO_MINIMO = new BigDecimal("400000");
+    private static final BigDecimal LIMITE_BONO = new BigDecimal("0.5");
+
     private final EmpleadoRepository empleadoRepository;
 
     public EmpleadoValidator(EmpleadoRepository empleadoRepository) {
@@ -37,7 +40,7 @@ public class EmpleadoValidator {
     }
 
     private void validarSalarioBase(BigDecimal salarioBase) {
-        if (salarioBase.compareTo(new BigDecimal("400000")) < 0) {
+        if (salarioBase.compareTo(SALARIO_MINIMO) < 0) {
             throw new ValidacionException("salarioBase",
                     "El salario base no puede ser menor a $400.000");
         }
@@ -48,7 +51,7 @@ public class EmpleadoValidator {
             throw new ValidacionException("bono",
                     "El bono no puede ser negativo");
         }
-        if (bono.compareTo(salarioBase.multiply(new BigDecimal("0.5"))) > 0) {
+        if (bono.compareTo(salarioBase.multiply(LIMITE_BONO)) > 0) {
             throw new ValidacionException("bono",
                     "El bono no puede superar el 50% del salario base");
         }

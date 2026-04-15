@@ -1,5 +1,8 @@
 package com.previred.desafiolegacy.model;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
+
 import java.math.BigDecimal;
 
 public class Empleado {
@@ -46,8 +49,10 @@ public class Empleado {
     public void setSalarioBase(BigDecimal salarioBase) { this.salarioBase = salarioBase; }
 
     public BigDecimal getBono() { return bono; }
+    @JsonSetter(nulls = Nulls.SKIP)
     public void setBono(BigDecimal bono) { this.bono = bono; }
 
     public BigDecimal getDescuentos() { return descuentos; }
+    @JsonSetter(nulls = Nulls.SKIP)
     public void setDescuentos(BigDecimal descuentos) { this.descuentos = descuentos; }
 }

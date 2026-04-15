@@ -175,4 +175,24 @@ public class EmpleadoValidatorTest {
 
         assertEquals("descuentos", ex.getCampo());
     }
+
+    @Test
+    void validar_lanzaExcepcion_cuandoSalarioBaseEsNulo() {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                null, BigDecimal.ZERO, BigDecimal.ZERO);
+
+        ValidacionException ex = assertThrows(ValidacionException.class,
+                () -> empleadoValidator.validar(empleado));
+
+        assertEquals("salarioBase", ex.getCampo());
+    }
+
+    @Test
+    void validar_noLanzaExcepcion_cuandoBonoEsExactamente50Porciento() {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("1000000"), new BigDecimal("500000"), BigDecimal.ZERO);
+        when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
+
+        assertDoesNotThrow(() -> empleadoValidator.validar(empleado));
+    }
 }
