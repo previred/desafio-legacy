@@ -51,6 +51,7 @@ public class EmpleadoServiceTest {
         boolean resultado = empleadoService.eliminar(99L);
 
         assertFalse(resultado);
+        verify(empleadoRepository, times(1)).deleteById(99L);
     }
 
     @Test
@@ -76,6 +77,7 @@ public class EmpleadoServiceTest {
 
         assertNotNull(resultado.getId());
         assertEquals(1L, resultado.getId());
+        verify(empleadoValidator, times(1)).validar(empleado);
         verify(empleadoRepository, times(1)).save(empleado);
     }
 

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class EmpleadoRepository {
@@ -40,13 +39,6 @@ public class EmpleadoRepository {
         logger.info("Buscando todos los empleados");
         String sql = "SELECT * FROM empleados";
         return jdbcTemplate.query(sql, empleadoRowMapper);
-    }
-
-    public Optional<Empleado> findById(Long id) {
-        logger.info("Buscando empleado con id: {}", id);
-        String sql = "SELECT * FROM empleados WHERE id = ?";
-        List<Empleado> resultado = jdbcTemplate.query(sql, empleadoRowMapper, id);
-        return resultado.stream().findFirst();
     }
 
     public boolean existsByRut(String rut) {

@@ -10,8 +10,8 @@ public class Empleado {
     private String rut;
     private String cargo;
     private BigDecimal salarioBase;
-    private BigDecimal bono;
-    private BigDecimal descuentos;
+    private BigDecimal bono = BigDecimal.ZERO;
+    private BigDecimal descuentos = BigDecimal.ZERO;
 
     public Empleado() {}
 

@@ -96,7 +96,12 @@ function eliminarEmpleado(id) {
 
 function mostrarErrores(errores) {
     const divErrores = document.getElementById('errores');
-    divErrores.innerHTML = errores.map(e => `<p>⚠️ ${e}</p>`).join('');
+    divErrores.innerHTML = '';
+    errores.forEach(mensaje => {
+        const p = document.createElement('p');
+        p.textContent = `⚠️ ${mensaje}`;
+        divErrores.appendChild(p);
+    });
     divErrores.style.display = 'block';
 }
 

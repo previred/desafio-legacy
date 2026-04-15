@@ -78,5 +78,8 @@ public class EmpleadoValidator {
         if (empleado.getCargo() == null || empleado.getCargo().trim().isEmpty()) {
             throw new ValidacionException("cargo", "El cargo es obligatorio");
         }
+        if (empleado.getSalarioBase() == null) {
+            throw new ValidacionException("salarioBase", "El salario base es obligatorio");
+        }
     }
 }

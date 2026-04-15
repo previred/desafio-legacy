@@ -165,7 +165,7 @@ public class EmpleadoValidatorTest {
     }
 
     @Test
-    void validar_lanzaExcepcion_cuandoDescuentosSONNegativos() {
+    void validar_lanzaExcepcion_cuandoDescuentosSonNegativos() {
         Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
                 new BigDecimal("800000"), BigDecimal.ZERO, new BigDecimal("-50000"));
         when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
