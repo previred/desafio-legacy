@@ -1,72 +1,212 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Legacy
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Aplicación web desarrollada con `Java 8`, `Spring Boot`, `Servlets`, `JDBC`, `H2` y `AJAX` nativo para gestionar empleados con validaciones de negocio en backend y frontend.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## Resumen
+La solución implementa el endpoint `/api/empleados` con operaciones `GET`, `POST` y `DELETE`, además de una interfaz web simple en `HTML`, `CSS` y `JavaScript` puro para listar, agregar y eliminar empleados sin recargar la página.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
+Se mantuvo una arquitectura por capas, con separación entre:
+- capa HTTP (`servlet`)
+- reglas de negocio (`service`)
+- acceso a datos (`repository`)
+- validaciones (`validation`)
+- contratos de intercambio (`dto`)
+
+## Stack técnico
+- Java 8
+- Maven
+- Spring Boot 2.7.18
+- Apache Tomcat embebido
+- Servlets
+- JDBC puro
+- H2 en memoria
+- HTML + CSS + JavaScript nativo
+- JUnit 5 + Mockito + AssertJ
+
+## Decisiones de implementación
+- El endpoint principal está implementado con `HttpServlet`, no con controladores MVC.
+- Se usa `spring-boot-starter-web` para habilitar el arranque web y el contenedor embebido, pero la exposición de la API sigue resolviéndose con servlets registrados manualmente.
+- Para cubrir la ambigüedad del enunciado entre `salario`, `salario base`, `bonos` y `descuentos`, el modelo final incorpora:
+  - `salarioBase`
+  - `bono`
+  - `descuentos`
+
+## Estructura principal
+- `src/main/java/com/previred/desafio/Application.java`
+- `src/main/java/com/previred/desafio/config/`
+- `src/main/java/com/previred/desafio/servlet/EmpleadoServlet.java`
+- `src/main/java/com/previred/desafio/service/EmpleadoService.java`
+- `src/main/java/com/previred/desafio/repository/EmpleadoRepository.java`
+- `src/main/java/com/previred/desafio/validation/EmpleadoValidator.java`
+- `src/main/java/com/previred/desafio/dto/`
+- `src/main/resources/static/`
+
+## Modelo de empleado
+Campos utilizados:
+- `id`
+- `nombre`
+- `apellido`
+- `rutDni`
+- `cargo`
+- `salarioBase`
+- `bono`
+- `descuentos`
+
+## Reglas de negocio implementadas
+Backend y frontend validan:
+- campos obligatorios
+- formato de `RUT/DNI`
+- `salarioBase >= 400000`
+- `bono <= 50% del salarioBase`
+- `descuentos <= salarioBase`
+
+Además, en backend:
+- no se permite duplicidad de `RUT/DNI`
+- los errores se devuelven con `HTTP 400` y JSON estructurado
+
+## Endpoints
+
+### `GET /api/empleados`
+Retorna la lista de empleados en formato JSON.
+
+### `POST /api/empleados`
+Crea un nuevo empleado.
+
+Ejemplo de request:
+
+```json
+{
+  "nombre": "Ana",
+  "apellido": "Pérez",
+  "rutDni": "12345678-9",
+  "cargo": "Analista",
+  "salarioBase": 650000,
+  "bono": 80000,
+  "descuentos": 25000
+}
 ```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+### `DELETE /api/empleados?id=1`
+Elimina un empleado por su identificador.
 
-  Datos esperados del empleado: 
+## Formato de errores
+Cuando ocurre un error de validación o negocio, la API responde con una estructura como esta:
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
-
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+```json
+{
+  "status": 400,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "rutDni",
+      "code": "DUPLICATE_RUT_DNI",
+      "message": "El RUT/DNI ya existe",
+      "rejectedValue": "12345678-9"
+    }
+  ]
+}
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+Ejemplo de error inesperado:
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+```json
+{
+  "status": 500,
+  "message": "Internal Server Error",
+  "errors": [
+    {
+      "field": null,
+      "code": "UNEXPECTED_ERROR",
+      "message": "Ocurrio un error inesperado",
+      "rejectedValue": null
+    }
+  ]
+}
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+## Interfaz web
+La vista está disponible en:
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+- `http://localhost:8080`
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+La API queda disponible en:
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+- `http://localhost:8080/api/empleados`
+
+La interfaz permite:
+- listar empleados sin recargar
+- agregar empleados desde formulario
+- eliminar empleados desde la tabla
+- mostrar errores de validación en pantalla
+
+## Configuración
+Puerto y base en memoria definidos en `application.properties`:
+
+```properties
+server.port=8080
+app.datasource.url=jdbc:h2:mem:desafiodb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+app.datasource.username=sa
+app.datasource.password=
+```
+
+## Cómo ejecutar
+
+### Requisitos
+- Java 8 instalado
+- Maven instalado
+
+### Levantar la aplicación
+
+```bash
+mvn spring-boot:run
+```
+
+O bien:
+
+```bash
+mvn clean package
+java -jar target/desafio-0.0.1-SNAPSHOT.jar
+```
+
+## Cómo probar manualmente
+1. Abrir `http://localhost:8080`.
+2. Verificar que carguen los empleados iniciales.
+3. Crear un empleado con datos válidos.
+4. Probar validaciones:
+   - salario menor a `400000`
+   - bono mayor al `50%`
+   - descuentos mayores al salario
+   - `RUT/DNI` duplicado
+5. Eliminar un empleado desde la tabla.
+
+## Datos iniciales
+La base se inicializa automáticamente con:
+- `src/main/resources/schema.sql`
+- `src/main/resources/data.sql`
+
+## Tests
+Se agregaron tests unitarios y de integración para reforzar el desafío.
+
+Suite actual:
+- `EmpleadoValidatorTest`
+- `EmpleadoServiceTest`
+- `EmpleadoServletTest`
+- `EmpleadoApiIntegrationTest`
+
+Ejecutar tests:
+
+```bash
+mvn test
+```
+
+## Buenas prácticas aplicadas
+- separación por capas
+- DTOs para request y response
+- validaciones centralizadas
+- errores estructurados
+- uso de JDBC encapsulado en repositorio
+- documentación breve con Javadoc en clases clave
+- tests unitarios e integración mínima
+
+## Autor
+Realizado por Sergio Suárez Suárez.
