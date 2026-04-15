@@ -76,8 +76,7 @@ public class EmpleadoServlet extends HttpServlet {
             Long id = Long.parseLong(pathInfo.substring(1));
             boolean eliminado = empleadoService.eliminar(id);
             if (eliminado) {
-                enviarRespuestaJson(response, HttpServletResponse.SC_OK,
-                        Map.of("mensaje", "Empleado eliminado correctamente"));
+                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
             } else {
                 enviarRespuestaJson(response, HttpServletResponse.SC_NOT_FOUND,
                         Map.of("error", "Empleado no encontrado con id: " + id));

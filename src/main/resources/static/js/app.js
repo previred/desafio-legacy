@@ -65,7 +65,7 @@ function eliminarEmpleado(id) {
         if (response.ok) {
             cargarEmpleados();
         } else {
-            mostrarError('No se pudo eliminar el empleado');
+            mostrarErrores(['No se pudo eliminar el empleado']);
         }
     })
     .catch(error => {

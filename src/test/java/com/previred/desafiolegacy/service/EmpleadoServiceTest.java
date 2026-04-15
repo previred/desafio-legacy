@@ -45,19 +45,15 @@ public class EmpleadoServiceTest {
 
     @Test
     void eliminar_retornaFalse_cuandoEmpleadoNoExiste() {
-        when(empleadoRepository.findById(99L)).thenReturn(Optional.empty());
+        when(empleadoRepository.deleteById(99L)).thenReturn(false);
 
         boolean resultado = empleadoService.eliminar(99L);
 
         assertFalse(resultado);
-        verify(empleadoRepository, never()).deleteById(99L);
     }
 
     @Test
     void eliminar_retornaTrue_cuandoEmpleadoExiste() {
-        Empleado empleado = new Empleado(1L, "Ana", "Fernandez", "22222222-2",
-                "Designer", 700000, 50000, 30000);
-        when(empleadoRepository.findById(1L)).thenReturn(Optional.of(empleado));
         when(empleadoRepository.deleteById(1L)).thenReturn(true);
 
         boolean resultado = empleadoService.eliminar(1L);

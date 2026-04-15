@@ -72,7 +72,12 @@ public class EmpleadoRepository {
             ps.setDouble(7, empleado.getDescuentos());
             return ps;
         }, keyHolder);
-        empleado.setId(keyHolder.getKey().longValue());
+
+        Number key = keyHolder.getKey();
+        if (key == null) {
+            throw new IllegalStateException("No se pudo obtener el ID generado por la base de datos");
+        }
+        empleado.setId(key.longValue());
         return empleado;
     }
 

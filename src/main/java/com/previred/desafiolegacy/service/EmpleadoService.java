@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class EmpleadoService {
@@ -30,7 +28,7 @@ public class EmpleadoService {
         return empleadoRepository.findAll()
                 .stream()
                 .sorted(Comparator.comparing(Empleado::getNombre))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Empleado crear(Empleado empleado) {
@@ -41,11 +39,10 @@ public class EmpleadoService {
 
     public boolean eliminar(Long id) {
         logger.info("Eliminando empleado con id: {}", id);
-        Optional<Empleado> empleado = empleadoRepository.findById(id);
-        if (empleado.isEmpty()) {
+        boolean eliminado = empleadoRepository.deleteById(id);
+        if (!eliminado) {
             logger.warn("Empleado con id {} no encontrado", id);
-            return false;
         }
-        return empleadoRepository.deleteById(id);
+        return eliminado;
     }
 }

@@ -20,6 +20,7 @@ public class EmpleadoValidator {
 
     public void validar(Empleado empleado) {
         logger.info("Validando empleado");
+        validarCamposObligatorios(empleado);
         validarRutDuplicado(empleado.getRut());
         validarSalarioBase(empleado.getSalarioBase());
         validarBono(empleado.getBono(), empleado.getSalarioBase());
@@ -41,6 +42,10 @@ public class EmpleadoValidator {
     }
 
     private void validarBono(double bono, double salarioBase) {
+        if (bono < 0) {
+            throw new ValidacionException("bono",
+                    "El bono no puede ser negativo");
+        }
         if (bono > salarioBase * 0.5) {
             throw new ValidacionException("bono",
                     "El bono no puede superar el 50% del salario base");
@@ -48,9 +53,28 @@ public class EmpleadoValidator {
     }
 
     private void validarDescuentos(double descuentos, double salarioBase) {
+        if (descuentos < 0) {
+            throw new ValidacionException("descuentos",
+                    "Los descuentos no pueden ser negativos");
+        }
         if (descuentos > salarioBase) {
             throw new ValidacionException("descuentos",
                     "El total de descuentos no puede ser mayor al salario base");
+        }
+    }
+
+    private void validarCamposObligatorios(Empleado empleado) {
+        if (empleado.getNombre() == null || empleado.getNombre().trim().isEmpty()) {
+            throw new ValidacionException("nombre", "El nombre es obligatorio");
+        }
+        if (empleado.getApellido() == null || empleado.getApellido().trim().isEmpty()) {
+            throw new ValidacionException("apellido", "El apellido es obligatorio");
+        }
+        if (empleado.getRut() == null || empleado.getRut().trim().isEmpty()) {
+            throw new ValidacionException("rut", "El RUT es obligatorio");
+        }
+        if (empleado.getCargo() == null || empleado.getCargo().trim().isEmpty()) {
+            throw new ValidacionException("cargo", "El cargo es obligatorio");
         }
     }
 }
