@@ -118,4 +118,61 @@ public class EmpleadoValidatorTest {
 
         assertDoesNotThrow(() -> empleadoValidator.validar(empleado));
     }
+
+    @Test
+    void validar_lanzaExcepcion_cuandoNombreEsNulo() {
+        Empleado empleado = new Empleado(null, null, APELLIDO, RUT, CARGO,
+                new BigDecimal("800000"), BigDecimal.ZERO, BigDecimal.ZERO);
+
+        ValidacionException ex = assertThrows(ValidacionException.class,
+                () -> empleadoValidator.validar(empleado));
+
+        assertEquals("nombre", ex.getCampo());
+    }
+
+    @Test
+    void validar_lanzaExcepcion_cuandoNombreEsVacio() {
+        Empleado empleado = new Empleado(null, "   ", APELLIDO, RUT, CARGO,
+                new BigDecimal("800000"), BigDecimal.ZERO, BigDecimal.ZERO);
+
+        ValidacionException ex = assertThrows(ValidacionException.class,
+                () -> empleadoValidator.validar(empleado));
+
+        assertEquals("nombre", ex.getCampo());
+    }
+
+    @Test
+    void validar_lanzaExcepcion_cuandoCargoEsNulo() {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, null,
+                new BigDecimal("800000"), BigDecimal.ZERO, BigDecimal.ZERO);
+
+        ValidacionException ex = assertThrows(ValidacionException.class,
+                () -> empleadoValidator.validar(empleado));
+
+        assertEquals("cargo", ex.getCampo());
+    }
+
+    @Test
+    void validar_lanzaExcepcion_cuandoBonoEsNegativo() {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("800000"), new BigDecimal("-100000"), BigDecimal.ZERO);
+        when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
+
+        ValidacionException ex = assertThrows(ValidacionException.class,
+                () -> empleadoValidator.validar(empleado));
+
+        assertEquals("bono", ex.getCampo());
+    }
+
+    @Test
+    void validar_lanzaExcepcion_cuandoDescuentosSONNegativos() {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("800000"), BigDecimal.ZERO, new BigDecimal("-50000"));
+        when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
+
+        ValidacionException ex = assertThrows(ValidacionException.class,
+                () -> empleadoValidator.validar(empleado));
+
+        assertEquals("descuentos", ex.getCampo());
+    }
 }
