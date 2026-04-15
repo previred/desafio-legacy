@@ -48,7 +48,7 @@ function agregarEmpleado(empleado) {
             cargarEmpleados();
         } else {
             return response.json().then(error => {
-                mostrarError(error.error);
+                mostrarErrores([error.error]);
             });
         }
     })
@@ -73,9 +73,9 @@ function eliminarEmpleado(id) {
     });
 }
 
-function mostrarError(mensaje) {
+function mostrarErrores(errores) {
     const divErrores = document.getElementById('errores');
-    divErrores.innerHTML = `<p>⚠️ ${mensaje}</p>`;
+    divErrores.innerHTML = errores.map(e => `<p>⚠️ ${e}</p>`).join('');
     divErrores.style.display = 'block';
 }
 
@@ -87,6 +87,28 @@ function limpiarErrores() {
 
 function limpiarFormulario() {
     document.getElementById('formularioEmpleado').reset();
+}
+
+function validarCamposCompletos(empleado) {
+    const errores = [];
+    if (!empleado.nombre.trim())    errores.push('El nombre es obligatorio');
+    if (!empleado.apellido.trim())  errores.push('El apellido es obligatorio');
+    if (!empleado.rut.trim())       errores.push('El RUT es obligatorio');
+    if (!empleado.cargo.trim())     errores.push('El cargo es obligatorio');
+    if (!empleado.salarioBase)      errores.push('El salario base es obligatorio');
+    return errores;
+}
+
+function validarReglas(empleado) {
+    const errores = [];
+    const rutRegex = /^\d{1,2}\.?\d{3}\.?\d{3}-[\dkK]$/;
+    if (!rutRegex.test(empleado.rut)) {
+        errores.push('El formato del RUT no es válido. Ej: 12345678-9');
+    }
+    if (empleado.salarioBase < 400000) {
+        errores.push('El salario base no puede ser menor a $400.000');
+    }
+    return errores;
 }
 
 document.getElementById('formularioEmpleado')
@@ -103,6 +125,16 @@ document.getElementById('formularioEmpleado')
             bono:        parseFloat(document.getElementById('bono').value) || 0,
             descuentos:  parseFloat(document.getElementById('descuentos').value) || 0
         };
+
+        const todosLosErrores = [
+            ...validarCamposCompletos(empleado),
+            ...validarReglas(empleado)
+        ];
+
+        if (todosLosErrores.length > 0) {
+            mostrarErrores(todosLosErrores);
+            return;
+        }
 
         agregarEmpleado(empleado);
     });
