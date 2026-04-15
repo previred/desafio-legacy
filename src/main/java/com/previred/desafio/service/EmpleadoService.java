@@ -11,6 +11,9 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
+/**
+ * Orquesta reglas de negocio para la gestión de empleados.
+ */
 @Service
 public class EmpleadoService {
 
@@ -22,10 +25,21 @@ public class EmpleadoService {
         this.empleadoValidator = empleadoValidator;
     }
 
+    /**
+     * Obtiene todos los empleados registrados.
+     *
+     * @return listado de empleados
+     */
     public List<Empleado> findAll() {
         return empleadoRepository.findAll();
     }
 
+    /**
+     * Valida y registra un nuevo empleado.
+     *
+     * @param request datos recibidos desde la API
+     * @return empleado persistido con id generado
+     */
     public Empleado create(EmpleadoRequest request) {
         List<ApiError> validationErrors = empleadoValidator.validate(request);
         if (!validationErrors.isEmpty()) {
@@ -62,6 +76,11 @@ public class EmpleadoService {
         return empleadoRepository.save(empleado);
     }
 
+    /**
+     * Elimina un empleado existente por id.
+     *
+     * @param id identificador del empleado
+     */
     public void deleteById(Long id) {
         if (id == null || id <= 0L) {
             throw new BusinessException(

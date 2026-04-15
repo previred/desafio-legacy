@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Repository;
 
+/**
+ * Encapsula el acceso JDBC a la tabla de empleados.
+ */
 @Repository
 public class EmpleadoRepository {
 
@@ -20,6 +23,11 @@ public class EmpleadoRepository {
         this.connectionFactory = connectionFactory;
     }
 
+    /**
+     * Recupera todos los empleados ordenados por id.
+     *
+     * @return lista de empleados persistidos
+     */
     public List<Empleado> findAll() {
         String sql = "SELECT id, nombre, apellido, rut_dni, cargo, salario_base, bono, descuentos "
                 + "FROM empleados ORDER BY id";
@@ -40,6 +48,12 @@ public class EmpleadoRepository {
         return empleados;
     }
 
+    /**
+     * Inserta un empleado y devuelve la entidad con id generado.
+     *
+     * @param empleado empleado a persistir
+     * @return empleado guardado
+     */
     public Empleado save(Empleado empleado) {
         String sql = "INSERT INTO empleados (nombre, apellido, rut_dni, cargo, salario_base, bono, descuentos) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -68,6 +82,12 @@ public class EmpleadoRepository {
         }
     }
 
+    /**
+     * Elimina un empleado por id.
+     *
+     * @param id identificador del empleado
+     * @return true si se eliminó un registro
+     */
     public boolean deleteById(Long id) {
         String sql = "DELETE FROM empleados WHERE id = ?";
 
@@ -81,6 +101,12 @@ public class EmpleadoRepository {
         }
     }
 
+    /**
+     * Verifica si ya existe un empleado con el RUT/DNI indicado.
+     *
+     * @param rutDni identificador tributario o documento
+     * @return true si el registro ya existe
+     */
     public boolean existsByRutDni(String rutDni) {
         String sql = "SELECT 1 FROM empleados WHERE UPPER(rut_dni) = UPPER(?)";
 

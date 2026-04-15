@@ -16,6 +16,9 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.StreamUtils;
 import org.springframework.stereotype.Component;
 
+/**
+ * Ejecuta los scripts iniciales de base de datos al arrancar la aplicación.
+ */
 @Component
 public class DatabaseInitializer implements CommandLineRunner {
 
@@ -29,6 +32,12 @@ public class DatabaseInitializer implements CommandLineRunner {
         this.resourceLoader = resourceLoader;
     }
 
+    /**
+     * Carga el esquema y los datos iniciales en la base H2.
+     *
+     * @param args argumentos de arranque
+     * @throws Exception si ocurre un error al ejecutar los scripts
+     */
     @Override
     public void run(String... args) throws Exception {
         executeScript("classpath:schema.sql");

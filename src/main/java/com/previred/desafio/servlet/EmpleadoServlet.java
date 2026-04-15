@@ -17,6 +17,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+/**
+ * Expone la API HTTP para listar, crear y eliminar empleados.
+ */
 @Component
 public class EmpleadoServlet extends HttpServlet {
 
@@ -30,6 +33,9 @@ public class EmpleadoServlet extends HttpServlet {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * Devuelve el listado completo de empleados en formato JSON.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
@@ -40,6 +46,9 @@ public class EmpleadoServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Crea un empleado a partir del cuerpo JSON recibido.
+     */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
@@ -61,6 +70,9 @@ public class EmpleadoServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Elimina un empleado usando el parámetro id.
+     */
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {

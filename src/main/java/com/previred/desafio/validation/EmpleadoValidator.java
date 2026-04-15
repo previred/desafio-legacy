@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;
 
+/**
+ * Aplica validaciones de formato y reglas de negocio sobre empleados.
+ */
 @Component
 public class EmpleadoValidator {
 
@@ -17,6 +20,12 @@ public class EmpleadoValidator {
     private static final BigDecimal SALARIO_MINIMO = new BigDecimal("400000");
     private static final BigDecimal PORCENTAJE_MAXIMO_BONO = new BigDecimal("0.50");
 
+    /**
+     * Valida el request y devuelve los errores encontrados.
+     *
+     * @param request datos del empleado a validar
+     * @return lista de errores tipados
+     */
     public List<ApiError> validate(EmpleadoRequest request) {
         List<ApiError> errors = new ArrayList<>();
 
