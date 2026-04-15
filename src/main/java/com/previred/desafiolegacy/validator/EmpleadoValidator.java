@@ -3,8 +3,12 @@ package com.previred.desafiolegacy.validator;
 import com.previred.desafiolegacy.exception.ValidacionException;
 import com.previred.desafiolegacy.model.Empleado;
 import com.previred.desafiolegacy.repository.EmpleadoRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EmpleadoValidator {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmpleadoValidator.class);
 
     private final EmpleadoRepository empleadoRepository;
 
@@ -13,6 +17,7 @@ public class EmpleadoValidator {
     }
 
     public void validar(Empleado empleado) {
+        logger.info("Validando empleado");
         validarRutDuplicado(empleado.getRut());
         validarSalarioBase(empleado.getSalarioBase());
         validarBono(empleado.getBono(), empleado.getSalarioBase());

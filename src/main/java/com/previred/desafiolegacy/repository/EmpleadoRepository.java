@@ -56,7 +56,7 @@ public class EmpleadoRepository {
     }
 
     public Empleado save(Empleado empleado) {
-        logger.info("Guardando empleado con rut: {}", empleado.getRut());
+        logger.info("Guardando nuevo empleado");
         String sql = "INSERT INTO empleados (nombre, apellido, rut, cargo, salario_base, bono, descuentos) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();

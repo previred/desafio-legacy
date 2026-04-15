@@ -34,7 +34,7 @@ public class EmpleadoService {
     }
 
     public Empleado crear(Empleado empleado) {
-        logger.info("Creando empleado con RUT: {}", empleado.getRut());
+        logger.info("Creando nuevo empleado");
         empleadoValidator.validar(empleado);
         return empleadoRepository.save(empleado);
     }

@@ -55,6 +55,10 @@ public class EmpleadoServlet extends HttpServlet {
             logger.warn("Validacion fallida - campo: {}, mensaje: {}", e.getCampo(), e.getMessage());
             enviarRespuestaJson(response, HttpServletResponse.SC_BAD_REQUEST,
                     Map.of("campo", e.getCampo(), "error", e.getMessage()));
+        } catch (Exception e) {
+            logger.error("Error procesando POST /api/empleados: {}", e.getMessage());
+            enviarRespuestaJson(response, HttpServletResponse.SC_BAD_REQUEST,
+                    Map.of("error", "El cuerpo de la solicitud no es un JSON válido"));
         }
     }
 
