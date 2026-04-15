@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="page-shell">
+    <main class="container">
+        <section class="hero card">
+            <div class="hero-copy">
+                <span class="eyebrow">Desafío técnico</span>
+                <h1>Gestión de Empleados</h1>
+                <p class="subtitle">Administra empleados, valida reglas de negocio y actualiza la información sin recargar la página.</p>
+            </div>
+            <div class="hero-badges">
+                <span class="badge">Java 8</span>
+                <span class="badge">Servlets</span>
+                <span class="badge">AJAX nativo</span>
+            </div>
+        </section>
+
+        <section class="layout">
+            <section class="card form-card">
+                <div class="section-heading">
+                    <div>
+                        <h2>Nuevo empleado</h2>
+                        <p class="section-copy">Completa el formulario para registrar un empleado con sus datos base, bono y descuentos.</p>
+                    </div>
+                </div>
+
+                <form id="empleado-form" novalidate>
+                    <div class="grid">
+                        <label>
+                            Nombre
+                            <input type="text" name="nombre" placeholder="Ej. Ana" required>
+                        </label>
+                        <label>
+                            Apellido
+                            <input type="text" name="apellido" placeholder="Ej. Pérez" required>
+                        </label>
+                        <label>
+                            RUT/DNI
+                            <input type="text" name="rutDni" placeholder="Ej. 12345678-9" required>
+                        </label>
+                        <label>
+                            Cargo
+                            <input type="text" name="cargo" placeholder="Ej. Analista" required>
+                        </label>
+                        <label>
+                            Salario base
+                            <input type="number" name="salarioBase" min="400000" step="0.01" placeholder="400000" required>
+                        </label>
+                        <label>
+                            Bono
+                            <input type="number" name="bono" min="0" step="0.01" placeholder="0" required>
+                        </label>
+                        <label>
+                            Descuentos
+                            <input type="number" name="descuentos" min="0" step="0.01" placeholder="0" required>
+                        </label>
+                    </div>
+
+                    <p class="helper-text">Todos los campos son obligatorios. Las validaciones se ejecutan antes y después del envío.</p>
+                    <div id="form-errors" class="errors" aria-live="polite"></div>
+
+                    <div class="actions">
+                        <button type="submit" class="primary-button">Agregar empleado</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="card table-card">
+                <div class="table-header">
+                    <div>
+                        <h2>Empleados registrados</h2>
+                        <p class="section-copy">Consulta el listado actualizado y elimina registros cuando sea necesario.</p>
+                    </div>
+                    <button id="reload-button" type="button" class="secondary-button">Actualizar listado</button>
+                </div>
+                <div id="table-feedback" class="feedback" aria-live="polite"></div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Apellido</th>
+                            <th>RUT/DNI</th>
+                            <th>Cargo</th>
+                            <th>Salario base</th>
+                            <th>Bono</th>
+                            <th>Descuentos</th>
+                            <th>Acción</th>
+                        </tr>
+                        </thead>
+                        <tbody id="empleados-body">
+                        <tr>
+                            <td colspan="9">Cargando...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>Realizado por Sergio Suárez Suárez</p>
+    </footer>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
