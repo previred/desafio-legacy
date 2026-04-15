@@ -23,13 +23,13 @@ public class EmpleadoValidator {
         validarRutDuplicado(empleado.getRut());
         validarSalarioBase(empleado.getSalarioBase());
         validarBono(empleado.getBono(), empleado.getSalarioBase());
-        validarDescuentos(empleado.getDescuentos(),  empleado.getSalarioBase());
+        validarDescuentos(empleado.getDescuentos(), empleado.getSalarioBase());
     }
 
     private void validarRutDuplicado(String rut) {
         if (empleadoRepository.existsByRut(rut)) {
             throw new ValidacionException("rut",
-                    "Ya existe un empleado con el RUT: " + rut);
+                    "Ya existe un empleado con ese RUT");
         }
     }
 
@@ -53,5 +53,4 @@ public class EmpleadoValidator {
                     "El total de descuentos no puede ser mayor al salario base");
         }
     }
-
 }

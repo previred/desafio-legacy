@@ -48,5 +48,4 @@ public class Empleado {
 
     public double getDescuentos() { return descuentos; }
     public void setDescuentos(double descuentos) { this.descuentos = descuentos; }
-
 }

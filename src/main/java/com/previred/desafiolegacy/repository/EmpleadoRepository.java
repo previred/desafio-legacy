@@ -50,6 +50,7 @@ public class EmpleadoRepository {
     }
 
     public boolean existsByRut(String rut) {
+        logger.info("Verificando existencia de RUT");
         String sql = "SELECT COUNT(*) FROM empleados WHERE rut = ?";
         Integer count = jdbcTemplate.queryForObject(sql, Integer.class, rut);
         return count != null && count > 0;

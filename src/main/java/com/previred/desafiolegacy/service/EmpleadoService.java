@@ -20,7 +20,7 @@ public class EmpleadoService {
     private final EmpleadoRepository empleadoRepository;
     private final EmpleadoValidator empleadoValidator;
 
-    public EmpleadoService(EmpleadoRepository empleadoRepository,  EmpleadoValidator empleadoValidator) {
+    public EmpleadoService(EmpleadoRepository empleadoRepository, EmpleadoValidator empleadoValidator) {
         this.empleadoRepository = empleadoRepository;
         this.empleadoValidator = empleadoValidator;
     }
@@ -48,5 +48,4 @@ public class EmpleadoService {
         }
         return empleadoRepository.deleteById(id);
     }
-
 }

@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class EmpleadoServlet extends HttpServlet {
 
-    private static final Logger logger = LoggerFactory.getLogger(EmpleadoServlet.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(EmpleadoServlet.class);
 
     private EmpleadoService empleadoService;
     private ObjectMapper objectMapper;
