@@ -20,9 +20,9 @@ public class EmpleadoService {
     private final EmpleadoRepository empleadoRepository;
     private final EmpleadoValidator empleadoValidator;
 
-    public EmpleadoService(EmpleadoRepository empleadoRepository) {
+    public EmpleadoService(EmpleadoRepository empleadoRepository,  EmpleadoValidator empleadoValidator) {
         this.empleadoRepository = empleadoRepository;
-        this.empleadoValidator = new EmpleadoValidator(empleadoRepository);
+        this.empleadoValidator = empleadoValidator;
     }
 
     public List<Empleado> obtenerTodos() {

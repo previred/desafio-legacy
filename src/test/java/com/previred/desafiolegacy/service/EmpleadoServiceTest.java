@@ -2,6 +2,7 @@ package com.previred.desafiolegacy.service;
 
 import com.previred.desafiolegacy.model.Empleado;
 import com.previred.desafiolegacy.repository.EmpleadoRepository;
+import com.previred.desafiolegacy.validator.EmpleadoValidator;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,6 +21,9 @@ public class EmpleadoServiceTest {
 
     @Mock
     private EmpleadoRepository empleadoRepository;
+
+    @Mock
+    private EmpleadoValidator empleadoValidator;
 
     @InjectMocks
     private EmpleadoService empleadoService;
@@ -69,7 +73,6 @@ public class EmpleadoServiceTest {
         Empleado empleadoGuardado = new Empleado(1L, "Ana", "Fernandez", "22222222-2",
                 "Developer", 800000, 200000, 50000);
 
-        when(empleadoRepository.existsByRut("22222222-2")).thenReturn(false);
         when(empleadoRepository.save(empleado)).thenReturn(empleadoGuardado);
 
         Empleado resultado = empleadoService.crear(empleado);
