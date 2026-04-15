@@ -1,72 +1,158 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Técnico - API de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## Descripción
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+Aplicación web desarrollada en Java que permite gestionar empleados mediante un API REST implementada con **Servlets**, utilizando **Spring Boot como runtime** y **Apache Tomcat embebido**.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+Incluye operaciones CRUD básicas, validaciones de negocio y una interfaz web simple que consume el API mediante **AJAX (Fetch API)** sin recargar la página.
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+---
 
-  Datos esperados del empleado: 
+## Tecnologías utilizadas
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+* Java 17 (compatible con Java 8+)
+* Spring Boot (solo como runtime)
+* Apache Tomcat embebido
+* JDBC
+* H2 Database (en memoria)
+* Maven
+* HTML + JavaScript (Fetch API)
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+---
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
-
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+## Estructura del proyecto
 
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+com.desafio
+├── servlet        # Controladores HTTP (Servlets)
+├── service        # Lógica de negocio
+├── repository     # Acceso a datos (JDBC)
+├── model          # Entidades
+├── util           # Utilidades (DB, configuración)
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+---
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+## Cómo ejecutar el proyecto
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+### 1. Ejecutar la aplicación
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+Desde IntelliJ o con Maven:
+
+```bash
+mvn spring-boot:run
+```
+
+### 2. Acceder a la aplicación
+
+* API:
+
+  ```
+  http://localhost:8080/api/empleados
+  ```
+
+* Interfaz web:
+
+  ```
+  http://localhost:8080/index.html
+  ```
+
+* Consola H2 (opcional):
+
+  ```
+  http://localhost:8080/h2-console
+  ```
+
+Configuración H2:
+
+* JDBC URL: `jdbc:h2:mem:testdb`
+* User: `sa`
+* Password: (vacío)
+
+---
+
+## Endpoints disponibles
+
+### GET /api/empleados
+
+Obtiene la lista de empleados.
+
+**Respuesta:**
+
+```json
+[ 
+  { 
+    "id": 1, 
+    "nombre": "Juan", 
+    "apellido": "Perez", 
+    "dni": "12345678", 
+    "cargo": "Dev", 
+    "salario": 500000, 
+    "bono": 50000, 
+    "descuentos": 20000
+  } 
+]
+```
+
+---
+
+### POST /api/empleados
+
+Crea un nuevo empleado.
+
+**Request:**
+
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Perez",
+  "dni": "12345678",
+  "cargo": "Dev",
+  "salario": 500000,
+  "bono": 50000, 
+  "descuentos": 20000
+}
+```
+
+---
+
+### DELETE /api/empleados?id=1
+
+Elimina un empleado por ID.
+
+---
+
+## Validaciones de negocio (Backend)
+
+* No se permite DNI duplicado
+* Salario mínimo: $400,000
+* El bono no puede superar el 50% del salario base
+* El total de descuentos no puede ser mayor al salario base
+* Se retorna HTTP 400 en caso de error
+
+**Ejemplo de error:**
+
+```json
+{
+  "error": "DNI duplicado"
+}
+```
+
+---
+
+## Validaciones (Frontend)
+
+* Campos obligatorios
+* Validación de formato DNI (8 dígitos)
+* Validación de salario mínimo
+* Visualización de errores en pantalla (sin alert)
+
+---
+
+## Autor
+
+* Nombre: Rodolfo Crisanto
+* Empresa: Sermaluc
+* Cargo al que postula: Desarrolador Backend Java
+
+---
