@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Empleados</title>
+</head>
+
+<body>
+
+<h2>Lista de empleados</h2>
+<ul id="lista"></ul>
+
+<h2>Crear empleado</h2>
+
+<input id="nombre" placeholder="Nombre">
+<br> <input id="apellido" placeholder="Apellido">
+<br> <input id="dni" placeholder="DNI">
+<br> <input id="cargo" placeholder="Cargo">
+<br> <input id="salario" type="number" placeholder="Salario">
+<br> <input id="bono" type="number" placeholder="Bono">
+<br> <input id="descuentos" type="number" placeholder="Descuentos">
+<br>
+
+<button onclick="crear()">Crear</button>
+
+<p id="error" style="color:red;"></p>
+
+<script>
+    function cargar() {
+        fetch('/api/empleados')
+            .then(r => r.json())
+            .then(data => {
+                const lista = document.getElementById("lista");
+                lista.innerHTML = "";
+
+                data.forEach(e => {
+                    lista.innerHTML += `
+                        <li>
+                            ${e.id} - ${e.nombre} - ${e.cargo}
+                            <button onclick="eliminar(${e.id})">X</button>
+                        </li>`;
+                });
+            });
+    }
+
+    function crear() {
+        const error = document.getElementById("error");
+        error.innerText = "";
+
+        const nombre = document.getElementById("nombre").value;
+        const apellido = document.getElementById("apellido").value;
+        const dni = document.getElementById("dni").value;
+        const cargo = document.getElementById("cargo").value;
+        const salario = parseFloat(document.getElementById("salario").value);
+        const bono = parseFloat(document.getElementById("bono").value);
+        const descuentos = parseFloat(document.getElementById("descuentos").value);
+
+        if (!nombre || !apellido || !dni || !cargo || !salario || !bono || !descuentos) {
+            error.innerText = "Todos los campos son obligatorios";
+            return;
+        }
+
+        if (salario < 400000) {
+            error.innerText = "El salario debe ser mayor a 400000";
+            return;
+        }
+
+        const dniRegex = /^[0-9]{8}$/;
+        if (!dniRegex.test(dni)) {
+            error.innerText = "DNI inválido (debe tener 8 dígitos)";
+            return;
+        }
+
+        const emp = { nombre, apellido, dni, cargo, salario, bono, descuentos };
+
+        fetch('/api/empleados', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(emp)
+        })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(err => {
+                        error.innerText = err.error;
+                    });
+                }
+                cargar();
+            });
+    }
+
+    function eliminar(id) {
+        fetch(`/api/empleados?id=${id}`, {
+            method: 'DELETE'
+        }).then(() => cargar());
+    }
+
+    window.onload = cargar;
+</script>
+
+</body>
+</html>
