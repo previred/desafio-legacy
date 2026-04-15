@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Empleados — Desafío Servlets y AJAX</title>
+    <link rel="stylesheet" href="/css/estilos.css"/>
+</head>
+<body>
+<a class="skip-link" href="#contenido-principal">Saltar al contenido</a>
+<nav class="navbar" aria-label="Navegación principal">
+    <div class="navbar-inner">
+        <a class="navbar-marca" href="/" title="Inicio">Empleados</a>
+        <ul class="navbar-links">
+            <li><a href="#nuevo-empleado">Formulario</a></li>
+            <li><a href="#listado">Listado</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main id="contenido-principal" class="contenedor" tabindex="-1">
+    <header class="cabecera">
+        <h1>Gestión de empleados</h1>
+        <p class="subtitulo">Alta, listado y baja sin recargar la página.</p>
+    </header>
+
+    <section id="nuevo-empleado" class="panel" aria-labelledby="titulo-form">
+        <h2 id="titulo-form">Nuevo empleado</h2>
+        <div id="errores-cliente" class="mensajes mensajes-error oculto" role="alert"></div>
+        <div id="errores-servidor" class="mensajes mensajes-error oculto" role="alert"></div>
+
+        <form id="form-empleado" novalidate>
+            <div class="grid">
+                <label>Nombre <input type="text" name="nombre" id="nombre" autocomplete="given-name" required/></label>
+                <label>Apellido <input type="text" name="apellido" id="apellido" autocomplete="family-name" required/></label>
+                <label>RUT (Chile) <input type="text" name="rutDni" id="rutDni" placeholder="12.345.678-5" required/></label>
+                <label>Cargo <input type="text" name="cargo" id="cargo" required/></label>
+                <label>Salario base <input type="number" name="salarioBase" id="salarioBase" min="400000" step="1" required/></label>
+                <label>Bono <input type="number" name="bono" id="bono" min="0" step="1" value="0"/></label>
+                <label>Descuentos <input type="number" name="descuentos" id="descuentos" min="0" step="1" value="0"/></label>
+            </div>
+            <button type="submit" class="btn primario">Agregar</button>
+        </form>
+    </section>
+
+    <section id="listado" class="panel" aria-labelledby="titulo-tabla">
+        <div class="panel-listado-cabecera">
+            <h2 id="titulo-tabla">Listado</h2>
+            <button type="button" class="btn secundario" id="btn-listar">Actualizar listado</button>
+        </div>
+        <p id="estado-carga" class="estado" aria-live="polite">Cargando…</p>
+        <p id="mensaje-vacio" class="mensaje-vacio oculto" role="status" aria-live="polite">No hay empleados registrados. Puede agregar uno con el formulario superior o volver a intentar más tarde.</p>
+        <div class="tabla-wrap" id="wrap-tabla-empleados">
+            <table class="tabla" id="tabla-empleados">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>RUT</th>
+                    <th>Cargo</th>
+                    <th>Salario base</th>
+                    <th>Bono</th>
+                    <th>Descuentos</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody id="tbody-empleados"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="pie-pagina">
+    <div class="pie-pagina-inner">
+        <p class="pie-pagina-texto">Desafío técnico · Servlets, JDBC (H2) y AJAX con Fetch API · Spring Boot + Tomcat embebido</p>
+        <p class="pie-pagina-meta">Documentación en el <code>README.md</code> del proyecto</p>
+    </div>
+</footer>
+
+<script src="/js/empleados.js" defer></script>
+</body>
+</html>
