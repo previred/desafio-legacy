@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+
 @Component
 public class EmpleadoValidator {
 
@@ -34,30 +36,30 @@ public class EmpleadoValidator {
         }
     }
 
-    private void validarSalarioBase(double salarioBase) {
-        if (salarioBase < 400000) {
+    private void validarSalarioBase(BigDecimal salarioBase) {
+        if (salarioBase.compareTo(new BigDecimal("400000")) < 0) {
             throw new ValidacionException("salarioBase",
                     "El salario base no puede ser menor a $400.000");
         }
     }
 
-    private void validarBono(double bono, double salarioBase) {
-        if (bono < 0) {
+    private void validarBono(BigDecimal bono, BigDecimal salarioBase) {
+        if (bono.compareTo(BigDecimal.ZERO) < 0) {
             throw new ValidacionException("bono",
                     "El bono no puede ser negativo");
         }
-        if (bono > salarioBase * 0.5) {
+        if (bono.compareTo(salarioBase.multiply(new BigDecimal("0.5"))) > 0) {
             throw new ValidacionException("bono",
                     "El bono no puede superar el 50% del salario base");
         }
     }
 
-    private void validarDescuentos(double descuentos, double salarioBase) {
-        if (descuentos < 0) {
+    private void validarDescuentos(BigDecimal descuentos, BigDecimal salarioBase) {
+        if (descuentos.compareTo(BigDecimal.ZERO) < 0) {
             throw new ValidacionException("descuentos",
                     "Los descuentos no pueden ser negativos");
         }
-        if (descuentos > salarioBase) {
+        if (descuentos.compareTo(salarioBase) > 0) {
             throw new ValidacionException("descuentos",
                     "El total de descuentos no puede ser mayor al salario base");
         }

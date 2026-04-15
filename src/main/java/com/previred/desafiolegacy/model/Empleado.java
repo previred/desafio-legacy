@@ -1,5 +1,7 @@
 package com.previred.desafiolegacy.model;
 
+import java.math.BigDecimal;
+
 public class Empleado {
 
     private Long id;
@@ -7,14 +9,14 @@ public class Empleado {
     private String apellido;
     private String rut;
     private String cargo;
-    private double salarioBase;
-    private double bono;
-    private double descuentos;
+    private BigDecimal salarioBase;
+    private BigDecimal bono;
+    private BigDecimal descuentos;
 
     public Empleado() {}
 
     public Empleado(Long id, String nombre, String apellido, String rut,
-                    String cargo, double salarioBase, double bono, double descuentos) {
+                    String cargo, BigDecimal salarioBase, BigDecimal bono, BigDecimal descuentos) {
         this.id = id;
         this.nombre = nombre;
         this.apellido = apellido;
@@ -40,12 +42,12 @@ public class Empleado {
     public String getCargo() { return cargo; }
     public void setCargo(String cargo) { this.cargo = cargo; }
 
-    public double getSalarioBase() { return salarioBase; }
-    public void setSalarioBase(double salarioBase) { this.salarioBase = salarioBase; }
+    public BigDecimal getSalarioBase() { return salarioBase; }
+    public void setSalarioBase(BigDecimal salarioBase) { this.salarioBase = salarioBase; }
 
-    public double getBono() { return bono; }
-    public void setBono(double bono) { this.bono = bono; }
+    public BigDecimal getBono() { return bono; }
+    public void setBono(BigDecimal bono) { this.bono = bono; }
 
-    public double getDescuentos() { return descuentos; }
-    public void setDescuentos(double descuentos) { this.descuentos = descuentos; }
+    public BigDecimal getDescuentos() { return descuentos; }
+    public void setDescuentos(BigDecimal descuentos) { this.descuentos = descuentos; }
 }

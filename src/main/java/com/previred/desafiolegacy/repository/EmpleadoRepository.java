@@ -31,9 +31,9 @@ public class EmpleadoRepository {
             rs.getString("apellido"),
             rs.getString("rut"),
             rs.getString("cargo"),
-            rs.getDouble("salario_base"),
-            rs.getDouble("bono"),
-            rs.getDouble("descuentos")
+            rs.getBigDecimal("salario_base"),
+            rs.getBigDecimal("bono"),
+            rs.getBigDecimal("descuentos")
     );
 
     public List<Empleado> findAll() {
@@ -67,9 +67,9 @@ public class EmpleadoRepository {
             ps.setString(2, empleado.getApellido());
             ps.setString(3, empleado.getRut());
             ps.setString(4, empleado.getCargo());
-            ps.setDouble(5, empleado.getSalarioBase());
-            ps.setDouble(6, empleado.getBono());
-            ps.setDouble(7, empleado.getDescuentos());
+            ps.setBigDecimal(5, empleado.getSalarioBase());
+            ps.setBigDecimal(6, empleado.getBono());
+            ps.setBigDecimal(7, empleado.getDescuentos());
             return ps;
         }, keyHolder);
 

@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,15 +32,15 @@ public class EmpleadoServiceTest {
     @Test
     void obtenerTodos_retornaListaOrdenadaPorNombre() {
         Empleado pedro = new Empleado(1L, "Pedro", "Reyes", "11111111-1",
-                "Developer", 800000, 100000, 50000);
-        Empleado ana = new Empleado(2L, "Ana", "Fernandez", "22222222-2",
-                "Designer", 700000, 50000, 30000);
-        when(empleadoRepository.findAll()).thenReturn(Arrays.asList(pedro, ana));
+                "Developer", new BigDecimal("800000"), new BigDecimal("100000"), new BigDecimal("50000"));
+        Empleado luisa = new Empleado(2L, "Luisa", "Fernandez", "22222222-2",
+                "Designer", new BigDecimal("700000"), new BigDecimal("50000"), new BigDecimal("30000"));
+        when(empleadoRepository.findAll()).thenReturn(Arrays.asList(pedro, luisa));
 
         List<Empleado> resultado = empleadoService.obtenerTodos();
 
         assertEquals(2, resultado.size());
-        assertEquals("Ana", resultado.get(0).getNombre());
+        assertEquals("Luisa", resultado.get(0).getNombre());
         assertEquals("Pedro", resultado.get(1).getNombre());
     }
 
@@ -64,10 +65,10 @@ public class EmpleadoServiceTest {
 
     @Test
     void crear_guardaEmpleado_cuandoDatosValidos() {
-        Empleado empleado = new Empleado(null, "Ana", "Fernandez", "22222222-2",
-                "Developer", 800000, 200000, 50000);
-        Empleado empleadoGuardado = new Empleado(1L, "Ana", "Fernandez", "22222222-2",
-                "Developer", 800000, 200000, 50000);
+        Empleado empleado = new Empleado(null, "Pedro", "Reyes", "11111111-1",
+                "Developer", new BigDecimal("800000"), new BigDecimal("200000"), new BigDecimal("50000"));
+        Empleado empleadoGuardado = new Empleado(1L, "Pedro", "Reyes", "11111111-1",
+                "Developer", new BigDecimal("800000"), new BigDecimal("200000"), new BigDecimal("50000"));
 
         when(empleadoRepository.save(empleado)).thenReturn(empleadoGuardado);
 

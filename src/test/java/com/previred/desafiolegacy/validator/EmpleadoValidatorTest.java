@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,19 +35,27 @@ public class EmpleadoValidatorTest {
         empleadoValidator = new EmpleadoValidator(empleadoRepository);
     }
 
-    static Stream<Double> salariosInvalidos() {
-        return Stream.of(0.0, 100000.0, 399999.0);
+    static Stream<BigDecimal> salariosInvalidos() {
+        return Stream.of(
+                new BigDecimal("0"),
+                new BigDecimal("100000"),
+                new BigDecimal("399999")
+        );
     }
 
-    static Stream<Double> salariosValidos() {
-        return Stream.of(400000.0, 500000.0, 1000000.0);
+    static Stream<BigDecimal> salariosValidos() {
+        return Stream.of(
+                new BigDecimal("400000"),
+                new BigDecimal("500000"),
+                new BigDecimal("1000000")
+        );
     }
 
     @ParameterizedTest
     @MethodSource("salariosInvalidos")
-    void validar_lanzaExcepcion_cuandoSalarioMenorA400000(double salario) {
-        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT,
-                CARGO, salario, 0, 0);
+    void validar_lanzaExcepcion_cuandoSalarioMenorA400000(BigDecimal salario) {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                salario, BigDecimal.ZERO, BigDecimal.ZERO);
         when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
 
         ValidacionException ex = assertThrows(ValidacionException.class,
@@ -57,9 +66,9 @@ public class EmpleadoValidatorTest {
 
     @ParameterizedTest
     @MethodSource("salariosValidos")
-    void validar_noLanzaExcepcion_cuandoSalarioValido(double salario) {
-        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT,
-                CARGO, salario, 0, 0);
+    void validar_noLanzaExcepcion_cuandoSalarioValido(BigDecimal salario) {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                salario, BigDecimal.ZERO, BigDecimal.ZERO);
         when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
 
         assertDoesNotThrow(() -> empleadoValidator.validar(empleado));
@@ -67,8 +76,8 @@ public class EmpleadoValidatorTest {
 
     @Test
     void validar_lanzaExcepcion_cuandoBonoSuperaEl50Porciento() {
-        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT,
-                CARGO, 1000000, 600000, 0);
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("1000000"), new BigDecimal("600000"), BigDecimal.ZERO);
         when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
 
         ValidacionException ex = assertThrows(ValidacionException.class,
@@ -79,8 +88,8 @@ public class EmpleadoValidatorTest {
 
     @Test
     void validar_lanzaExcepcion_cuandoDescuentosSuperanSalario() {
-        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT,
-                CARGO, 1000000, 0, 1500000);
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("1000000"), BigDecimal.ZERO, new BigDecimal("1500000"));
         when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
 
         ValidacionException ex = assertThrows(ValidacionException.class,
@@ -91,8 +100,8 @@ public class EmpleadoValidatorTest {
 
     @Test
     void validar_lanzaExcepcion_cuandoRutDuplicado() {
-        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT,
-                CARGO, 1000000, 0, 0);
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("1000000"), BigDecimal.ZERO, BigDecimal.ZERO);
         when(empleadoRepository.existsByRut(RUT)).thenReturn(true);
 
         ValidacionException ex = assertThrows(ValidacionException.class,
@@ -103,8 +112,8 @@ public class EmpleadoValidatorTest {
 
     @Test
     void validar_noLanzaExcepcion_cuandoEmpleadoValido() {
-        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT,
-                CARGO, 1000000, 400000, 500000);
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("1000000"), new BigDecimal("400000"), new BigDecimal("500000"));
         when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
 
         assertDoesNotThrow(() -> empleadoValidator.validar(empleado));

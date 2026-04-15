@@ -8,23 +8,44 @@ function cargarEmpleados() {
             tbody.innerHTML = '';
 
             if (empleados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="sin-empleados">No hay empleados registrados</td></tr>';
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.setAttribute('colspan', '9');
+                td.className = 'sin-empleados';
+                td.textContent = 'No hay empleados registrados';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
                 return;
             }
 
             empleados.forEach(empleado => {
                 const fila = document.createElement('tr');
-                fila.innerHTML = `
-                    <td>${empleado.id}</td>
-                    <td>${empleado.nombre}</td>
-                    <td>${empleado.apellido}</td>
-                    <td>${empleado.rut}</td>
-                    <td>${empleado.cargo}</td>
-                    <td>$${empleado.salarioBase.toLocaleString('es-CL')}</td>
-                    <td>$${empleado.bono.toLocaleString('es-CL')}</td>
-                    <td>$${empleado.descuentos.toLocaleString('es-CL')}</td>
-                    <td><button class="btn-eliminar" onclick="eliminarEmpleado(${empleado.id})">Eliminar</button></td>
-                `;
+
+                const celdas = [
+                    empleado.id,
+                    empleado.nombre,
+                    empleado.apellido,
+                    empleado.rut,
+                    empleado.cargo,
+                    '$' + empleado.salarioBase.toLocaleString('es-CL'),
+                    '$' + empleado.bono.toLocaleString('es-CL'),
+                    '$' + empleado.descuentos.toLocaleString('es-CL')
+                ];
+
+                celdas.forEach(valor => {
+                    const td = document.createElement('td');
+                    td.textContent = valor;
+                    fila.appendChild(td);
+                });
+
+                const tdAccion = document.createElement('td');
+                const boton = document.createElement('button');
+                boton.className = 'btn-eliminar';
+                boton.textContent = 'Eliminar';
+                boton.addEventListener('click', () => eliminarEmpleado(empleado.id));
+                tdAccion.appendChild(boton);
+                fila.appendChild(tdAccion);
+
                 tbody.appendChild(fila);
             });
         })
