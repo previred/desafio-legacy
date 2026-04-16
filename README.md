@@ -1,72 +1,72 @@
-# Desafío Técnico: Servlets y AJAX
+# Sistema de Gestión de Empleados - Desafío Técnico Previred
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Este proyecto es una aplicación web para la gestión de empleados, desarrollada como parte de un desafío técnico. La solución integra una arquitectura limpia, validaciones de negocio robustas y una interfaz dinámica sin el uso de frameworks de persistencia pesados, cumpliendo con los requisitos de desarrollo "Legacy" y modernización con AJAX.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## 🚀 Tecnologías Utilizadas
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+* **Backend:** Java 8+, Spring Boot 2.7.x (como contenedor), Servlets nativos (`javax.servlet`).
+* **Persistencia:** JDBC Nativo con base de datos H2 (en memoria).
+* **Frontend:** HTML5, CSS3 y JavaScript Vanilla (Fetch API).
+* **Documentación:** OpenAPI 3.0 (Swagger).
+* **Gestión de Dependencias:** Maven.
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+## 🛠️ Requisitos Previos
 
-  Datos esperados del empleado: 
+* Java JDK 8 o superior instalado.
+* Maven 3.6+ instalado.
+* Navegador web moderno (Chrome, Firefox, Edge).
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+## 📥 Instalación y Ejecución
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+1.  **Clonar el repositorio:**
+    ```bash
+    git clone [https://github.com/tu-usuario/desafio-previred.git](https://github.com/tu-usuario/desafio-previred.git)
+    cd desafio-previred
+    ```
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+2.  **Compilar el proyecto:**
+    ```bash
+    mvn clean install
+    ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+3.  **Ejecutar la aplicación:**
+    ```bash
+    mvn spring-boot:run
+    ```
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+4.  **Acceder a la aplicación:**
+    Abre tu navegador en: [http://localhost:8080](http://localhost:8080)
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
-```
+## 📝 Reglas de Negocio Implementadas
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+La aplicación valida automáticamente las siguientes reglas antes de permitir el registro de un empleado:
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+1.  **Salario Mínimo:** No se permiten registros con un salario base inferior a **$400.000**.
+2.  **Tope de Bonos:** El monto por concepto de bonos no puede superar el **50% del salario base**.
+3.  **Tope de Descuentos:** El total de descuentos no puede ser superior al **salario base**.
+4.  **RUT Único:** No se permite el registro de dos empleados con el mismo RUT.
+5.  **Campos Obligatorios:** Validación de integridad para asegurar que los datos básicos estén presentes.
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+## 🔍 Cómo Probar la Aplicación
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+### Interfaz Web (Frontend)
+1.  Ingresa a `http://localhost:8080`.
+2.  Completa el formulario. El sistema calculará automáticamente el **Sueldo Líquido** en la tabla inferior.
+3.  Intenta ingresar un salario de `$300.000` para observar la captura de errores dinámicos (HTTP 400).
+4.  Utiliza el botón **Eliminar** para probar la persistencia en tiempo real.
+
+### API y Documentación (Swagger)
+* Puedes consultar la definición de la API en el archivo `swagger.yaml` incluido en la raíz.
+* Para probar los endpoints manualmente, puedes usar herramientas como Postman o el navegador:
+    * **GET** `http://localhost:8080/api/empleados` (Listar todos).
+    * **POST** `http://localhost:8080/api/empleados` (Registrar).
+    * **DELETE** `http://localhost:8080/api/empleados?id=1` (Eliminar).
+
+### Consola de Base de Datos
+Para visualizar las tablas en tiempo real:
+* URL: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+* JDBC URL: `jdbc:h2:mem:previred_db`
+* User: `sa` | Password: (en blanco)
+
+---
+Desarrollado por **Franco Carrasco** - Abril 2026
