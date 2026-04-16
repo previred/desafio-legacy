@@ -195,4 +195,13 @@ public class EmpleadoValidatorTest {
 
         assertDoesNotThrow(() -> empleadoValidator.validar(empleado));
     }
+
+    @Test
+    void validar_noLanzaExcepcion_cuandoDescuentosSonExactamenteIgualesAlSalario() {
+        Empleado empleado = new Empleado(null, NOMBRE, APELLIDO, RUT, CARGO,
+                new BigDecimal("1000000"), BigDecimal.ZERO, new BigDecimal("1000000"));
+        when(empleadoRepository.existsByRut(RUT)).thenReturn(false);
+
+        assertDoesNotThrow(() -> empleadoValidator.validar(empleado));
+    }
 }

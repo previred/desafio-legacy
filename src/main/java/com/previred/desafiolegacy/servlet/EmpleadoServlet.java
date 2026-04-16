@@ -43,7 +43,7 @@ public class EmpleadoServlet extends HttpServlet {
             List<Empleado> empleados = empleadoService.obtenerTodos();
             enviarRespuestaJson(response, HttpServletResponse.SC_OK, empleados);
         } catch (Exception e) {
-            logger.error("Error procesando GET /api/empleados: {}", e.getMessage());
+            logger.error("Error procesando GET /api/empleados", e);
             enviarRespuestaJson(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     Map.of("error", "Error al obtener la lista de empleados"));
         }
@@ -62,7 +62,7 @@ public class EmpleadoServlet extends HttpServlet {
             enviarRespuestaJson(response, HttpServletResponse.SC_BAD_REQUEST,
                     Map.of("campo", e.getCampo(), "error", e.getMessage()));
         } catch (Exception e) {
-            logger.error("Error procesando POST /api/empleados: {}", e.getMessage());
+            logger.error("Error procesando POST /api/empleados", e);
             enviarRespuestaJson(response, HttpServletResponse.SC_BAD_REQUEST,
                     Map.of("error", "El cuerpo de la solicitud no es un JSON válido"));
         }
