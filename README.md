@@ -1,72 +1,151 @@
-# Desafío Técnico: Servlets y AJAX
+# 📌 DemoPrevired - API de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## 📖 Descripción
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+Proyecto backend desarrollado con **Spring Boot** que expone una API REST para la gestión de empleados.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
-
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
-
-  Datos esperados del empleado: 
-
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
-
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
-
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+Permite realizar operaciones Crear, Leer y Eliminar sobre empleados mediante el endpoint:
 
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+/api/empleados
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+---
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+## 🚀 Tecnologías utilizadas
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+* Java 17
+* Spring Boot
+* Spring Data JPA
+* H2 Database (en memoria)
+* Maven
+* Lombok
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+---
+
+## ⚙️ Configuración del proyecto
+
+### 🔧 Requisitos
+
+* Java 17+
+* Maven 3+
+
+---
+
+### ▶️ Ejecutar la aplicación
+
+```bash
+mvn spring-boot:run
+```
+
+La aplicación se ejecutará en:
+
+```
+http://localhost:8080
+```
+
+---
+
+## 🗄️ Base de datos H2
+
+Accede a la consola H2:
+
+```
+http://localhost:8080/h2-console
+```
+
+### 🔑 Configuración:
+
+* **JDBC URL:** `jdbc:h2:mem:testdb`
+* **User:** `sa`
+* **Password:** (vacío)
+
+---
+
+## 📌 Endpoints disponibles
+
+### 📍 Obtener todos los empleados
+
+```http
+GET http://localhost:8080/api/empleados
+```
+
+---
+
+### 📍 Crear empleado
+
+```http
+POST http://localhost:8080/api/empleados
+```
+
+#### Body ejemplo:
+
+```json
+{
+  "nombre":"test",
+  "apellido":"test2",
+  "rut":"12345678-5",
+  "cargo":"dev",
+  "salario":300000,
+  "bonos":200000,
+  "descuentos":700000
+}
+```
+
+---
+
+### 📍 Eliminar empleado
+
+```http
+DELETE http://localhost:8080/api/empleados/{id}
+```
+
+---
+
+## ✔️ Validaciones
+
+El sistema valida:
+
+* Campos obligatorios
+* Formato de RUT
+* Datos numéricos (salario)
+
+---
+
+## 🧪 Testing
+
+Para ejecutar los tests:
+
+```bash
+mvn test
+```
+
+---
+
+## 📂 Estructura del proyecto
+
+```
+src/
+ ├── config/
+ ├── domain/
+ ├── entity/
+ ├── exception/
+ ├── mapper/
+ ├── repository/
+ ├── service/
+ └── servlet/
+```
+
+---
+
+## 📌 Notas
+
+* La base de datos es en memoria, por lo que los datos se pierden al reiniciar la aplicación.
+* Ideal para pruebas y desarrollo.
+
+---
+
+## 👨‍💻 Autor
+
+Proyecto desarrollado como prueba técnica.
+Rodrigo Sanchez
