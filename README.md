@@ -1,72 +1,123 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafío Técnico — Gestión de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Aplicación web para gestión de empleados construida con Java 21, Spring Boot, Servlets puros y JDBC sobre H2 in-memory.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+---
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+## Requisitos previos
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+- Java 21
+- Maven 3.6+ (o usar el Maven Wrapper incluido `./mvnw`)
 
-  Datos esperados del empleado: 
-
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
-
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
-
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+Verificar versión de Java:
+```bash
+java -version
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+Para ejecutar sin Maven instalado globalmente usar `./mvnw` en lugar de `mvn`.
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
+---
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+## Ejecutar la aplicación
+
+```bash
+./mvnw spring-boot:run
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+La aplicación estará disponible en: http://localhost:8080
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+---
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+## Ejecutar los tests
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```bash
+./mvnw test
+```
+
+---
+
+## Endpoints disponibles
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | /api/empleados | Retorna lista de empleados ordenada por nombre |
+| POST | /api/empleados | Crea un nuevo empleado |
+| DELETE | /api/empleados/{id} | Elimina un empleado por ID |
+
+### Ejemplo POST
+
+```json
+{
+    "nombre": "Wilson",
+    "apellido": "Fisk",
+    "rut": "12345678-9",
+    "cargo": "Desarrollador Backend",
+    "salarioBase": 800000,
+    "bono": 200000,
+    "descuentos": 50000
+}
+```
+
+### Validaciones backend
+
+- RUT no puede estar duplicado
+- Salario base mínimo: $400.000
+- Bono máximo: 50% del salario base
+- Descuentos no pueden superar el salario base
+- Bono y descuentos son opcionales (valor por defecto: 0)
+
+---
+
+## Consola H2
+
+Durante el desarrollo, la consola H2 está disponible en: http://localhost:8080/h2-console
+
+| Campo | Valor |
+|-------|-------|
+| JDBC URL | jdbc:h2:mem:empleadosdb |
+| Username | sa |
+| Password | (vacío) |
+
+---
+
+## Decisiones de diseño
+
+**Servlets puros con ServletRegistrationBean**
+Los endpoints se implementaron con `HttpServlet` registrado manualmente via `ServletRegistrationBean`, sin usar `@RestController` ni Spring MVC, cumpliendo el requisito de la prueba.
+
+**JDBC puro con JdbcTemplate**
+La persistencia se implementó con `JdbcTemplate` sin JPA ni Hibernate. El mapeo de filas a objetos se realiza con `RowMapper` usando lambdas.
+
+**Arquitectura por capas**
+`EmpleadoServlet` → `EmpleadoService` → `EmpleadoRepository` + `EmpleadoValidator`. Cada capa tiene una única responsabilidad (SOLID - SRP).
+
+**Inyección de dependencias por constructor**
+Todas las dependencias se inyectan por constructor, cumpliendo el principio de Inversión de Dependencias (SOLID - DIP).
+
+**BigDecimal para valores monetarios**
+Los campos monetarios (salarioBase, bono, descuentos) usan `BigDecimal` en lugar de `double` para garantizar precisión decimal exacta — crítico en sistemas de nómina.
+
+**Ordenamiento en Java con Streams**
+La lista de empleados se ordena alfabéticamente por nombre usando `Stream.sorted()` con `Comparator.comparing()`, demostrando el uso de lambdas y Streams requerido por el enunciado.
+
+**Prevención XSS**
+El frontend usa `createElement` + `textContent` en lugar de `innerHTML` para renderizar datos del servidor, previniendo XSS.
+
+**Protección SQL Injection**
+`JdbcTemplate` usa queries parametrizadas en todas las operaciones, previniendo SQL Injection.
+
+---
+
+## Limitaciones conocidas
+
+- El catch genérico en `doPost` retorna "El cuerpo de la solicitud no es un JSON válido" para cualquier error no controlado, incluyendo errores internos del servidor. En producción se separarían los tipos de excepción.
+- Los datos no persisten al reiniciar la aplicación — H2 in-memory es intencional para este contexto de prueba.
+
+---
+
+## Mejoras futuras
+
+- Validación del dígito verificador del RUT chileno (algoritmo módulo 11)
+- Ordenamiento por columnas en la tabla del frontend
+- Sanitización de largo máximo en campos de texto
+- Tests de integración para `EmpleadoRepository` con `@JdbcTest`
