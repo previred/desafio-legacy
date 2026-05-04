@@ -1,72 +1,208 @@
-# Desafío Técnico: Servlets y AJAX
+# Sistema de Gestión de Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Sistema web para gestión de empleados con arquitectura en capas, implementando Servlets, AJAX, validaciones de RUT chileno y reglas de negocio.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+**Documentación de cumplimiento**: Ver [CUMPLIMIENTO_DESAFIO.md](CUMPLIMIENTO_DESAFIO.md) para trazabilidad completa de requisitos.
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+## Stack Tecnológico
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+**Backend**:
+- Java 8 (Lambdas, Streams, Optional)
+- Spring Boot 2.7.18 + Apache Tomcat embebido
+- Servlets 4.0.1
+- JDBC puro (sin ORM) + HikariCP
+- H2 Database (in-memory)
+- Jackson (JSON)
+- SLF4J + Logback
 
-  Datos esperados del empleado: 
+**Frontend**:
+- HTML5 + CSS3
+- JavaScript Vanilla (sin frameworks)
+- Fetch API (AJAX nativo)
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+**Testing**:
+- JUnit 4 + Mockito
+- 37 tests unitarios
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+## Requisitos Previos
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+- JDK 8 o superior
+- Maven 3.6+
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+## Instalación y Ejecución
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+### 1. Clonar e instalar
+```bash
+git clone https://github.com/Angelocerpa/desafio-legacy.git
+cd desafio-legacy
+mvn clean install
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+### 2. Ejecutar aplicación
+```bash
+mvn spring-boot:run
+```
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+### 3. Acceder
+- **Aplicación**: http://localhost:8080
+- **H2 Console**: http://localhost:8080/h2-console
+  - JDBC URL: `jdbc:h2:mem:empleadosdb`
+  - User: `sa`
+  - Password: (vacío)
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+## Arquitectura
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```
+Frontend (HTML/JS/CSS)
+    ↓ HTTP/JSON
+EmpleadoServlet (REST Controller)
+    ↓
+EmpleadoService (Business Logic)
+    ↓
+EmpleadoValidator + RutValidator
+    ↓
+EmpleadoDAO (JDBC)
+    ↓
+H2 Database (In-Memory)
+```
+
+**Patrones aplicados**: DAO, DTO, Service Layer, Dependency Injection
+
+**Principios SOLID**: Separación de responsabilidades, interfaces segregadas, inversión de dependencias
+
+## API REST
+
+### GET /api/empleados
+Listar todos los empleados
+
+**Response 200**:
+```json
+[
+  {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "rut": "12.345.678-5",
+    "cargo": "Desarrollador Senior",
+    "salarioBase": 1200000,
+    "bonos": 300000,
+    "descuentos": 50000,
+    "salarioTotal": 1450000
+  }
+]
+```
+
+### POST /api/empleados
+Crear nuevo empleado
+
+**Request**:
+```json
+{
+  "nombre": "María",
+  "apellido": "González",
+  "rut": "23.456.789-6",
+  "cargo": "Product Manager",
+  "salarioBase": 1500000,
+  "bonos": 500000,
+  "descuentos": 100000
+}
+```
+
+**Response 201**: Empleado creado
+
+**Response 400**: Errores de validación
+```json
+{
+  "errors": [
+    "El RUT ya existe en el sistema",
+    "Los bonos no pueden superar el 50% del salario base"
+  ]
+}
+```
+
+### DELETE /api/empleados/{id}
+Eliminar empleado por ID
+
+**Response 204**: Eliminado exitosamente
+
+## Validaciones
+
+### Backend (Java)
+- RUT único (no duplicados)
+- RUT válido con algoritmo Módulo 11
+- Salario base: $400.000 - $100.000.000
+- Bonos: máximo 50% del salario base
+- Descuentos: máximo igual al salario base
+- Campos obligatorios
+
+### Frontend (JavaScript)
+- Validación de RUT en tiempo real
+- Auto-formateo de RUT (XX.XXX.XXX-X)
+- Validación de rangos numéricos
+- Mensajes de error dinámicos (sin alerts)
+
+## Testing
+
+```bash
+mvn test
+```
+
+**Cobertura**: 37/37 tests pasando
+- RutValidatorTest: Algoritmo Módulo 11
+- EmpleadoValidatorTest: Reglas de negocio
+- EmpleadoServiceTest: Lógica con Mockito
+- EmpleadoDAOTest: JDBC con H2
+
+## Estructura del Proyecto
+
+```
+src/
+├── main/java/com/previred/empleados/
+│   ├── servlet/         # EmpleadoServlet (REST endpoints)
+│   ├── service/         # Lógica de negocio
+│   ├── dao/             # Acceso a datos JDBC
+│   ├── validator/       # Validadores (RUT, reglas)
+│   ├── model/           # Entidad Empleado
+│   ├── dto/             # Request/Response/Error DTOs
+│   └── exception/       # Excepciones personalizadas
+├── main/resources/
+│   ├── application.properties
+│   ├── schema.sql       # DDL
+│   └── data.sql         # Datos iniciales
+├── main/webapp/
+│   ├── index.html
+│   ├── css/styles.css
+│   └── js/
+│       ├── app.js       # Lógica UI
+│       ├── api.js       # Cliente REST
+│       └── validator.js # Validaciones cliente
+└── test/java/           # Tests unitarios
+```
+
+## Características Destacadas
+
+**Java 8**:
+- Lambdas y method references
+- Streams para transformaciones
+- Optional para manejo de nulos
+
+**Seguridad**:
+- PreparedStatement (prevención SQL injection)
+- Validación multi-capa
+- Manejo centralizado de excepciones
+
+**Buenas Prácticas**:
+- Código limpio y legible
+- Logging estructurado
+- Connection pooling
+- Configuración externalizada
+- Tests con alta cobertura
+
+## Datos de Prueba
+
+La aplicación incluye 3 empleados iniciales:
+1. Juan Pérez - RUT: 12.345.678-5
+2. María González - RUT: 23.456.789-6
+3. Carlos Rodríguez - RUT: 18.765.432-7
+
+Todos los RUTs validados con algoritmo Módulo 11.
