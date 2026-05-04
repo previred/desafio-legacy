@@ -33,7 +33,7 @@ mvn spring-boot:run
 O bien:
 ```bash
 mvn clean package
-target/empleados-1.0.0.jar
+java -jar target/empleados-1.0.0.jar
 ```
 
 ## URL
