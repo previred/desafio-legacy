@@ -311,13 +311,3 @@ footer {
     text-align: right;
     font-variant-numeric: tabular-nums;
 }
-
-.success-message {
-    background-color: #d4edda;
-    border: 1px solid #28a745;
-    color: #155724;
-    padding: 15px;
-    border-radius: 6px;
-    margin-top: 20px;
-    display: none;
-}
