@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Empleados - Desafío Previred</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .form-container { background: #f9f9f9; padding: 15px; border-radius: 5px; }
+        input { margin: 5px; padding: 8px; }
+        button { cursor: pointer; padding: 8px 15px; }
+        .btn-add { background-color: #28a745; color: white; border: none; }
+        .btn-del { background-color: #dc3545; color: white; border: none; }
+    </style>
+</head>
+<body>
+
+    <h2>Agregar Nuevo Empleado</h2>
+    <div class="form-container">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="apellido" placeholder="Apellido" required>
+        <input type="text" id="rut" placeholder="RUT/DNI" required>
+        <input type="text" id="cargo" placeholder="Cargo" required>
+        <input type="number" id="salario" placeholder="Salario" required>
+        <button class="btn-add" onclick="agregarEmpleado()">Agregar</button>
+    </div>
+	<label id="messages"></label>
+    <h2>Lista de Empleados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>RUT</th>
+                <th>Cargo</th>
+                <th>Salario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tablaEmpleados">
+            </tbody>
+    </table>
+	<script src="js/script.js"></script>
+<!--    <script>-->
+<!--        const API_URL = '/api/empleados';-->
+<!--		window.onload = cargarEmpleados;-->
+<!--    </script>-->
+</body>
+</html>
