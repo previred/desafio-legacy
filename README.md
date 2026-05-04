@@ -1,72 +1,146 @@
-# Desafío Técnico: Servlets y AJAX
+# Gestión de Empleados — Desafío Técnico
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+Aplicación web Java 8 para gestión de empleados, implementada con **Arquitectura Hexagonal** (Puertos y Adaptadores), Servlets nativos y AJAX vanilla.
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+## Stack Tecnológico
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
+| Componente | Tecnología |
+|---|---|
+| Lenguaje | Java 8 |
+| Runtime / Contenedor | Spring Boot 2.7.18 + Apache Tomcat 9 (embebido) |
+| Endpoints | Servlets nativos (`javax.servlet`) |
+| Persistencia | JDBC nativo + H2 en memoria |
+| Serialización JSON | Gson 2.10.1 |
+| Frontend | HTML5 + JavaScript Vanilla (Fetch API) |
+| Build | Maven 3.x |
+| Tests | JUnit 5 + Mockito |
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+## Requisitos
 
-  Datos esperados del empleado: 
+- Java 8 o superior
+- Maven 3.6 o superior
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+## Cómo ejecutar
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+```bash
+# 1. Clonar o descomprimir el proyecto
+cd empleados-app
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+# 2. Compilar y ejecutar
+mvn spring-boot:run
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+La aplicación levanta en **http://localhost:8080**
+
+## Endpoints disponibles
+
+| Método | URL | Descripción |
+|---|---|---|
+| `GET` | `/api/empleados` | Retorna lista de empleados en JSON |
+| `POST` | `/api/empleados` | Agrega un nuevo empleado |
+| `DELETE` | `/api/empleados?id={id}` | Elimina un empleado por ID |
+
+### Ejemplo POST
+
+```json
+POST /api/empleados
+Content-Type: application/json
+
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "rut": "12345678-5",
+  "cargo": "Desarrollador",
+  "salarioBase": 600000,
+  "bono": 200000,
+  "descuentos": 50000
+}
+```
+
+Respuesta exitosa `201 Created`:
+```json
+{
+  "id": 1,
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "rut": "12345678-5",
+  "cargo": "Desarrollador",
+  "salarioBase": 600000.0,
+  "bono": 200000.0,
+  "descuentos": 50000.0,
+  "salarioNeto": 750000.0
+}
+```
+
+Respuesta de error `400 Bad Request`:
+```json
+{
+  "errores": ["El salario base ($300000) no puede ser menor a $400000"],
+  "timestamp": "2026-05-04T03:57:21Z"
+}
+```
+
+## Reglas de Negocio validadas
+
+| Regla | Comportamiento |
+|---|---|
+| Salario base mínimo | No puede ser menor a **$400.000** |
+| Tope de bono | No puede superar el **50% del salario base** |
+| Tope de descuentos | No pueden superar el **salario base** |
+| RUT único | Se rechaza RUT ya registrado |
+| Formato RUT | Validación de formato y dígito verificador (módulo 11 chileno) |
+
+Toda violación retorna `HTTP 400` con JSON de errores. Múltiples infracciones se reportan en un solo response.
+
+## Interfaz Web
+
+Abrir en el navegador: **http://localhost:8080/index.html**
+
+- Lista de empleados con actualización dinámica (sin recargar página)
+- Formulario de alta con validaciones en frontend antes de enviar
+- Botón de eliminar por empleado
+- Mensajes de error inline (sin `alert()`)
+
+## Ejecutar los tests
+
+```bash
+mvn test
+```
+
+12 tests unitarios sobre las reglas de negocio (`ValidacionServiceImplTest`):
+- Salario base exacto en el límite ($400.000)
+- Salario base por debajo del límite
+- Bono exactamente al 50%
+- Bono sobre el 50%
+- Descuentos iguales al salario base
+- Descuentos sobre el salario base
+- RUT válido (módulo 11)
+- RUT con dígito verificador K
+- RUT con formato inválido
+- RUT con dígito verificador incorrecto
+- Múltiples errores reportados juntos
+
+## Consola H2
+
+Base de datos accesible en: **http://localhost:8080/h2-console**
+- JDBC URL: `jdbc:h2:mem:empleadosdb`
+- Usuario: `sa`
+- Contraseña: *(vacía)*
+
+## Arquitectura
 
 ```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+com.mindgrid.empleados/
+├── adapters/
+│   ├── inbound/web/         # Servlets, DTOs, Mapper Web, WebExceptionHandler
+│   └── outbound/database/   # EmpleadoDbAdapter (JDBC), Entity, DbMapper
+├── application/usecase/     # GestionEmpleadoUseCase (interfaz + implementación)
+├── domain/
+│   ├── model/               # Empleado (Builder pattern)
+│   ├── exception/           # BusinessException
+│   ├── repository/          # EmpleadoRepository (interfaz — puerto de salida)
+│   └── service/             # ValidacionService (interfaz + implementación)
+└── infrastructure/config/   # DbConnectionConfig (DataSource H2)
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
-
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
-
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
-
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+El dominio no tiene ninguna dependencia de Spring, HTTP ni JDBC. Las reglas de negocio viven exclusivamente en `domain/service/ValidacionServiceImpl`.
