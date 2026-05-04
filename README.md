@@ -1,72 +1,58 @@
-# Desafío Técnico: Servlets y AJAX
+# Desafio Legacy
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+**Descripción:** 
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+La estructura del proyecto es un aplicacione web para la gestion de empleados contruido con java 1.8 y javascript como estipula las intrucciones entregadas en el desafio.  La applicacion presenta un CRUD deform asincrona utilizando una capa api y base datos h2 en memoria. 
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+**Tecnoligas Utilizada:** 
+ - Java 1.8
+ - Maven
+ - SpringBoot (runtime)
+ - Java Servlets
+ - H2 Database
+ - Jacson
+ - SLF4J
+ - Javascript Vanilla
 
-  Datos esperados del empleado: 
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+** Arquitectura y Diseño:**
+El proyecto esta construido en capas:
+ 1. Controlladores: Expone las apis de employees para que se comuniquen con el front.
+ 2. Servicios: Encapsula lógica de negocios y validaciones. 
+ 3. Repository: Encapsula la conexión a la base datos.
+ 4- Front: Interfaz de usuario en html con javascrip y ajax.
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+### Requisito
+ - Java 1.8
+ - Maven
+ 
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
-```
+### Configuración del Entorno de Desarrollo
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
+    ***Clonar repositorio***
+    ```bash
+        git clone https://github.com/previred/desafio-legacy.git
+    ```
+    ***Compilar y descargar dependencias***
+    ```bash
+        mvn clean install
+    ```
+    ***Ejecutar***
+    ```bash
+       mvn spring-boot:run
+    ```
 
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
 
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
-```
+## Api EndPoint
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+| Metodo| Endpoint |Descripción|
+| ------------------------ | 
+| get| api/empleados/ | Retornar la lista de Empleandos|
+| post| api/empleados/|Agrega nuevos empleados|
+| delete| api/empleados/ |Elimina Empleados|
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+###Autor
+ Christopher Gaete Oliveres - Desarrollador.
