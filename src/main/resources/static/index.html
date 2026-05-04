@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Empleados — MindGrid</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+<div class="container">
+
+    <h1>Gestión de Empleados</h1>
+
+    <!-- Formulario de alta -->
+    <div class="card">
+        <h2>Registrar nuevo empleado</h2>
+
+        <div id="error-container" role="alert">
+            <p id="error-title">Se encontraron los siguientes errores:</p>
+            <ul id="error-list"></ul>
+        </div>
+
+        <form id="form-empleado" novalidate>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label for="campo-nombre">Nombre</label>
+                    <input type="text" id="campo-nombre" placeholder="Juan" autocomplete="off">
+                    <span class="field-error" id="nombre-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="campo-apellido">Apellido</label>
+                    <input type="text" id="campo-apellido" placeholder="Pérez" autocomplete="off">
+                    <span class="field-error" id="apellido-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="campo-rut">RUT / DNI</label>
+                    <input type="text" id="campo-rut" placeholder="12345678-5" autocomplete="off">
+                    <span class="field-error" id="rut-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="campo-cargo">Cargo</label>
+                    <input type="text" id="campo-cargo" placeholder="Desarrollador" autocomplete="off">
+                    <span class="field-error" id="cargo-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="campo-salarioBase">Salario Base ($)</label>
+                    <input type="number" id="campo-salarioBase" placeholder="500000" min="400000" step="1">
+                    <span class="field-error" id="salarioBase-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="campo-bono">Bono ($)</label>
+                    <input type="number" id="campo-bono" placeholder="0" min="0" step="1" value="0">
+                    <span class="field-error" id="bono-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="campo-descuentos">Descuentos ($)</label>
+                    <input type="number" id="campo-descuentos" placeholder="0" min="0" step="1" value="0">
+                    <span class="field-error" id="descuentos-error"></span>
+                </div>
+
+            </div>
+            <button type="submit" class="btn-primary">Agregar Empleado</button>
+        </form>
+    </div>
+
+    <!-- Tabla de empleados -->
+    <div class="card">
+        <div class="table-header">
+            <h2>Lista de empleados</h2>
+            <button class="btn-refresh" onclick="cargarEmpleados()" title="GET /api/empleados">
+                ↻ Actualizar lista
+            </button>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>RUT</th>
+                    <th>Cargo</th>
+                    <th>Salario Base</th>
+                    <th>Bono</th>
+                    <th>Descuentos</th>
+                    <th>Salario Neto</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-empleados">
+                <tr><td colspan="10" class="loading">Cargando...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script src="/static/js/empleados.js"></script>
+</body>
+</html>
