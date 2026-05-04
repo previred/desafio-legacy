@@ -27,6 +27,12 @@ public class DbConnectionConfig {
         "  descuentos  DOUBLE        NOT NULL DEFAULT 0" +
         ")";
 
+    private static final String DATA =
+        "INSERT INTO empleados (nombre, apellido, rut, cargo, salario_base, bono, descuentos) " +
+        "SELECT 'Juan', 'Pérez', '12345678-5', 'Desarrollador', 500000, 50000, 20000 WHERE NOT EXISTS (SELECT 1 FROM empleados WHERE rut = '12345678-5');" +
+        "INSERT INTO empleados (nombre, apellido, rut, cargo, salario_base, bono, descuentos) " +
+        "SELECT 'Maria', 'García', '87654321-0', 'Analista', 600000, 60000, 25000 WHERE NOT EXISTS (SELECT 1 FROM empleados WHERE rut = '87654321-0');";
+
     @Bean
     public DataSource dataSource() {
         DriverManagerDataSource ds = new DriverManagerDataSource();
@@ -43,6 +49,7 @@ public class DbConnectionConfig {
         try (Connection conn = ds.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(DDL);
+            stmt.execute(DATA);
             LOGGER.info("Esquema de base de datos inicializado correctamente");
         } catch (SQLException e) {
             throw new RuntimeException("Error al inicializar el esquema de la base de datos", e);
