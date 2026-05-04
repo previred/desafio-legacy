@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Desafío Empleados - Legacy</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .form-section { background: #f9f9f9; padding: 15px; border-radius: 5px; }
+        .error-msg { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<h2>Sistema de Gestión de Empleados (AJAX Nativo)</h2>
+
+<div class="form-section">
+    <h3>Nuevo Empleado</h3>
+    <p id="errorLog" class="error-msg"></p>
+    <form id="empForm">
+        <input type="text" id="nombre" placeholder="Nombre" required>
+        <input type="text" id="apellido" placeholder="Apellido" required><br><br>
+        <input type="text" id="rut" placeholder="RUT/DNI" required>
+        <input type="text" id="cargo" placeholder="Cargo" required><br><br>
+        <input type="number" id="salario" placeholder="Salario Base" required>
+        <button type="button" onclick="crearEmpleado()">Registrar</button>
+    </form>
+</div>
+
+<!--<table id="tablaEmpleados">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>ID</th>-->
+<!--        <th>Nombre Completo</th>-->
+<!--        <th>RUT</th>-->
+<!--        <th>Cargo</th>-->
+<!--        <th>Salario</th>-->
+<!--        <th>Acción</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody></tbody>-->
+<!--</table>-->
+
+<script>
+    window.onload = function() {
+        listarEmpleados();
+    };
+
+    function listarEmpleados() {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/empleados", true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                var empleados = JSON.parse(xhr.responseText);
+                var html = "";
+                empleados.forEach(function(e) {
+                    html += "<tr><td>" + e.id + "</td><td>" + e.nombre + " " + e.apellido +
+                        "</td><td>" + e.rutDni + "</td><td>" + e.cargo +
+                        "</td><td>$" + e.salarioBase +
+                        "</td><td><button onclick='eliminar(" + e.id + ")'>X</button></td></tr>";
+                });
+                document.querySelector("#tablaEmpleados tbody").innerHTML = html;
+            }
+        };
+        xhr.send();
+    }
+
+    function crearEmpleado() {
+        var payload = {
+            nombre: document.getElementById("nombre").value,
+            apellido: document.getElementById("apellido").value,
+            rutDni: document.getElementById("rut").value,
+            cargo: document.getElementById("cargo").value,
+            salarioBase: parseFloat(document.getElementById("salario").value)
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/empleados", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 201) {
+                    document.getElementById("empForm").reset();
+                    document.getElementById("errorLog").innerText = "";
+                    listarEmpleados();
+                } else {
+                    var err = JSON.parse(xhr.responseText);
+                    document.getElementById("errorLog").innerText = err.error;
+                }
+            }
+        };
+        xhr.send(JSON.stringify(payload));
+    }
+
+    function eliminar(id) {
+        if (!confirm("¿Eliminar empleado?")) return;
+        var xhr = new XMLHttpRequest();
+        xhr.open("DELETE", "/api/empleados?id=" + id, true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                listarEmpleados();
+            }
+        };
+        xhr.send();
+    }
+</script>
+</body>
+</html>

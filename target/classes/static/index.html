@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Sistema de Nómina - Empleados</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background: #f9f9f9; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-width: 600px; margin-bottom: 20px; }
+        input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        input.invalid { border-color: #dc3545; background-color: #fff8f8; }
+        button { padding: 10px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 0.9em; }
+        th { background: #eee; }
+        .msg-error { color: #dc3545; font-size: 0.8em; grid-column: span 2; margin-bottom: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+<h2>Registro de Empleado</h2>
+<div id="api-message" class="msg-error"></div>
+
+<div class="form-grid">
+    <input type="text" id="name" placeholder="Nombre">
+    <input type="text" id="surname" placeholder="Apellido">
+    <input type="text" id="fiscalId" placeholder="ID Fiscal (DNI/RUT)">
+    <input type="text" id="role" placeholder="Cargo">
+    <input type="number" id="salary" placeholder="Salario Base">
+    <input type="number" id="bonus" placeholder="Bono">
+    <input type="number" id="discounts" placeholder="Descuentos">
+    <button id="btn-guardar" style="grid-column: span 2;">Registrar Empleado</button>
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Fiscal ID</th>
+        <th>Nombre Completo</th>
+        <th>Cargo</th>
+        <th>Salario</th>
+        <th>Bono</th>
+        <th>Desc.</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody id="lista-empleados"></tbody>
+</table>
+
+<script src="api-client.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
