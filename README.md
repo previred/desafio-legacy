@@ -1,72 +1,108 @@
-# Desafío Técnico: Servlets y AJAX
+# Guia del desafio Empleados
 
-## Objetivo:
-Demostrar el conocimiento sobre Java (mínimo versión 8), manejo de servlets y peticiones AJAX nativas.
+## Enfoque de arquitectura
 
-## Requisitos Técnicos:
-### Java:
-- Utiliza Java 8 o superior para la implementación.
-- Utiliza las características de Java como lambdas y streams, cuando sea apropiado.
-- Utilizar Maven como gestor de dependencias.
-- Utilizar Spring Boot como Runtime para la ejecución del desafío en conjunto con Apache Tomcat como contenedor web.
+Ocupa `spring-boot-starter-web`. para el arranque con aplicationRUN con tomcat embebido la clase se llama: EmpleadosApplication.java
 
-## Parte 1: Implementación de un Servicio Web con Servlets y AJAX
-```
-  Crear una aplicación web en Java 8 con Servlets y manejo de AJAX, con las siguientes características: 
 
-    Endpoint: /api/empleados 
-      GET: Retorna una lista de empleados en formato JSON. 
-      POST: Permite agregar un nuevo empleado enviando datos en formato JSON. 
-      DELETE: Elimina un empleado por su ID. 
+- Los endpoints principales se implementan como Servlets donde los controladores del servlet estan en: EmpleadoServlet.java
 
-  Datos esperados del empleado: 
 
-    ID (autogenerado), Nombre, Apellido, RUT/DNI, Cargo, Salario.
+- Los servlets se registran em clase ServletConfig.java donde aqui esta la comunicacion con el levantamiento de la pagina y luego su referencia de API mediante FETCH para la activavion del servlet
 
-  Interfaz con AJAX: 
-    Crear una página web simple en HTML + JavaScript (sin frameworks como React o Angular). 
-    Usar AJAX (Fetch API o XMLHttpRequest) para:  
-      - Cargar la lista de empleados sin recargar la página. 
-      - Agregar nuevos empleados mediante un formulario sin recargar la página. 
-      - Eliminar empleados con un botón sin recargar la página. 
+- La persistencia con JDC y H2 esta en la configuracion en clase DatabaseInitializer.java
 
-  Requerimientos técnicos: 
-    - No usar frameworks externos, solo Servlets y JDBC para conexión con una BD en memoria como H2. 
-    - Manejo adecuado de excepciones y logging. 
-    - Validación de datos en los endpoints. 
+## Condiciones
+- al salario le saque 25% de bonos y 20% de descuento segun mi entendimiento, entonces solo me recibe salarios valores desde 400 mil a 800 mil pesos aprox. 
+``
+## Qué incluye, Resumen
+
+- Clase `EmpleadosApplication` con `main()` para ejecutar como Spring Boot App
+- Tomcat embebido vía `spring-boot-starter-web`
+- Servlet `HomeServlet` para servir la vista principal
+- Servlet `EmpleadoServlet` para API AJAX
+- Logging y manejo centralizado de errores esta en la carpeta logs 
+- SOLID y patrones básicos por capas
+
+## Cómo ejecutar
+
+### Desde Eclipse o terminal
+```bash
+mvn spring-boot:run
 ```
 
-## Parte 2: Validaciones de Reglas de Negocio con AJAX
-
-```
-  Implementar validaciones en la carga de empleados y nóminas: 
-
-    1. En el backend (Java 8): 
-        - Rechazar empleados con RUT/DNI duplicado. 
-        - No permitir salarios base menores a $400,000. 
-        - Bonos no pueden superar el 50% del salario base. 
-        - El total de descuentos no puede ser mayor al salario base. 
-        - Si alguna regla se incumple, se debe retornar una respuesta HTTP 400 con un JSON indicando los registros con error. 
-    2. En el frontend (JavaScript + AJAX): 
-        - Implementar validaciones antes de enviar el formulario:  
-        - Verificar que todos los campos estén completos. 
-        - Validar formato del RUT/DNI. 
-        - Validar que el salario base no sea menor a $400,000. 
-        - Mostrar errores de validación de forma dinámica en la página (sin alertas de JavaScript). 
+O bien:
+```bash
+mvn clean package
+target/empleados-1.0.0.jar
 ```
 
-## Entregables:
-### Repositorio de GitHub:
-- Realiza un Pull request a este repositorio indicando tu nombre, empresa reclutadora, correo y cargo al que postulas.
-- Todos los PR serán rechazados, no es un indicador de la prueba.
+## URL
+```text
+http://localhost:8080/home
+```
 
-### Documentación:
-- Incluye instrucciones claras en un README en formato markdown, sobre cómo ejecutar y probar la aplicación.
+## Estructura
 
-## Evaluación:
-Se evaluará la solución en función de los siguientes criterios:
+```text
+/previred
+├── logs
+│   └── app.log
+├── menuprincipal.png
+├── pom.xml
+├── README.md
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── cl
+│   │   │       └── previred
+│   │   │           ├── config
+│   │   │           │   ├── AppConfig.java
+│   │   │           │   ├── DatabaseInitializer.java
+│   │   │           │   └── ServletConfig.java
+│   │   │           ├── dto
+│   │   │           │   ├── ApiResponse.java
+│   │   │           │   ├── EmpleadoRequest.java
+│   │   │           │   └── EmpleadoResponse.java
+│   │   │           ├── EmpleadosApplication.java
+│   │   │           ├── exception
+│   │   │           │   ├── AppException.java
+│   │   │           │   ├── ResourceNotFoundException.java
+│   │   │           │   └── ValidationException.java
+│   │   │           ├── mapper
+│   │   │           │   └── EmpleadoMapper.java
+│   │   │           ├── model
+│   │   │           │   └── Empleado.java
+│   │   │           ├── repository
+│   │   │           │   ├── EmpleadoRepository.java
+│   │   │           │   └── impl
+│   │   │           │       └── EmpleadoJdbcRepository.java
+│   │   │           ├── service
+│   │   │           │   ├── EmpleadoService.java
+│   │   │           │   └── impl
+│   │   │           │       └── EmpleadoServiceImpl.java
+│   │   │           ├── servlet
+│   │   │           │   ├── EmpleadoServlet.java
+│   │   │           │   └── HomeServlet.java
+│   │   │           └── util
+│   │   │               ├── AppExceptionHandler.java
+│   │   │               ├── DatabaseUtil.java
+│   │   │               ├── JsonUtils.java
+│   │   │               └── ValidationUtils.java
+│   │   └── resources
+│   │       ├── application.properties
+│   │       ├── logback-spring.xml
+│   │       └── static
+│   │           ├── css
+│   │           │   └── styles.css
+│   │           ├── index.html
+│   │           └── js
+│   │               └── app.js
+│   └── test
+│       └── java
+│           └── cl
+│               └── previred
+│                   └── ApplicationTests.java
 
-- Correcta implementación de las funcionalidades solicitadas.
-- Aplicación de buenas prácticas de desarrollo, patrones de diseño y principios SOLID.
-- Uso adecuado de Java y Javascript.
-- Claridad y completitud de la documentación.
+```
+

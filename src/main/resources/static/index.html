@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Empleados</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div class="container">
+    <header class="page-header">
+        <h1>Gestión de Empleados</h1>
+        <p>Carga, Agrega y elimina empleados</p>
+    </header>
+
+     
+        <div class="margen">
+            <h2>Nuevo empleado</h2>
+            <form id="empleadoForm" novalidate>
+                <div>
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre">
+                </div>
+                <div>
+                    <label for="apellido">Apellido</label>
+                    <input type="text" id="apellido" name="apellido">
+                </div>
+                <div>
+                    <label for="rutDni">RUT/DNI</label>
+                    <input type="text" id="rutDni" name="rutDni" placeholder="11.111.111-1">
+                </div>
+                <div>
+                    <label for="cargo">Cargo</label>
+                    <input type="text" id="cargo" name="cargo">
+                </div>
+                <div>
+                    <label for="salario">Salario</label>
+                    <input type="number" id="salario" name="salario" min="400000">
+                </div>
+                <button type="submit">Guardar empleado</button>
+            </form>
+            <div id="mensaje" class="message hidden"></div>
+            <ul id="errores" class="error-list"></ul>
+        </div>
+        
+        <div class="card">
+            <div class="table-header">
+                <h2>Listado de empleados</h2>
+                <button id="recargarBtn" type="button">Recargar</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>RUT/DNI</th>
+                        <th>Cargo</th>
+                        <th>Salario</th>
+                        <th>Acción</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tablaEmpleadosBody">
+                    <tr><td colspan="7">Cargando empleados...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+   
+</div>
+<script src="/js/app.js"></script>
+</body>
+</html>
