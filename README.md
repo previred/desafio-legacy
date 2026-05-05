@@ -10,11 +10,12 @@ Ocupa `spring-boot-starter-web`. para el arranque con aplicationRUN con tomcat e
 
 - Los servlets se registran em clase ServletConfig.java donde aqui esta la comunicacion con el levantamiento de la pagina y luego su referencia de API mediante FETCH para la activavion del servlet
 
-
 - La persistencia con JDC y H2 esta en la configuracion en clase DatabaseInitializer.java
 
-
-## Qué incluye Resumen
+## Condiciones
+- al salario le saque 25% de bonos y 20% de descuento segun mi entendimiento, entonces solo me recibe salarios valores desde 400 mil a 800 mil pesos aprox. 
+``
+## Qué incluye, Resumen
 
 - Clase `EmpleadosApplication` con `main()` para ejecutar como Spring Boot App
 - Tomcat embebido vía `spring-boot-starter-web`
@@ -33,7 +34,7 @@ mvn spring-boot:run
 O bien:
 ```bash
 mvn clean package
-java -jar target/empleados-1.0.0.jar
+target/empleados-1.0.0.jar
 ```
 
 ## URL
@@ -104,5 +105,4 @@ http://localhost:8080/home
 │                   └── ApplicationTests.java
 
 ```
-
 
